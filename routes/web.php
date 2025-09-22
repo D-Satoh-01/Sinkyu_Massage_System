@@ -12,7 +12,6 @@ Route::get('/auth/login', function () {
 	return view('auth.login');
 })->name('login');
 
-// ->name('ルート名') と記述することでルートに名前を付けられる
 Route::get('/dashboard', function () {
 	return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -29,3 +28,5 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::view('/master-registration', 'master-registration')->name('master-registration');

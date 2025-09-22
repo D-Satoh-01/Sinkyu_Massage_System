@@ -7,9 +7,10 @@
 
 		<title>{{ config('app.name', 'Laravel') }}</title>
 
-		<!-- Fonts -->
-		<link rel="preconnect" href="https://fonts.bunny.net">
-		<link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+		<!-- Google Fonts - Noto Sans JP -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">		
 
 		<!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -17,7 +18,7 @@
 		<!-- Scripts -->
 		@vite(['resources/css/app.css', 'resources/js/app.js'])
 	</head>
-	<body class="min-vh-100 bg-gray">
+	<body class="min-vh-100 bg-gray m-2">
 		<div>
 			@include('header')
 
