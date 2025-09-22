@@ -18,7 +18,7 @@
 		<!-- Scripts -->
 		@vite(['resources/css/app.css', 'resources/js/app.js'])
 	</head>
-	<body class="min-vh-100 bg-gray m-2">
+	<body class="min-vh-100 bg-gray m-3">
 		<div>
 			@include('header')
 
