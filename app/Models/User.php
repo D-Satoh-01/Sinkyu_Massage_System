@@ -12,14 +12,16 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
+    // ログイン機能でsystem_usersテーブルを使用
+    protected $table = 'system_users';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'email',
+        'login_id',
         'password',
     ];
 
@@ -41,8 +43,13 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // login_id を使ってログイン
+    public function username(): string
+    {
+        return 'login_id';
     }
 }
