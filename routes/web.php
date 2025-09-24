@@ -13,9 +13,10 @@ Route::middleware('auth')->group(function () {
 	Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 	Route::view('/home', 'home')->name('home');
+	
 	Route::view('/master-registration/mr-home', 'master-registration.mr-home')->name('mr-home');
 	Route::view('/clinic-users-info/cui-home', 'clinic-users-info.cui-home')->name('cui-home');
+	Route::view('/clinic-users-info/cui-registration', 'clinic-users-info.cui-registration')->name('cui-registration');
 });
 
 require __DIR__.'/auth.php';
-
