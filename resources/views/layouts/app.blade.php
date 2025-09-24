@@ -20,7 +20,7 @@
 	</head>
 	<body class="min-vh-100 bg-gray m-3">
 		<div>
-			@include('header')
+			@include('layouts.header')
 
 			<!-- Page Content -->
 			<main>
