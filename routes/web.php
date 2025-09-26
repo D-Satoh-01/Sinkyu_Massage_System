@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ClinicUserController;
 
 Route::view('/','auth.login');
 
@@ -17,6 +18,8 @@ Route::middleware('auth')->group(function () {
 	Route::view('/master-registration/mr-home', 'master-registration.mr-home')->name('mr-home');
 	Route::view('/clinic-users-info/cui-home', 'clinic-users-info.cui-home')->name('cui-home');
 	Route::view('/clinic-users-info/cui-registration', 'clinic-users-info.cui-registration')->name('cui-registration');
+	Route::get('/clinic-users-info/cui-registration', [ClinicUserController::class, 'create'])->name('cui-registration');
+  Route::post('/clinic-users-info/cui-registration', [ClinicUserController::class, 'store'])->name('cui-registration.store');
 });
 
 require __DIR__.'/auth.php';

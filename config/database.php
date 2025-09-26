@@ -63,6 +63,22 @@ return [
             ]) : [],
         ],
 
+        'sinkyu_massage_system_db' => [
+            'driver' => 'mysql',
+            'host' => env('SINKYU_DB_HOST', '127.0.0.1'),
+            'port' => env('SINKYU_DB_PORT', '3306'),
+            'database' => env('SINKYU_DB_DATABASE', 'sinkyu_massage_system_db'),
+            'username' => env('SINKYU_DB_USERNAME', 'root'),
+            'password' => env('SINKYU_DB_PASSWORD', ''),
+            'unix_socket' => env('SINKYU_DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+        ],
+
         'mariadb' => [
             'driver' => 'mariadb',
             'url' => env('DB_URL'),

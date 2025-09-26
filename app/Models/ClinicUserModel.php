@@ -13,6 +13,28 @@ class ClinicUserModel extends Model
   protected $table = 'clinic_users';
   
   protected $fillable = [
-      'clinic_user_name'
+    'clinic_user_name',
+    'furigana',
+    'birthday',
+    'age',
+    'gender_id',
+    'postal_code',
+    'address_1',
+    'address_2',
+    'address_3',
+    'phone',
+    'cell_phone',
+    'fax',
+    'email',
+    'housecall_distance',
+    'housecall_additional_distance',
+    'is_redeemed',
+    'application_count',
+    'note'
+  ];
+
+  protected $casts = [
+    'birthday' => 'date',
+    'is_redeemed' => 'boolean'
   ];
 }
