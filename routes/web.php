@@ -16,10 +16,10 @@ Route::middleware('auth')->group(function () {
 	Route::view('/home', 'home')->name('home');
 	
 	Route::view('/master-registration/mr-home', 'master-registration.mr-home')->name('mr-home');
-	Route::view('/clinic-users-info/cui-home', 'clinic-users-info.cui-home')->name('cui-home');
-	Route::view('/clinic-users-info/cui-registration', 'clinic-users-info.cui-registration')->name('cui-registration');
-	Route::get('/clinic-users-info/cui-registration', [ClinicUserController::class, 'create'])->name('cui-registration');
-  Route::post('/clinic-users-info/cui-registration', [ClinicUserController::class, 'store'])->name('cui-registration.store');
+  Route::view('/clinic-users-info/cui-home', 'clinic-users-info.cui-home')->name('cui-home');
+  Route::get('/clinic-users-info/cui-registration', [ClinicUserController::class, 'create'])->name('cui-registration');
+  Route::post('/clinic-users-info/cui-registration/confirm', [ClinicUserController::class, 'confirm'])->name('cui-registration.confirm');
+  Route::post('/clinic-users-info/cui-registration/store', [ClinicUserController::class, 'store'])->name('cui-registration.store');
 });
 
 require __DIR__.'/auth.php';
