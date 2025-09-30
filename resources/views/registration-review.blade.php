@@ -3,39 +3,40 @@
 <x-app-layout>
   <h2>{{ $page_title }}</h2><br><br>
 
-  <p>入力内容の登録を行います。</p><br>
+  <p>{{ $registration_message }}</p><br>
 
-  <table>
-    <tbody>
-      @foreach($data as $key => $value)
-        @if($value !== null && $value !== '')
-          <tr>
-            <th>{{ $labels[$key] ?? $key }}</th>
-            <td>
-              @if($key === 'gender_id')
-                {{ $value == 1 ? '男性' : ($value == 2 ? '女性' : '') }}
-              @elseif($key === 'is_redeemed')
-                {{ $value ? 'あり' : 'なし' }}
-              @elseif($key === 'birthday')
-                {{ $value ? date('Y年n月j日', strtotime($value)) : '' }}
-              @else
-                {{ $value }}
-              @endif
-            </td>
-          </tr>
-        @endif
-      @endforeach
-    </tbody>
-  </table>
+  <div>
+    @foreach($labels as $key => $label)
+      <div class="mb-3">
+        <div class="fw-semibold">{{ $label }}</div>
+        <div>
+          @if(isset($data[$key]) && $data[$key] !== null && $data[$key] !== '')
+            @if($key === 'gender_id')
+              {{ $data[$key] == 1 ? '男性' : ($data[$key] == 2 ? '女性' : '') }}
+            @elseif($key === 'is_redeemed')
+              {{ $data[$key] ? 'あり' : 'なし' }}
+            @elseif($key === 'birthday')
+              {{ date('Y年n月j日', strtotime($data[$key])) }}
+            @else
+              {{ $data[$key] }}
+            @endif
+          @else
+            {{-- 空欄の場合 --}}
+            &nbsp;
+          @endif
+        </div>
+      </div>
+    @endforeach
+  </div>
 
   <br>
 
-  <form action="{{ route($back_route) }}" method="GET" style="display: inline;">
-    <button type="submit">◀ 戻る</button>
+  <form action="{{ route($back_route) }}" method="GET" style="display: inline-block;">
+    <button type="submit" class="me-3">◀ 戻る</button>
   </form>
 
-  <form action="{{ route($store_route) }}" method="POST" style="display: inline;">
+  <form action="{{ route($store_route) }}" method="POST" style="display: inline-block;">
     @csrf
-    <button type="submit">登録する</button>
+    <button type="submit" class="me-3">登録する</button>
   </form>
 </x-app-layout>

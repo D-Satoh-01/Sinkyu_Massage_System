@@ -70,7 +70,8 @@ class ClinicUserController extends Controller
       'labels' => $labels,
       'back_route' => 'cui-registration',
       'store_route' => 'cui-registration.store',
-      'page_title' => '利用者登録内容確認'
+      'page_title' => '利用者登録内容確認',
+      'registration_message' => '利用者情報の登録を行います。',
     ]);
   }
 
@@ -93,8 +94,8 @@ class ClinicUserController extends Controller
     $request->session()->forget('registration_data');
 
     return view('registration-done', [
-      'page_title' => '利用者登録完了',
-      'message' => '利用者情報が正常に登録されました。',
+      'page_title' => '基本情報登録完了',
+      'message' => '入力された内容を登録しました。',
       'home_route' => 'cui-home',
       'list_route' => null // 一覧ページがあれば指定
     ]);
