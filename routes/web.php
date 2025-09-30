@@ -1,4 +1,5 @@
 <?php
+// routes/web.php
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -16,7 +17,8 @@ Route::middleware('auth')->group(function () {
 	Route::view('/home', 'home')->name('home');
 	
 	Route::view('/master-registration/mr-home', 'master-registration.mr-home')->name('mr-home');
-  Route::view('/clinic-users-info/cui-home', 'clinic-users-info.cui-home')->name('cui-home');
+	
+  Route::get('/clinic-users-info/cui-home', [ClinicUserController::class, 'index'])->name('cui-home');
   Route::get('/clinic-users-info/cui-registration', [ClinicUserController::class, 'create'])->name('cui-registration');
   Route::post('/clinic-users-info/cui-registration/confirm', [ClinicUserController::class, 'confirm'])->name('cui-registration.confirm');
   Route::post('/clinic-users-info/cui-registration/store', [ClinicUserController::class, 'store'])->name('cui-registration.store');

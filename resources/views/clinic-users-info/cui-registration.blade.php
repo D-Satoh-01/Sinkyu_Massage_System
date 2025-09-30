@@ -1,4 +1,4 @@
-<!-- cui-registration.blade.php -->
+<!-- resources/views/clinic-users-info/cui-registration.blade.php -->
 
 <x-app-layout>
   <h2>利用者新規登録</h2><br><br>

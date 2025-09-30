@@ -8,6 +8,37 @@ use App\Models\ClinicUserModel;
 
 class ClinicUserController extends Controller
 {
+  // 一覧表示
+  public function index(Request $request)
+  {
+    $perPage = $request->input('per_page', 10);
+    $search = $request->input('search', '');
+    $sortBy = $request->input('sort_by', 'id');
+    $sortOrder = $request->input('sort_order', 'desc');
+
+    $query = ClinicUserModel::query();
+
+    // 検索処理
+    if ($search) {
+      $query->where(function($q) use ($search) {
+        $q->where('id', 'like', "%{$search}%")
+          ->orWhere('clinic_user_name', 'like', "%{$search}%")
+          ->orWhere('furigana', 'like', "%{$search}%")
+          ->orWhere('birthday', 'like', "%{$search}%")
+          ->orWhere('postal_code', 'like', "%{$search}%")
+          ->orWhere('address_1', 'like', "%{$search}%")
+          ->orWhere('address_2', 'like', "%{$search}%")
+          ->orWhere('address_3', 'like', "%{$search}%")
+          ->orWhere('created_at', 'like', "%{$search}%");
+      });
+    }
+
+    // ソート処理
+    $clinicUsers = $query->orderBy($sortBy, $sortOrder)->paginate($perPage);
+
+    return view('clinic-users-info.cui-home', compact('clinicUsers', 'perPage', 'search', 'sortBy', 'sortOrder'));
+  }
+
   public function create()
   {
     return view('clinic-users-info.cui-registration');
@@ -97,7 +128,7 @@ class ClinicUserController extends Controller
       'page_title' => '基本情報登録完了',
       'message' => '入力された内容を登録しました。',
       'home_route' => 'cui-home',
-      'list_route' => null // 一覧ページがあれば指定
+      'list_route' => null
     ]);
   }
 }
