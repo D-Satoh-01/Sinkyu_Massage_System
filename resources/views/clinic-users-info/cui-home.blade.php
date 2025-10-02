@@ -1,5 +1,6 @@
 <!-- resources/views/clinic-users-info/cui-home.blade.php -->
 
+
 <x-app-layout>
   <h2>利用者情報</h2>
   

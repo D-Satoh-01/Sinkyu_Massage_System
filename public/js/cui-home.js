@@ -1,4 +1,5 @@
-// public/js/cui-home.js
+//-- public/js/cui-home.js --//
+
 
 let allRows = [];
 let currentSort = window.initialSort || 'id';

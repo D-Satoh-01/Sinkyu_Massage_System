@@ -1,3 +1,6 @@
+<!-- resources/views/home.blade.php -->
+
+
 <x-app-layout>
   <h2>ホーム画面</h2><br><br>
 

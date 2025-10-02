@@ -1,15 +1,16 @@
-<div>
-  <a href="{{route('home')}}">ホーム</a>
-</div>
+<!-- resources/views/layouts/header.blade.php -->
 
-<div>
-  <form method="POST" action="{{ route('logout') }}" >
+
+<div style="display: flex; align-items: center; gap: 1rem; font-weight: bold;">
+  <a href="{{route('home')}}">ホーム</a>
+
+  <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
     @csrf
     <x-responsive-nav-link :href="route('logout')"
       onclick="event.preventDefault();
       this.closest('form').submit();"
       style="padding: 0 !important;">
-      {{ __('Log Out') }}
+      {{ __('ログアウト') }}
     </x-responsive-nav-link>
   </form>
 </div>

@@ -1,5 +1,6 @@
 <!-- resources/views/registration-done.blade.php -->
 
+
 <x-app-layout>
   <h2>{{ $page_title }}</h2><br><br>
 

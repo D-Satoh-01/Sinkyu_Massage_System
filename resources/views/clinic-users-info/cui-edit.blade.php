@@ -1,5 +1,6 @@
 <!-- resources/views/clinic-users-info/cui-edit.blade.php -->
 
+
 <x-app-layout>
   <h2>利用者情報編集</h2><br><br>
 

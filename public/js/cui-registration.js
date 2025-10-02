@@ -1,3 +1,6 @@
+//-- public/js/cui-registration.js --//
+
+
 // 郵便番号から住所を検索する関数
 async function searchAddress() {
   const postalCode = document.getElementById('postal_code').value;

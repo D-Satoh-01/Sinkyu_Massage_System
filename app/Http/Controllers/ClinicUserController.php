@@ -1,5 +1,6 @@
 <?php
-// app/Http/Controllers/ClinicUserController.php
+//-- app/Http/Controllers/ClinicUserController.php --//
+
 
 namespace App\Http\Controllers;
 

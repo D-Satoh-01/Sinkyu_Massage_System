@@ -1,4 +1,6 @@
 <?php
+// app/Models/ClinicUserModel.php
+
 
 namespace App\Models;
 
