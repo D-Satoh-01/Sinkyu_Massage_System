@@ -21,7 +21,6 @@
               {{ $data[$key] }}
             @endif
           @else
-            {{-- 空欄の場合 --}}
             &nbsp;
           @endif
         </div>
@@ -31,9 +30,15 @@
 
   <br>
 
-  <form action="{{ route($back_route) }}" method="GET" style="display: inline-block;">
-    <button type="submit" class="me-3">◀ 戻る</button>
-  </form>
+  @if(isset($back_id))
+    <a href="{{ route($back_route, ['id' => $back_id]) }}">
+      <button type="button" class="me-3">◀ 戻る</button>
+    </a>
+  @else
+    <form action="{{ route($back_route) }}" method="GET" style="display: inline-block;">
+      <button type="submit" class="me-3">◀ 戻る</button>
+    </form>
+  @endif
 
   <form action="{{ route($store_route) }}" method="POST" style="display: inline-block;">
     @csrf

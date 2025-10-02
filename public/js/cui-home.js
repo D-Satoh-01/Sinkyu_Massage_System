@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', function() {
       e.preventDefault();
       const sortBy = this.getAttribute('data-sort');
       
-      // 同じカラムをクリックした場合は順序を反転
       if (currentSort === sortBy) {
         currentOrder = currentOrder === 'asc' ? 'desc' : 'asc';
       } else {
@@ -39,13 +38,23 @@ document.addEventListener('DOMContentLoaded', function() {
       filterAndDisplay(document.getElementById('search').value);
     });
   });
+
+  // 削除ボタンのイベントリスナー
+  document.querySelectorAll('.delete-form').forEach(function(form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      if (confirm('一度削除したデータは元に戻せません。\n削除してもよろしいですか？')) {
+        this.submit();
+      }
+    });
+  });
 });
 
 function filterAndDisplay(searchTerm) {
   const tbody = document.getElementById('tableBody');
   const lowerSearch = searchTerm.toLowerCase();
 
-  // フィルタリング
   let filteredRows = allRows.filter(function(row) {
     if (!searchTerm) return true;
 
@@ -64,7 +73,6 @@ function filterAndDisplay(searchTerm) {
            created.includes(lowerSearch);
   });
 
-  // ソート
   filteredRows.sort(function(a, b) {
     let aVal, bVal;
 
@@ -99,10 +107,8 @@ function filterAndDisplay(searchTerm) {
     return 0;
   });
 
-  // 表示件数制限
   const displayRows = filteredRows.slice(0, displayLimit);
 
-  // テーブル更新
   tbody.innerHTML = '';
   if (displayRows.length === 0) {
     tbody.innerHTML = '<tr><td colspan="7" style="border: 1px solid #000; padding: 8px; text-align: center;">データがありません</td></tr>';
@@ -110,18 +116,27 @@ function filterAndDisplay(searchTerm) {
     displayRows.forEach(function(row) {
       tbody.appendChild(row.cloneNode(true));
     });
+    
+    // 削除ボタンのイベントリスナーを再設定
+    document.querySelectorAll('.delete-form').forEach(function(form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (confirm('一度削除したデータは元に戻せません。\n削除してもよろしいですか？')) {
+          this.submit();
+        }
+      });
+    });
   }
 }
 
 function updateSortIndicators() {
-  // 全てのソートインジケーターをクリア
   document.querySelectorAll('[id^="sort-"]').forEach(function(span) {
     span.textContent = '';
   });
 
-  // 現在のソートインジケーターを設定
   const indicator = document.getElementById('sort-' + currentSort);
   if (indicator) {
-    indicator.textContent = currentOrder === 'asc' ? '▲' : '▼';
+    indicator.textContent = currentOrder === 'asc' ? '▴' : '▾';
   }
 }

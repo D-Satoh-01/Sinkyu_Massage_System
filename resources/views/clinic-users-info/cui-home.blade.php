@@ -1,7 +1,9 @@
 <!-- resources/views/clinic-users-info/cui-home.blade.php -->
 
 <x-app-layout>
-  <h2>利用者情報</h2><br><br>
+  <h2>利用者情報</h2>
+  
+  <br><br>
 
   <a href="{{ route('cui-registration') }}">
     <button type="button">利用者新規登録</button>
@@ -12,7 +14,7 @@
   <!-- 表示件数と検索 -->
   <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
     <div>
-      <label for="per_page">表示件数:</label>
+      <label for="per_page">表示行数</label>
       <select name="per_page" id="per_page">
         <option value="10" {{ ($perPage ?? 10) == 10 ? 'selected' : '' }}>10件</option>
         <option value="25" {{ ($perPage ?? 10) == 25 ? 'selected' : '' }}>25件</option>
@@ -22,42 +24,42 @@
     </div>
 
     <div>
-      <input type="text" id="search" placeholder="検索..." value="{{ $search ?? '' }}">
+      <input type="text" id="search" placeholder="検索" value="{{ $search ?? '' }}">
     </div>
   </div>
 
   <!-- 利用者一覧テーブル -->
   <table id="userTable" style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
     <thead>
-      <tr style="background-color: #f0f0f0;">
+      <tr style="background-color: #eeeeee;">
         <th style="border: 1px solid #000; padding: 8px;">
           <a href="#" data-sort="id">
             ID
-            <span id="sort-id">{{ ($sortBy ?? 'id') == 'id' ? (($sortOrder ?? 'desc') == 'asc' ? '▲' : '▼') : '' }}</span>
+            <span id="sort-id">{{ ($sortBy ?? 'id') == 'id' ? (($sortOrder ?? 'desc') == 'asc' ? '▴' : '▾') : '' }}</span>
           </a>
         </th>
         <th style="border: 1px solid #000; padding: 8px;">
           <a href="#" data-sort="clinic_user_name">
-            名前[編集] / カナ
-            <span id="sort-clinic_user_name">{{ ($sortBy ?? 'id') == 'clinic_user_name' ? (($sortOrder ?? 'desc') == 'asc' ? '▲' : '▼') : '' }}</span>
+            名前 [編集] / カナ
+            <span id="sort-clinic_user_name">{{ ($sortBy ?? 'id') == 'clinic_user_name' ? (($sortOrder ?? 'desc') == 'asc' ? '▴' : '▾') : '' }}</span>
           </a>
         </th>
         <th style="border: 1px solid #000; padding: 8px;">
           <a href="#" data-sort="birthday">
             生年月日
-            <span id="sort-birthday">{{ ($sortBy ?? 'id') == 'birthday' ? (($sortOrder ?? 'desc') == 'asc' ? '▲' : '▼') : '' }}</span>
+            <span id="sort-birthday">{{ ($sortBy ?? 'id') == 'birthday' ? (($sortOrder ?? 'desc') == 'asc' ? '▴' : '▾') : '' }}</span>
           </a>
         </th>
         <th style="border: 1px solid #000; padding: 8px;">
           <a href="#" data-sort="address_1">
             住所 / TEL
-            <span id="sort-address_1">{{ ($sortBy ?? 'id') == 'address_1' ? (($sortOrder ?? 'desc') == 'asc' ? '▲' : '▼') : '' }}</span>
+            <span id="sort-address_1">{{ ($sortBy ?? 'id') == 'address_1' ? (($sortOrder ?? 'desc') == 'asc' ? '▴' : '▾') : '' }}</span>
           </a>
         </th>
         <th style="border: 1px solid #000; padding: 8px;">
           <a href="#" data-sort="created_at">
             データ登録日
-            <span id="sort-created_at">{{ ($sortBy ?? 'id') == 'created_at' ? (($sortOrder ?? 'desc') == 'asc' ? '▲' : '▼') : '' }}</span>
+            <span id="sort-created_at">{{ ($sortBy ?? 'id') == 'created_at' ? (($sortOrder ?? 'desc') == 'asc' ? '▴' : '▾') : '' }}</span>
           </a>
         </th>
         <th style="border: 1px solid #000; padding: 8px;">各種編集</th>
@@ -74,7 +76,7 @@
             data-created="{{ $user->created_at->format('Y/m/d H:i') }}">
           <td style="border: 1px solid #000; padding: 8px;">{{ $user->id }}</td>
           <td style="border: 1px solid #000; padding: 8px;">
-            {{ $user->clinic_user_name }}[編集]<br>
+            <a href="{{ route('cui-edit', ['id' => $user->id]) }}">{{ $user->clinic_user_name }} [編集]</a><br>
             {{ $user->furigana }}
           </td>
           <td style="border: 1px solid #000; padding: 8px;">
@@ -99,7 +101,13 @@
             同意医師履歴（はり・きゅう）<br>
             計画書情報
           </td>
-          <td style="border: 1px solid #000; padding: 8px;">削除</td>
+          <td style="border: 1px solid #000; padding: 8px;">
+            <form action="{{ route('cui-delete', ['id' => $user->id]) }}" method="POST" class="delete-form" style="display: inline;">
+              @csrf
+              @method('DELETE')
+              <button type="submit" class="delete-btn" style="background: none; border: none; color: #0d6efd; cursor: pointer;">削除</button>
+            </form>
+          </td>
         </tr>
       @empty
         <tr id="noDataRow">
