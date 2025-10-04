@@ -69,7 +69,7 @@
     </thead>
     <tbody id="tableBody">
       @forelse($clinicUsers ?? [] as $user)
-        <tr data-id="{{ $user->id }}" 
+        <tr data-id="{{ $user->id }}"
             data-name="{{ $user->clinic_user_name }}" 
             data-furigana="{{ $user->furigana }}"
             data-birthday="{{ $user->birthday ? $user->birthday->format('Y/m/d') : '' }}"
