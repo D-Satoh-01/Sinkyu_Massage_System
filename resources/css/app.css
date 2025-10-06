@@ -8,6 +8,6 @@ body {
   background-color: #ccc;
 }
 
-a {
-  text-decoration: none;
+[href] {
+  text-decoration-line: none;
 }
