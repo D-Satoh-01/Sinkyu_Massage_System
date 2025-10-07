@@ -12,20 +12,21 @@
 
   <br><br>
 
-  <!-- 表示件数と検索 -->
+  <!-- 表示件数切替えと検索 -->
   <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
     <div>
-      <label for="per_page">表示行数</label>
-      <select name="per_page" id="per_page">
-        <option value="10" {{ ($perPage ?? 10) == 10 ? 'selected' : '' }}>10件</option>
-        <option value="25" {{ ($perPage ?? 10) == 25 ? 'selected' : '' }}>25件</option>
-        <option value="50" {{ ($perPage ?? 10) == 50 ? 'selected' : '' }}>50件</option>
-        <option value="100" {{ ($perPage ?? 10) == 100 ? 'selected' : '' }}>100件</option>
+      <label for="per_page">表示件数</label>
+      <select name="per_page" id="per_page" onchange="changePerPage(this.value)">
+        <option value="10" {{ ($perPage ?? 10) == 10 ? 'selected' : '' }}>10</option>
+        <option value="25" {{ ($perPage ?? 10) == 25 ? 'selected' : '' }}>25</option>
+        <option value="50" {{ ($perPage ?? 10) == 50 ? 'selected' : '' }}>50</option>
+        <option value="100" {{ ($perPage ?? 10) == 100 ? 'selected' : '' }}>100</option>
       </select>
+      <a>件</a>
     </div>
 
     <div>
-      <input type="text" id="search" placeholder="検索" value="{{ $search ?? '' }}">
+      <input type="text" id="search" placeholder="検索" value="{{ $search ?? '' }}" onchange="changeSearch(this.value)">
     </div>
   </div>
 
@@ -122,7 +123,7 @@
 
   <!-- ページネーション -->
   @if(isset($clinicUsers) && $clinicUsers->hasPages())
-    <div>
+    <div class="pagination-container">
       {{ $clinicUsers->appends(['per_page' => $perPage ?? 10, 'search' => $search ?? '', 'sort_by' => $sortBy ?? 'id', 'sort_order' => $sortOrder ?? 'desc'])->links() }}
     </div>
   @endif

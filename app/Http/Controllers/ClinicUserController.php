@@ -37,6 +37,23 @@ class ClinicUserController extends Controller
     // ソート処理
     $clinicUsers = $query->orderBy($sortBy, $sortOrder)->paginate($perPage);
 
+    if ($request->ajax()) {
+      return response()->json([
+        'clinicUsers' => $clinicUsers->items(),
+        'pagination' => [
+          'current_page' => $clinicUsers->currentPage(),
+          'last_page' => $clinicUsers->lastPage(),
+          'per_page' => $clinicUsers->perPage(),
+          'total' => $clinicUsers->total(),
+          'links' => $clinicUsers->links()->toHtml(),
+        ],
+        'perPage' => $perPage,
+        'search' => $search,
+        'sortBy' => $sortBy,
+        'sortOrder' => $sortOrder,
+      ]);
+    }
+
     return view('clinic-users-info.cui-home', compact('clinicUsers', 'perPage', 'search', 'sortBy', 'sortOrder'));
   }
 
