@@ -32,6 +32,12 @@ Route::middleware('auth')->group(function () {
   
   // 削除機能
   Route::delete('/clinic-users-info/cui-delete/{id}', [ClinicUserController::class, 'destroy'])->name('cui-delete');
+
+  // 利用者関連情報ルート
+  Route::get('/clinic-users-info/cui-insurances-info/{id}', [ClinicUserController::class, 'ciiHome'])->name('cui-insurances-info');
+  Route::get('/clinic-users-info/cui-consenting-doctor-history-massage/{id}', [ClinicUserController::class, 'ccdhmHome'])->name('cui-consenting-doctor-history-massage');
+  Route::get('/clinic-users-info/cui-consenting-doctor-history-acupuncture/{id}', [ClinicUserController::class, 'ccdhaHome'])->name('cui-consenting-doctor-history-acupuncture');
+  Route::get('/clinic-users-info/cui-plans-info/{id}', [ClinicUserController::class, 'cpiHome'])->name('cui-plans-info');
 });
 
 require __DIR__.'/auth.php';

@@ -218,6 +218,34 @@ class ClinicUserController extends Controller
     return redirect()->route('cui-home')->with('success', '利用者情報を削除しました。');
   }
 
+  // 保険情報画面
+  public function ciiHome($id)
+  {
+    $user = ClinicUserModel::findOrFail($id);
+    return view('clinic-users-info.cui-insurances-info.cii-home', ['id' => $id, 'name' => $user->clinic_user_name]);
+  }
+
+  // 同意医師履歴（あんま・マッサージ）
+  public function ccdhmHome($id)
+  {
+    $user = ClinicUserModel::findOrFail($id);
+    return view('clinic-users-info.cui-consenting-doctor-history-massage.ccdhm-home', ['id' => $id, 'name' => $user->clinic_user_name]);
+  }
+
+  // 同意医師履歴（はり・きゅう）
+  public function ccdhaHome($id)
+  {
+    $user = ClinicUserModel::findOrFail($id);
+    return view('clinic-users-info.cui-consenting-doctor-history-acupuncture.ccdha-home', ['id' => $id, 'name' => $user->clinic_user_name]);
+  }
+
+  // 計画情報
+  public function cpiHome($id)
+  {
+    $user = ClinicUserModel::findOrFail($id);
+    return view('clinic-users-info.cui-plans-info.cpi-home', ['id' => $id, 'name' => $user->clinic_user_name]);
+  }
+
   // ラベル設定（共通処理）
   private function getLabels()
   {

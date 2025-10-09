@@ -15,7 +15,7 @@
   <!-- 表示件数切替えと検索 -->
   <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
     <div>
-      <label for="per_page">表示件数</label>
+      <label for="per_page">表示件数：</label>
       <select name="per_page" id="per_page" onchange="changePerPage(this.value)">
         <option value="10" {{ ($perPage ?? 10) == 10 ? 'selected' : '' }}>10</option>
         <option value="25" {{ ($perPage ?? 10) == 25 ? 'selected' : '' }}>25</option>
@@ -98,10 +98,10 @@
             {{ $user->created_at->format('H:i') }}
           </td>
           <td style="border: 1px solid #000; padding: 8px;">
-            保険情報一覧<br>
-            同意医師履歴（あんま・マッサージ）<br>
-            同意医師履歴（はり・きゅう）<br>
-            計画書情報
+            <a href="{{ route('cui-insurances-info', ['id' => $user->id]) }}">保険情報</a><br>
+            <a href="{{ route('cui-consenting-doctor-history-massage', ['id' => $user->id]) }}">同意医師履歴（あんま・マッサージ）</a><br>
+            <a href="{{ route('cui-consenting-doctor-history-acupuncture', ['id' => $user->id]) }}">同意医師履歴（はり・きゅう）</a><br>
+            <a href="{{ route('cui-plans-info', ['id' => $user->id]) }}">計画情報</a>
           </td>
           <td style="border: 1px solid #000; padding: 8px;">
             <form action="{{ route('cui-delete', ['id' => $user->id]) }}" method="POST" class="delete-form" style="display: inline;">
