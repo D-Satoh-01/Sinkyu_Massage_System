@@ -6,6 +6,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ClinicUserModel;
+use App\Models\Insurer;
+use App\Models\Insurance;
 
 class ClinicUserController extends Controller
 {
@@ -225,6 +227,114 @@ class ClinicUserController extends Controller
     return view('clinic-users-info.cui-insurances-info.cii-home', ['id' => $id, 'name' => $user->clinic_user_name]);
   }
 
+  // 保険情報新規登録画面
+  public function ciiRegistration($id)
+  {
+    $user = ClinicUserModel::findOrFail($id);
+    $insurers = Insurer::all();
+    return view('clinic-users-info.cui-insurances-info.cii-registration', ['id' => $id, 'name' => $user->clinic_user_name, 'insurers' => $insurers]);
+  }
+
+  // 保険情報新規登録：確認画面の表示
+  public function insuranceConfirm(Request $request, $id)
+  {
+    $validated = $request->validate([
+      'insurance_type_1' => 'required|string|max:10',
+      'insurance_type_2' => 'required|string|max:10',
+      'insurance_type_3' => 'required|string|max:10',
+      'insured_person_type' => 'required|string|max:10',
+      'insured_number' => 'required|string|max:20',
+      'symbol' => 'nullable|string|max:10',
+      'number' => 'nullable|string|max:10',
+      'qualification_date' => 'nullable|date',
+      'certification_date' => 'nullable|date',
+      'issue_date' => 'nullable|date',
+      'copayment_rate' => 'nullable|string|max:10',
+      'expiration_date' => 'nullable|date',
+      'reimbursement_target' => 'nullable|boolean',
+      'insured_person_name' => 'nullable|string|max:255',
+      'relationship' => 'nullable|string|max:10',
+      'medical_assistance_target' => 'nullable|boolean',
+      'public_burden_number' => 'nullable|string|max:20',
+      'public_recipient_number' => 'nullable|string|max:20',
+      'municipal_code' => 'nullable|string|max:20',
+      'recipient_number' => 'nullable|string|max:20',
+      'insurer_number' => 'nullable|string|max:20',
+      'new_insurer_number' => 'nullable|string|max:20',
+      'new_insurer_name' => 'nullable|string|max:255',
+      'new_postal_code' => 'nullable|string|max:8',
+      'new_address' => 'nullable|string|max:255',
+      'new_recipient_name' => 'nullable|string|max:255'
+    ]);
+
+    // チェックボックスの処理
+    $validated['reimbursement_target'] = $request->has('reimbursement_target');
+    $validated['medical_assistance_target'] = $request->has('medical_assistance_target');
+
+    // セッションに保存
+    $request->session()->put('insurance_registration_data', $validated);
+
+    // 確認画面のラベル設定
+    $labels = $this->getInsuranceLabels();
+
+    return view('registration-review', [
+      'data' => $validated,
+      'labels' => $labels,
+      'back_route' => 'cui-insurances-info.registration',
+      'back_id' => $id,
+      'store_route' => 'cui-insurances-info.store',
+      'page_title' => '保険情報登録内容確認',
+      'registration_message' => '保険情報の登録を行います。',
+    ]);
+  }
+
+  // 保険情報新規登録
+  public function insuranceStore(Request $request, $id)
+  {
+    // セッションからデータを取得
+    $data = $request->session()->get('insurance_registration_data');
+
+    if (!$data) {
+      return redirect()->route('cui-insurances-info.registration', $id)->with('error', 'セッションが切れました。もう一度入力してください。');
+    }
+
+    // insurer_idを取得または新規作成
+    $insurerId = null;
+    if (isset($data['insurer_number']) && $data['insurer_number']) {
+      $insurer = Insurer::where('insurer_number', $data['insurer_number'])->first();
+      if ($insurer) {
+        $insurerId = $insurer->id;
+      }
+    } elseif (isset($data['new_insurer_number']) && $data['new_insurer_number']) {
+      // 新規保険者作成
+      $newInsurer = Insurer::create([
+        'insurer_number' => $data['new_insurer_number'],
+        'insurer_name' => $data['new_insurer_name'],
+        'address' => $data['new_address'],
+        'recipient_name' => $data['new_recipient_name']
+      ]);
+      $insurerId = $newInsurer->id;
+    }
+
+    // 保険情報保存
+    $insurance = new Insurance();
+    $insurance->clinic_user_id = $id;
+    $insurance->insurer_id = $insurerId;
+    $insurance->fill($data);
+    $insurance->save();
+
+    // セッションをクリア
+    $request->session()->forget('insurance_registration_data');
+
+    return view('registration-done', [
+      'page_title' => '保険情報登録完了',
+      'message' => '保険情報を登録しました。',
+      'home_route' => 'cui-insurances-info',
+      'home_id' => $id,
+      'list_route' => null
+    ]);
+  }
+
   // 同意医師履歴（あんま・マッサージ）
   public function ccdhmHome($id)
   {
@@ -268,6 +378,42 @@ class ClinicUserController extends Controller
       'is_redeemed' => '償還対象',
       'application_count' => '申請書提出開始回数[大阪市のみ]',
       'note' => 'メモ'
+    ];
+  }
+
+  // 保険情報ラベル設定（共通処理）
+  private function getInsuranceLabels()
+  {
+    return [
+      'insurance_type_1' => '保険種別１',
+      'insurance_type_2' => '保険種別２',
+      'insurance_type_3' => '保険種別３',
+      'insured_person_type' => '本人・家族',
+      'insured_number' => '被保険者番号',
+      'symbol' => '記号',
+      'number' => '番号',
+      'qualification_date' => '資格取得年月日',
+      'certification_date' => '認定年月日',
+      'issue_date' => '発行（交付）年月日',
+      'copayment_rate' => '一部負担金の割合',
+      'expiration_date' => '有効期限',
+      'reimbursement_target' => '償還対象',
+      'insured_person_name' => '被保険者氏名',
+      'relationship' => '利用者との続柄',
+      'medical_assistance_target' => '医療助成対象',
+      'public_burden_number' => '公費負担者番号',
+      'public_recipient_number' => '公費受給者番号',
+      'municipal_code' => '区市町村番号',
+      'recipient_number' => '受給者番号',
+      'insurer_number' => '保険者番号',
+      'insurer_name' => '保険者名称',
+      'insurer_address' => '住所',
+      'recipient_name' => '提出先名称',
+      'new_insurer_number' => '保険者番号（新規）',
+      'new_insurer_name' => '保険者名称（新規）',
+      'new_postal_code' => '郵便番号（新規）',
+      'new_address' => '住所（新規）',
+      'new_recipient_name' => '提出先名称（新規）'
     ];
   }
 }

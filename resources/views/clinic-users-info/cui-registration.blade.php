@@ -24,12 +24,20 @@
     @csrf
     
     <div class="mb-3">
-      <label class="fw-semibold" style="font-size: 0.9rem;" for="clinic_user_name">利用者氏名</label><br>
-      <input type="text" id="clinic_user_name" name="clinic_user_name" value="{{ old('clinic_user_name', session('registration_data.clinic_user_name')) }}" required>
+      <label class="fw-semibold" style="font-size: 0.9rem;" for="clinic_user_name">利用者氏名</label>
+      @error('clinic_user_name')
+        <span class="text-danger ms-2">{{ $message }}</span>
+      @enderror
+      <br>
+      <input type="text" id="clinic_user_name" name="clinic_user_name" value="{{ old('clinic_user_name', session('registration_data.clinic_user_name')) }}">
     </div>
 
     <div class="mb-3">
-      <label class="fw-semibold" style="font-size: 0.9rem;" for="furigana">フリガナ</label><br>
+      <label class="fw-semibold" style="font-size: 0.9rem;" for="furigana">フリガナ</label>
+      @error('furigana')
+        <span class="text-danger ms-2">{{ $message }}</span>
+      @enderror
+      <br>
       <input type="text" id="furigana" name="furigana" value="{{ old('furigana', session('registration_data.furigana')) }}">
     </div>
 
@@ -39,7 +47,11 @@
     </div>
 
     <div class="mb-3">
-      <label class="fw-semibold" style="font-size: 0.9rem;" for="age">年齢</label><br>
+      <label class="fw-semibold" style="font-size: 0.9rem;" for="age">年齢</label>
+      @error('age')
+        <span class="text-danger ms-2">{{ $message }}</span>
+      @enderror
+      <br>
       <input type="number" id="age" name="age" value="{{ old('age', session('registration_data.age')) }}" min="0" max="150">
     </div>
 
@@ -53,23 +65,39 @@
     </div>
 
     <div class="mb-3">
-      <label class="fw-semibold" style="font-size: 0.9rem;" for="postal_code">郵便番号</label><br>
+      <label class="fw-semibold" style="font-size: 0.9rem;" for="postal_code">郵便番号</label>
+      @error('postal_code')
+        <span class="text-danger ms-2">{{ $message }}</span>
+      @enderror
+      <br>
       <input type="text" id="postal_code" name="postal_code" value="{{ old('postal_code', session('registration_data.postal_code')) }}" placeholder="000-0000" maxlength="8">
       <div id="address-message" class="loading" style="display: none; margin-top: 5px;"></div>
     </div>
 
     <div class="mb-3">
-      <label class="fw-semibold" style="font-size: 0.9rem;" for="address_1">（都道府県）</label><br>
+      <label class="fw-semibold" style="font-size: 0.9rem;" for="address_1">都道府県</label>
+      @error('address_1')
+        <span class="text-danger ms-2">{{ $message }}</span>
+      @enderror
+      <br>
       <input type="text" id="address_1" name="address_1" value="{{ old('address_1', session('registration_data.address_1')) }}" readonly>
     </div>
 
     <div class="mb-3">
-      <label class="fw-semibold" style="font-size: 0.9rem;" for="address_2">（市区町村番地以下）</label><br>
+      <label class="fw-semibold" style="font-size: 0.9rem;" for="address_2">市区町村番地以下</label>
+      @error('address_2')
+        <span class="text-danger ms-2">{{ $message }}</span>
+      @enderror
+      <br>
       <input type="text" id="address_2" name="address_2" value="{{ old('address_2', session('registration_data.address_2')) }}">
     </div>
 
     <div class="mb-3">
-      <label class="fw-semibold" style="font-size: 0.9rem;" for="address_3">（アパート・マンション名等）</label><br>
+      <label class="fw-semibold" style="font-size: 0.9rem;" for="address_3">アパート・マンション名等</label>
+      @error('address_3')
+        <span class="text-danger ms-2">{{ $message }}</span>
+      @enderror
+      <br>
       <input type="text" id="address_3" name="address_3" value="{{ old('address_3', session('registration_data.address_3')) }}">
     </div>
 
