@@ -21,12 +21,40 @@ function toggleMedicalAssistanceFields() {
 }
 
 // 保険者選択で詳細更新
-function updateInsurerDetails() {
-  const select = document.getElementById('insurer_number');
+function updateInsurerFields() {
+  const select = document.getElementById('selected_insurer');
   const selectedOption = select.options[select.selectedIndex];
-  document.getElementById('insurer_name').value = selectedOption.getAttribute('data-name') || '';
-  document.getElementById('insurer_address').value = selectedOption.getAttribute('data-address') || '';
-  document.getElementById('recipient_name').value = selectedOption.getAttribute('data-recipient') || '';
+  const newInsurerNumber = document.getElementById('new_insurer_number');
+  const newInsurerName = document.getElementById('new_insurer_name');
+  const newPostalCode = document.getElementById('new_postal_code');
+  const newAddress = document.getElementById('new_address');
+  const newRecipientName = document.getElementById('new_recipient_name');
+
+  if (select.value === '') {
+    // 非選択の場合、入力フォームを有効化してクリア
+    newInsurerNumber.disabled = false;
+    newInsurerName.disabled = false;
+    newPostalCode.disabled = false;
+    newAddress.disabled = false;
+    newRecipientName.disabled = false;
+    newInsurerNumber.value = '';
+    newInsurerName.value = '';
+    newPostalCode.value = '';
+    newAddress.value = '';
+    newRecipientName.value = '';
+  } else {
+    // 選択されている場合、情報を表示して入力無効化
+    newInsurerNumber.disabled = true;
+    newInsurerName.disabled = true;
+    newPostalCode.disabled = true;
+    newAddress.disabled = true;
+    newRecipientName.disabled = true;
+    newInsurerNumber.value = selectedOption.getAttribute('data-number') || '';
+    newInsurerName.value = selectedOption.getAttribute('data-name') || '';
+    newPostalCode.value = selectedOption.getAttribute('data-postal') || '';
+    newAddress.value = selectedOption.getAttribute('data-address') || '';
+    newRecipientName.value = selectedOption.getAttribute('data-recipient') || '';
+  }
 }
 
 // 新規登録郵便番号から住所を検索する関数

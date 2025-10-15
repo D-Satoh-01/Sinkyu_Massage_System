@@ -15,36 +15,36 @@ class Insurance extends Model
 
   protected $fillable = [
     'clinic_user_id',
-    'insurer_id',
-    'insurance_type_1',
-    'insurance_type_2',
-    'insurance_type_3',
-    'insured_person_type',
+    'insurers_id',
+    'insurance_type_1_id',
+    'insurance_type_2_id',
+    'insurance_type_3_id',
+    'self_or_family_id',
     'insured_number',
-    'symbol',
-    'number',
-    'qualification_date',
+    'code_number',
+    'account_number',
+    'license_acquisition_date',
     'certification_date',
     'issue_date',
-    'copayment_rate',
-    'expiration_date',
-    'reimbursement_target',
-    'insured_person_name',
-    'relationship',
-    'medical_assistance_target',
-    'public_burden_number',
-    'public_recipient_number',
-    'municipal_code',
-    'recipient_number'
+    'expenses_borne_ratio_id',
+    'expiry_date',
+    'is_redeemed',
+    'insured_name',
+    'relationship_with_clinic_user_id',
+    'is_healthcare_subsidized',
+    'public_funds_payer_code',
+    'public_funds_recipient_code',
+    'locality_code',
+    'recipient_code'
   ];
 
   protected $casts = [
-    'qualification_date' => 'date',
+    'license_acquisition_date' => 'date',
     'certification_date' => 'date',
     'issue_date' => 'date',
-    'expiration_date' => 'date',
-    'reimbursement_target' => 'boolean',
-    'medical_assistance_target' => 'boolean'
+    'expiry_date' => 'date',
+    'is_redeemed' => 'boolean',
+    'is_healthcare_subsidized' => 'boolean'
   ];
 
   public function clinicUser()
@@ -54,6 +54,6 @@ class Insurance extends Model
 
   public function insurer()
   {
-    return $this->belongsTo(Insurer::class, 'insurer_id');
+    return $this->belongsTo(Insurer::class, 'insurers_id');
   }
 }

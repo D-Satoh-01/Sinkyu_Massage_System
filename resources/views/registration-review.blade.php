@@ -14,9 +14,9 @@
           @if(isset($data[$key]) && $data[$key] !== null && $data[$key] !== '')
             @if($key === 'gender_id')
               {{ $data[$key] == 1 ? '男性' : ($data[$key] == 2 ? '女性' : '') }}
-            @elseif($key === 'is_redeemed')
+            @elseif($key === 'is_redeemed' || $key === 'reimbursement_target' || $key === 'medical_assistance_target')
               {{ $data[$key] ? 'あり' : 'なし' }}
-            @elseif($key === 'birthday')
+            @elseif($key === 'birthday' || $key === 'qualification_date' || $key === 'certification_date' || $key === 'issue_date' || $key === 'expiration_date')
               {{ date('Y年n月j日', strtotime($data[$key])) }}
             @else
               {{ $data[$key] }}

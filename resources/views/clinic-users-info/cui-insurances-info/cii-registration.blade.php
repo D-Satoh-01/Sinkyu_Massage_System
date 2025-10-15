@@ -177,31 +177,16 @@
     </div>
 
     <div class="mb-3">
-      <label for="insurer_number">保険者番号</label><br>
-      <select id="insurer_number" name="insurer_number" onchange="updateInsurerDetails()">
-        <option value="">----</option>
+      <label for="selected_insurer">保険者情報</label><br>
+      <select id="selected_insurer" name="selected_insurer" onchange="updateInsurerFields()">
+        <option value="">登録済みデータから選択［保険者名称｜保険者番号｜保険者住所｜提出先名称］</option>
         @foreach($insurers as $insurer)
-          <option value="{{ $insurer->insurer_number }}" data-name="{{ $insurer->insurer_name }}" data-address="{{ $insurer->address }}" data-recipient="{{ $insurer->recipient_name }}">{{ $insurer->insurer_number }} - {{ $insurer->insurer_name }}</option>
+          <option value="{{ $insurer->id }}" data-number="{{ $insurer->insurer_number }}" data-name="{{ $insurer->insurer_name }}" data-postal="{{ $insurer->postal_code }}" data-address="{{ $insurer->address }}" data-recipient="{{ $insurer->recipient_name }}">{{ $insurer->insurer_name }}｜{{ $insurer->insurer_number }}｜{{ $insurer->postal_code }}｜{{ $insurer->address }}｜{{ $insurer->recipient_name }}</option>
         @endforeach
       </select>
     </div>
 
-    <div class="mb-3">
-      <label for="insurer_name">保険者名称</label><br>
-      <input type="text" id="insurer_name" name="insurer_name" readonly>
-    </div>
-
-    <div class="mb-3">
-      <label for="insurer_address">住所</label><br>
-      <input type="text" id="insurer_address" name="insurer_address" readonly>
-    </div>
-
-    <div class="mb-3">
-      <label for="recipient_name">提出先名称</label><br>
-      <input type="text" id="recipient_name" name="recipient_name" readonly>
-    </div>
-
-    <h4>▼ 新規登録</h4>
+    <h6>▼ 保険者情報新規登録</h6>
 
     <div class="mb-3">
       <label for="new_insurer_number">保険者番号</label><br>
