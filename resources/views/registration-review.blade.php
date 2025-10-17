@@ -41,7 +41,7 @@
     </form>
   @endif
 
-  <form action="{{ route($store_route) }}" method="POST" style="display: inline-block;">
+  <form action="{{ isset($back_id) ? route($store_route, ['id' => $back_id]) : route($store_route) }}" method="POST" style="display: inline-block;">
     @csrf
     <button type="submit" class="me-3">登録する</button>
   </form>

@@ -232,6 +232,13 @@ class ClinicUserController extends Controller
   {
     $user = ClinicUserModel::findOrFail($id);
     $insurers = Insurer::all();
+
+    // セッションからデータを取得して old() にセット
+    $sessionData = session('insurance_registration_data');
+    if ($sessionData) {
+      session()->flashInput($sessionData);
+    }
+
     return view('clinic-users-info.cui-insurances-info.cii-registration', ['id' => $id, 'name' => $user->clinic_user_name, 'insurers' => $insurers]);
   }
 
@@ -317,24 +324,21 @@ class ClinicUserController extends Controller
 
     // 文字列をIDに変換
     $saveData = [
-      'clinic_user_id' => $id,
       'insurers_id' => $insurersId,
       'insured_number' => $data['insured_number'],
-      'symbol' => $data['symbol'] ?? null,
-      'number' => $data['number'] ?? null,
-      'qualification_date' => $data['qualification_date'] ?? null,
+      'code_number' => $data['symbol'] ?? null,
+      'account_number' => $data['number'] ?? null,
+      'license_acquisition_date' => $data['qualification_date'] ?? null,
       'certification_date' => $data['certification_date'] ?? null,
       'issue_date' => $data['issue_date'] ?? null,
-      'copayment_rate' => $data['copayment_rate'] ?? null,
-      'expiration_date' => $data['expiration_date'] ?? null,
-      'reimbursement_target' => $data['reimbursement_target'] ?? false,
-      'insured_person_name' => $data['insured_person_name'] ?? null,
-      'relationship' => $data['relationship'] ?? null,
-      'medical_assistance_target' => $data['medical_assistance_target'] ?? false,
-      'public_burden_number' => $data['public_burden_number'] ?? null,
-      'public_recipient_number' => $data['public_recipient_number'] ?? null,
-      'municipal_code' => $data['municipal_code'] ?? null,
-      'recipient_number' => $data['recipient_number'] ?? null,
+      'expiry_date' => $data['expiration_date'] ?? null,
+      'is_redeemed' => $data['reimbursement_target'] ?? false,
+      'insured_name' => $data['insured_person_name'] ?? null,
+      'is_healthcare_subsidized' => $data['medical_assistance_target'] ?? false,
+      'public_funds_payer_code' => $data['public_burden_number'] ?? null,
+      'public_funds_recipient_code' => $data['public_recipient_number'] ?? null,
+      'locality_code' => $data['municipal_code'] ?? null,
+      'recipient_code' => $data['recipient_number'] ?? null,
     ];
 
     // 保険種別をIDに変換
@@ -377,7 +381,7 @@ class ClinicUserController extends Controller
       'home_route' => 'cui-insurances-info',
       'home_id' => $id,
       'list_route' => null
-    ]);
+    ])->with('home_id', $id);
   }
 
   // 同意医師履歴（あんま・マッサージ）
