@@ -454,7 +454,6 @@ class ClinicUserController extends Controller
       'public_recipient_number' => '公費受給者番号',
       'municipal_code' => '区市町村番号',
       'recipient_number' => '受給者番号',
-      'selected_insurer' => '保険者情報',
       'new_insurer_number' => '保険者番号',
       'new_insurer_name' => '保険者名称',
       'new_postal_code' => '郵便番号',
