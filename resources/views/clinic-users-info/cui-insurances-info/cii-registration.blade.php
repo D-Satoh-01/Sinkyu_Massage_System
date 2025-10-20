@@ -20,14 +20,14 @@
 
     <div class="mb-3">
       <label>保険種別１</label><br>
-      <input type="radio" id="insurance_type_1_syakoku" name="insurance_type_1" value="社･国･組" {{ old('insurance_type_1') == '社･国･組' ? 'checked' : '' }}>
-      <label for="insurance_type_1_syakoku" class="me-3">社･国･組</label>
-      <input type="radio" id="insurance_type_1_kouhi" name="insurance_type_1" value="公費" {{ old('insurance_type_1') == '公費' ? 'checked' : '' }}>
-      <label for="insurance_type_1_kouhi" class="me-3">公費</label>
-      <input type="radio" id="insurance_type_1_kouki" name="insurance_type_1" value="後期" {{ old('insurance_type_1') == '後期' ? 'checked' : '' }}>
-      <label for="insurance_type_1_kouki" class="me-3">後期</label>
-      <input type="radio" id="insurance_type_1_taishoku" name="insurance_type_1" value="退職" {{ old('insurance_type_1') == '退職' ? 'checked' : '' }}>
-      <label for="insurance_type_1_taishoku" class="me-3">退職</label>
+      <input type="radio" id="insurance_type_1_company_national_union" name="insurance_type_1" value="社･国･組" {{ old('insurance_type_1') == '社･国･組' ? 'checked' : '' }}>
+      <label for="insurance_type_1_company_national_union" class="me-3">社･国･組</label>
+      <input type="radio" id="insurance_type_1_public_expense" name="insurance_type_1" value="公費" {{ old('insurance_type_1') == '公費' ? 'checked' : '' }}>
+      <label for="insurance_type_1_public_expense" class="me-3">公費</label>
+      <input type="radio" id="insurance_type_1_latter_period" name="insurance_type_1" value="後期" {{ old('insurance_type_1') == '後期' ? 'checked' : '' }}>
+      <label for="insurance_type_1_latter_period" class="me-3">後期</label>
+      <input type="radio" id="insurance_type_1_retirement" name="insurance_type_1" value="退職" {{ old('insurance_type_1') == '退職' ? 'checked' : '' }}>
+      <label for="insurance_type_1_retirement" class="me-3">退職</label>
       @error('insurance_type_1')
         <div class="text-danger">{{ $message }}</div>
       @enderror
@@ -35,12 +35,12 @@
 
     <div class="mb-3">
       <label>保険種別２</label><br>
-      <input type="radio" id="insurance_type_2_tandoku" name="insurance_type_2" value="単独" {{ old('insurance_type_2') == '単独' ? 'checked' : '' }}>
-      <label for="insurance_type_2_tandoku" class="me-3">単独</label>
-      <input type="radio" id="insurance_type_2_2hei" name="insurance_type_2" value="２併" {{ old('insurance_type_2') == '２併' ? 'checked' : '' }}>
-      <label for="insurance_type_2_2hei" class="me-3">２併</label>
-      <input type="radio" id="insurance_type_2_3hei" name="insurance_type_2" value="３併" {{ old('insurance_type_2') == '３併' ? 'checked' : '' }}>
-      <label for="insurance_type_2_3hei" class="me-3">３併</label>
+      <input type="radio" id="insurance_type_2_single" name="insurance_type_2" value="単独" {{ old('insurance_type_2') == '単独' ? 'checked' : '' }}>
+      <label for="insurance_type_2_single" class="me-3">単独</label>
+      <input type="radio" id="insurance_type_2_dual_combination" name="insurance_type_2" value="２併" {{ old('insurance_type_2') == '２併' ? 'checked' : '' }}>
+      <label for="insurance_type_2_dual_combination" class="me-3">２併</label>
+      <input type="radio" id="insurance_type_2_triple_combination" name="insurance_type_2" value="３併" {{ old('insurance_type_2') == '３併' ? 'checked' : '' }}>
+      <label for="insurance_type_2_triple_combination" class="me-3">３併</label>
       @error('insurance_type_2')
         <div class="text-danger">{{ $message }}</div>
       @enderror
@@ -48,16 +48,16 @@
 
     <div class="mb-3">
       <label>保険種別３</label><br>
-      <input type="radio" id="insurance_type_3_hongai" name="insurance_type_3" value="本外" {{ old('insurance_type_3') == '本外' ? 'checked' : '' }}>
-      <label for="insurance_type_3_hongai" class="me-3">本外</label>
-      <input type="radio" id="insurance_type_3_sangai" name="insurance_type_3" value="三外" {{ old('insurance_type_3') == '三外' ? 'checked' : '' }}>
-      <label for="insurance_type_3_sangai" class="me-3">三外</label>
-      <input type="radio" id="insurance_type_3_kagai" name="insurance_type_3" value="家外" {{ old('insurance_type_3') == '家外' ? 'checked' : '' }}>
-      <label for="insurance_type_3_kagai" class="me-3">家外</label>
-      <input type="radio" id="insurance_type_3_kougai9" name="insurance_type_3" value="高外9" {{ old('insurance_type_3') == '高外9' ? 'checked' : '' }}>
-      <label for="insurance_type_3_kougai9" class="me-3">高外9</label>
-      <input type="radio" id="insurance_type_3_kougai8" name="insurance_type_3" value="高外8" {{ old('insurance_type_3') == '高外8' ? 'checked' : '' }}>
-      <label for="insurance_type_3_kougai8" class="me-3">高外8</label>
+      <input type="radio" id="insurance_type_3_main_external" name="insurance_type_3" value="本外" {{ old('insurance_type_3') == '本外' ? 'checked' : '' }}>
+      <label for="insurance_type_3_main_external" class="me-3">本外</label>
+      <input type="radio" id="insurance_type_3_three_external" name="insurance_type_3" value="三外" {{ old('insurance_type_3') == '三外' ? 'checked' : '' }}>
+      <label for="insurance_type_3_three_external" class="me-3">三外</label>
+      <input type="radio" id="insurance_type_3_home_external" name="insurance_type_3" value="家外" {{ old('insurance_type_3') == '家外' ? 'checked' : '' }}>
+      <label for="insurance_type_3_home_external" class="me-3">家外</label>
+      <input type="radio" id="insurance_type_3_high_external_9" name="insurance_type_3" value="高外9" {{ old('insurance_type_3') == '高外9' ? 'checked' : '' }}>
+      <label for="insurance_type_3_high_external_9" class="me-3">高外9</label>
+      <input type="radio" id="insurance_type_3_high_external_8" name="insurance_type_3" value="高外8" {{ old('insurance_type_3') == '高外8' ? 'checked' : '' }}>
+      <label for="insurance_type_3_high_external_8" class="me-3">高外8</label>
       @error('insurance_type_3')
         <div class="text-danger">{{ $message }}</div>
       @enderror
@@ -65,18 +65,18 @@
 
     <div class="mb-3">
       <label>本人・家族</label><br>
-      <input type="radio" id="insured_person_type_honnin" name="insured_person_type" value="本人" {{ old('insured_person_type') == '本人' ? 'checked' : '' }}>
-      <label for="insured_person_type_honnin" class="me-3">本人</label>
-      <input type="radio" id="insured_person_type_rokusai" name="insured_person_type" value="六歳" {{ old('insured_person_type') == '六歳' ? 'checked' : '' }}>
-      <label for="insured_person_type_rokusai" class="me-3">六歳</label>
-      <input type="radio" id="insured_person_type_kazoku" name="insured_person_type" value="家族" {{ old('insured_person_type') == '家族' ? 'checked' : '' }}>
-      <label for="insured_person_type_kazoku" class="me-3">家族</label>
-      <input type="radio" id="insured_person_type_koureil" name="insured_person_type" value="高齢１" {{ old('insured_person_type') == '高齢１' ? 'checked' : '' }}>
-      <label for="insured_person_type_koureil" class="me-3">高齢１</label>
-      <input type="radio" id="insured_person_type_kourei" name="insured_person_type" value="高齢" {{ old('insured_person_type') == '高齢' ? 'checked' : '' }}>
-      <label for="insured_person_type_kourei" class="me-3">高齢</label>
-      <input type="radio" id="insured_person_type_kourei7" name="insured_person_type" value="高齢７" {{ old('insured_person_type') == '高齢７' ? 'checked' : '' }}>
-      <label for="insured_person_type_kourei7" class="me-3">高齢７</label>
+      <input type="radio" id="insured_person_type_self" name="insured_person_type" value="本人" {{ old('insured_person_type') == '本人' ? 'checked' : '' }}>
+      <label for="insured_person_type_self" class="me-3">本人</label>
+      <input type="radio" id="insured_person_type_six_years_old" name="insured_person_type" value="六歳" {{ old('insured_person_type') == '六歳' ? 'checked' : '' }}>
+      <label for="insured_person_type_six_years_old" class="me-3">六歳</label>
+      <input type="radio" id="insured_person_type_family" name="insured_person_type" value="家族" {{ old('insured_person_type') == '家族' ? 'checked' : '' }}>
+      <label for="insured_person_type_family" class="me-3">家族</label>
+      <input type="radio" id="insured_person_type_elderly_1" name="insured_person_type" value="高齢１" {{ old('insured_person_type') == '高齢１' ? 'checked' : '' }}>
+      <label for="insured_person_type_elderly_1" class="me-3">高齢１</label>
+      <input type="radio" id="insured_person_type_elderly" name="insured_person_type" value="高齢" {{ old('insured_person_type') == '高齢' ? 'checked' : '' }}>
+      <label for="insured_person_type_elderly" class="me-3">高齢</label>
+      <input type="radio" id="insured_person_type_elderly_7" name="insured_person_type" value="高齢７" {{ old('insured_person_type') == '高齢７' ? 'checked' : '' }}>
+      <label for="insured_person_type_elderly_7" class="me-3">高齢７</label>
       @error('insured_person_type')
         <div class="text-danger">{{ $message }}</div>
       @enderror
@@ -158,7 +158,11 @@
       </div>
     </div>
 
-    <div id="medical-assistance-fields" style="display: {{ old('medical_assistance_target') ? 'block' : 'none' }};">
+
+
+    <div id="medical-assistance-fields">
+
+
       <div class="mb-3">
         <label for="public_burden_number">公費負担者番号</label><br>
         <input type="text" id="public_burden_number" name="public_burden_number" value="{{ old('public_burden_number') }}">

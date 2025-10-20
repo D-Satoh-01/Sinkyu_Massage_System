@@ -9,16 +9,29 @@ function hideInsuranceForm() {
   document.getElementById('insurance-form').style.display = 'none';
 }
 
-// 医療助成対象チェックボックスでフィールド有効/無効
+// 医療助成対象チェックボックスでフィールド有効/無効（チェックなしで入力不可）
 function toggleMedicalAssistanceFields() {
   const checkbox = document.getElementById('medical_assistance_target');
-  const fields = document.getElementById('medical-assistance-fields');
+  const publicBurdenNumber = document.getElementById('public_burden_number');
+  const publicRecipientNumber = document.getElementById('public_recipient_number');
+  
+  // チェックボックスの状態に応じて入力フィールドの有効/無効を切り替え
+
   if (checkbox.checked) {
-    fields.style.display = 'block';
+    publicBurdenNumber.disabled = false;
+    publicRecipientNumber.disabled = false;
   } else {
-    fields.style.display = 'none';
+    publicBurdenNumber.disabled = true;
+    publicRecipientNumber.disabled = true;
   }
 }
+
+// ページ読み込み時に実行
+document.addEventListener('DOMContentLoaded', function() {
+  toggleMedicalAssistanceFields();
+});
+
+
 
 // 保険者選択で詳細更新
 function updateInsurerFields() {
