@@ -16,7 +16,6 @@ function toggleMedicalAssistanceFields() {
   const publicRecipientNumber = document.getElementById('public_recipient_number');
   
   // チェックボックスの状態に応じて入力フィールドの有効/無効を切り替え
-
   if (checkbox.checked) {
     publicBurdenNumber.disabled = false;
     publicRecipientNumber.disabled = false;
@@ -26,11 +25,48 @@ function toggleMedicalAssistanceFields() {
   }
 }
 
+// 保険者番号のバリデーション関数
+function validateInsurerNumber() {
+  const insurerNumberInput = document.getElementById('new_insurer_number');
+  const warningElement = document.getElementById('insurer_number_warning');
+
+  // 入力値から空白を削除
+  const value = insurerNumberInput.value.trim();
+
+  // 数字のみを抽出
+  const numbersOnly = value.replace(/[^\d]/g, '');
+
+  // 桁数チェック
+  if (numbersOnly.length === 0) {
+    // 入力がない場合は警告を非表示
+    warningElement.style.display = 'none';
+    return true;
+  } else if (numbersOnly.length === 6 || numbersOnly.length === 8) {
+    // 6桁または8桁の場合は有効
+    warningElement.style.display = 'none';
+    return true;
+  } else {
+    // それ以外の桁数は無効
+    warningElement.style.display = 'block';
+    return false;
+  }
+}
+
 // ページ読み込み時に実行
 document.addEventListener('DOMContentLoaded', function() {
+  // 医療助成対象チェックボックスによるフィールド切り替え関数
   toggleMedicalAssistanceFields();
-});
 
+  // 保険者番号入力フィールドにイベントリスナーを追加
+  const insurerNumberInput = document.getElementById('new_insurer_number');
+  insurerNumberInput.addEventListener('input', validateInsurerNumber);
+
+  // 画面更新時に選択された保険者情報をインプットボックスに反映
+  const selectedInsurer = document.getElementById('selected_insurer');
+  if (selectedInsurer.value !== '') {
+    updateInsurerFields();
+  }
+});
 
 
 // 保険者選択で詳細更新
@@ -85,7 +121,7 @@ async function searchNewAddress() {
   }
 
   try {
-    // 郵便番号APIを呼び出し（zipcloud API使用）
+    // 郵便番号API呼び出し（zipcloud API使用）
     const response = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${cleanPostalCode}`);
     const data = await response.json();
 

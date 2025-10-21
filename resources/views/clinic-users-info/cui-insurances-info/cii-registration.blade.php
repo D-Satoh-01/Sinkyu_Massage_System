@@ -198,28 +198,33 @@
 
     <div class="mb-3">
       <label for="new_insurer_number">保険者番号</label><br>
-      <input type="text" id="new_insurer_number" name="new_insurer_number" value="{{ old('new_insurer_number') }}">
+      <input type="text" id="new_insurer_number" name="new_insurer_number" value="{{ old('new_insurer_number', old('selected_insurer') ? '' : '') }}">
+      <div id="insurer_number_warning" class="text-danger" style="display: none;">保険者番号は6桁または8桁の数字を入力してください</div>
+      @error('new_insurer_number')
+        <div class="text-danger">{{ $message }}</div>
+      @enderror
     </div>
+
 
     <div class="mb-3">
       <label for="new_insurer_name">保険者名称</label><br>
-      <input type="text" id="new_insurer_name" name="new_insurer_name" value="{{ old('new_insurer_name') }}">
+      <input type="text" id="new_insurer_name" name="new_insurer_name" value="{{ old('new_insurer_name', old('selected_insurer') ? '' : '') }}">
     </div>
 
     <div class="mb-3">
       <label for="new_postal_code">郵便番号</label><br>
-      <input type="text" id="new_postal_code" name="new_postal_code" placeholder="000-0000" maxlength="8" value="{{ old('new_postal_code') }}">
+      <input type="text" id="new_postal_code" name="new_postal_code" placeholder="000-0000" maxlength="8" value="{{ old('new_postal_code', old('selected_insurer') ? '' : '') }}">
       <div id="new-address-message" class="loading" style="display: none; margin-top: 5px;"></div>
     </div>
 
     <div class="mb-3">
       <label for="new_address">住所</label><br>
-      <input type="text" id="new_address" name="new_address" value="{{ old('new_address') }}">
+      <input type="text" id="new_address" name="new_address" value="{{ old('new_address', old('selected_insurer') ? '' : '') }}">
     </div>
 
     <div class="mb-3">
       <label for="new_recipient_name">提出先名称</label><br>
-      <input type="text" id="new_recipient_name" name="new_recipient_name" value="{{ old('new_recipient_name') }}">
+      <input type="text" id="new_recipient_name" name="new_recipient_name" value="{{ old('new_recipient_name', old('selected_insurer') ? '' : '') }}">
     </div>
 
     <button type="submit">登録確認へ</button>

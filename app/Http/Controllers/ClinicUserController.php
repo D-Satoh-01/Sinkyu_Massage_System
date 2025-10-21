@@ -245,7 +245,7 @@ class ClinicUserController extends Controller
   // 保険情報新規登録：確認画面の表示
   public function insuranceConfirm(Request $request, $id)
   {
-    $validated = $request->validate([
+    $rules = [
       'insurance_type_1' => 'required|string',
       'insurance_type_2' => 'required|string',
       'insurance_type_3' => 'required|string',
@@ -267,12 +267,19 @@ class ClinicUserController extends Controller
       'municipal_code' => 'nullable|string',
       'recipient_number' => 'nullable|string',
       'selected_insurer' => 'nullable|integer|exists:insurers,id',
-      'new_insurer_number' => 'nullable|string',
+      'new_insurer_number' => 'nullable|string|regex:/^\d{6}(\d{2})?$/',
       'new_insurer_name' => 'nullable|string|max:255',
       'new_postal_code' => 'nullable|string|max:8',
       'new_address' => 'nullable|string|max:255',
       'new_recipient_name' => 'nullable|string|max:255'
-    ]);
+    ];
+
+    // 選択された保険者がない場合、新規保険者番号は必須
+    if (!$request->filled('selected_insurer')) {
+      $rules['new_insurer_number'] = 'required|string|regex:/^\d{6}(\d{2})?$/';
+    }
+
+    $validated = $request->validate($rules);
 
     // チェックボックスの処理
     $validated['reimbursement_target'] = $request->has('reimbursement_target');
