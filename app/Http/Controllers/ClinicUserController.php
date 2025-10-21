@@ -224,7 +224,8 @@ class ClinicUserController extends Controller
   public function ciiHome($id)
   {
     $user = ClinicUserModel::findOrFail($id);
-    return view('clinic-users-info.cui-insurances-info.cii-home', ['id' => $id, 'name' => $user->clinic_user_name]);
+    $insurances = Insurance::where('clinic_user_id', $id)->with('insurer')->get();
+    return view('clinic-users-info.cui-insurances-info.cii-home', ['id' => $id, 'name' => $user->clinic_user_name, 'insurances' => $insurances]);
   }
 
   // 保険情報新規登録画面
@@ -410,6 +411,31 @@ class ClinicUserController extends Controller
   {
     $user = ClinicUserModel::findOrFail($id);
     return view('clinic-users-info.cui-plans-info.cpi-home', ['id' => $id, 'name' => $user->clinic_user_name]);
+  }
+
+  // 保険情報編集画面
+  public function insuranceEdit($id, $insurance_id)
+  {
+    $user = ClinicUserModel::findOrFail($id);
+    $insurance = Insurance::findOrFail($insurance_id);
+    return view('clinic-users-info.cui-insurances-info.cii-edit', compact('user', 'insurance'));
+  }
+
+  // 保険情報複製
+  public function insuranceDuplicate(Request $request, $id, $insurance_id)
+  {
+    $original = Insurance::findOrFail($insurance_id);
+    $duplicate = $original->replicate();
+    $duplicate->save();
+    return redirect()->route('cui-insurances-info', $id)->with('success', '保険情報を複製しました。');
+  }
+
+  // 保険情報削除
+  public function insuranceDestroy($id, $insurance_id)
+  {
+    $insurance = Insurance::findOrFail($insurance_id);
+    $insurance->delete();
+    return redirect()->route('cui-insurances-info', $id)->with('success', '保険情報を削除しました。');
   }
 
   // ラベル設定（共通処理）
