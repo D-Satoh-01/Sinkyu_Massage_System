@@ -221,11 +221,37 @@ class ClinicUserController extends Controller
   }
 
   // 保険情報画面
-  public function ciiHome($id)
+  public function ciiHome(Request $request, $id)
   {
     $user = ClinicUserModel::findOrFail($id);
-    $insurances = Insurance::where('clinic_user_id', $id)->with('insurer')->get();
-    return view('clinic-users-info.cui-insurances-info.cii-home', ['id' => $id, 'name' => $user->clinic_user_name, 'insurances' => $insurances]);
+    $sortBy = $request->input('sort_by', 'created_at');
+    $sortOrder = $request->input('sort_order', 'desc');
+
+    // 有効な並び替えカラムを定義
+    $validSortColumns = [
+      'insured_number',
+      'license_acquisition_date',
+      'expiry_date',
+      'created_at'
+    ];
+
+    // 並び替えカラムのバリデーション
+    if (!in_array($sortBy, $validSortColumns)) {
+      $sortBy = 'created_at';
+    }
+
+    $insurances = Insurance::where('clinic_user_id', $id)
+      ->with('insurer')
+      ->orderBy($sortBy, $sortOrder)
+      ->get();
+
+    return view('clinic-users-info.cui-insurances-info.cii-home', [
+      'id' => $id,
+      'name' => $user->clinic_user_name,
+      'insurances' => $insurances,
+      'sortBy' => $sortBy,
+      'sortOrder' => $sortOrder
+    ]);
   }
 
   // 保険情報新規登録画面
@@ -332,6 +358,7 @@ class ClinicUserController extends Controller
 
     // 文字列をIDに変換
     $saveData = [
+      'clinic_user_id' => $id,
       'insurers_id' => $insurersId,
       'insured_number' => $data['insured_number'],
       'code_number' => $data['symbol'] ?? null,
