@@ -39,6 +39,9 @@ Route::middleware('auth')->group(function () {
   Route::post('/clinic-users-info/cui-insurances-info/{id}/confirm', [ClinicUserController::class, 'insuranceConfirm'])->name('cui-insurances-info.confirm');
   Route::post('/clinic-users-info/cui-insurances-info/{id}/store', [ClinicUserController::class, 'insuranceStore'])->name('cui-insurances-info.store');
   Route::get('/clinic-users-info/cui-insurances-info/{id}/edit/{insurance_id}', [ClinicUserController::class, 'insuranceEdit'])->name('cui-insurances-info.edit');
+    // cii編集機能
+    Route::get('/clinic-users-info/cui-insurances-info/{id}/cii-edit/{insurance_id}', [ClinicUserController::class, 'insuranceEdit'])->name('cii-edit');
+    Route::put('/clinic-users-info/cui-insurances-info/{id}/cii-edit/{insurance_id}', [ClinicUserController::class, 'insuranceUpdate'])->name('cii-edit.update');
   Route::post('/clinic-users-info/cui-insurances-info/{id}/duplicate/{insurance_id}', [ClinicUserController::class, 'insuranceDuplicate'])->name('cui-insurances-info.duplicate');
   Route::delete('/clinic-users-info/cui-insurances-info/{id}/delete/{insurance_id}', [ClinicUserController::class, 'insuranceDestroy'])->name('cui-insurances-info.delete');
   Route::get('/clinic-users-info/cui-consenting-doctor-history-massage/{id}', [ClinicUserController::class, 'ccdhmHome'])->name('cui-consenting-doctor-history-massage');

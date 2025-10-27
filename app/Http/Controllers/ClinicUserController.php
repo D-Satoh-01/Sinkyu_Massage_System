@@ -8,9 +8,40 @@ use Illuminate\Http\Request;
 use App\Models\ClinicUserModel;
 use App\Models\Insurer;
 use App\Models\Insurance;
+use Illuminate\Support\Facades\DB;
 
 class ClinicUserController extends Controller
 {
+  // 保険情報編集：更新処理
+  public function insuranceUpdate(Request $request, $id, $insurance_id)
+  {
+    $insurance = Insurance::findOrFail($insurance_id);
+    $validated = $request->validate([
+      'insurance_type_1' => 'required|string',
+      'insurance_type_2' => 'required|string',
+      'insurance_type_3' => 'required|string',
+      'insured_person_type' => 'required|string',
+      'insured_number' => 'required|string',
+      'symbol' => 'nullable|string',
+      'number' => 'nullable|string',
+      'qualification_date' => 'nullable|date',
+      'certification_date' => 'nullable|date',
+      'issue_date' => 'nullable|date',
+      'copayment_rate' => 'nullable|string',
+      'expiration_date' => 'nullable|date',
+      'reimbursement_target' => 'nullable|boolean',
+      'insured_person_name' => 'nullable|string',
+      'relationship' => 'nullable|string',
+      'medical_assistance_target' => 'nullable|boolean',
+      'public_burden_number' => 'nullable|string',
+      'public_recipient_number' => 'nullable|string',
+      'municipal_code' => 'nullable|string',
+      'recipient_number' => 'nullable|string'
+    ]);
+    $insurance->fill($validated);
+    $insurance->save();
+    return redirect()->route('cui-insurances-info', $id)->with('success', '保険情報を更新しました。');
+  }
   // 一覧表示
   public function index(Request $request)
   {
@@ -378,27 +409,27 @@ class ClinicUserController extends Controller
 
     // 保険種別をIDに変換
     if (isset($data['insurance_type_1'])) {
-      $type1 = \DB::table('insurance_types_1')->where('insurance_type_1', $data['insurance_type_1'])->first();
+      $type1 = DB::table('insurance_types_1')->where('insurance_type_1', $data['insurance_type_1'])->first();
       $saveData['insurance_type_1_id'] = $type1 ? $type1->id : null;
     }
     if (isset($data['insurance_type_2'])) {
-      $type2 = \DB::table('insurance_types_2')->where('insurance_type_2', $data['insurance_type_2'])->first();
+      $type2 = DB::table('insurance_types_2')->where('insurance_type_2', $data['insurance_type_2'])->first();
       $saveData['insurance_type_2_id'] = $type2 ? $type2->id : null;
     }
     if (isset($data['insurance_type_3'])) {
-      $type3 = \DB::table('insurance_types_3')->where('insurance_type_3', $data['insurance_type_3'])->first();
+      $type3 = DB::table('insurance_types_3')->where('insurance_type_3', $data['insurance_type_3'])->first();
       $saveData['insurance_type_3_id'] = $type3 ? $type3->id : null;
     }
     if (isset($data['insured_person_type'])) {
-      $selfFamily = \DB::table('self_or_family')->where('subject_type', $data['insured_person_type'])->first();
+      $selfFamily = DB::table('self_or_family')->where('subject_type', $data['insured_person_type'])->first();
       $saveData['self_or_family_id'] = $selfFamily ? $selfFamily->id : null;
     }
     if (isset($data['relationship'])) {
-      $rel = \DB::table('relationships_with_clinic_user')->where('relationship', $data['relationship'])->first();
+      $rel = DB::table('relationships_with_clinic_user')->where('relationship', $data['relationship'])->first();
       $saveData['relationship_with_clinic_user_id'] = $rel ? $rel->id : null;
     }
     if (isset($data['copayment_rate'])) {
-      $ratio = \DB::table('expenses_borne_ratios')->where('expenses_borne_ratio', $data['copayment_rate'])->first();
+      $ratio = DB::table('expenses_borne_ratios')->where('expenses_borne_ratio', $data['copayment_rate'])->first();
       $saveData['expenses_borne_ratio_id'] = $ratio ? $ratio->id : null;
     }
 

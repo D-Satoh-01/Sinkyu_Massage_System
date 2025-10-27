@@ -70,32 +70,33 @@
     </thead>
     <tbody id="tableBody">
       @forelse($clinicUsers ?? [] as $user)
+        @if(is_object($user))
         <tr data-id="{{ $user->id }}"
             data-name="{{ $user->clinic_user_name }}" 
             data-furigana="{{ $user->furigana }}"
-            data-birthday="{{ $user->birthday ? $user->birthday->format('Y/m/d') : '' }}"
+            data-birthday="{{ optional($user->birthday)->format('Y/m/d') }}"
             data-address="{{ ($user->postal_code ? '〒'.$user->postal_code : '') . $user->address_1 . $user->address_2 . $user->address_3 }}"
-            data-created="{{ $user->created_at->format('Y/m/d H:i') }}">
+            data-created="{{ optional($user->created_at)->format('Y/m/d H:i') }}">
           <td style="border: 1px solid #000; padding: 8px;">{{ $user->id }}</td>
           <td style="border: 1px solid #000; padding: 8px;">
             <a href="{{ route('cui-edit', ['id' => $user->id]) }}">{{ $user->clinic_user_name }} [編集]</a><br>
             {{ $user->furigana }}
           </td>
           <td style="border: 1px solid #000; padding: 8px;">
-            @if($user->birthday)
-              {{ $user->birthday->format('Y/m/d') }}
-              ({{ \Carbon\Carbon::parse($user->birthday)->age }}才)
+            @if(!empty($user->birthday))
+              {{ optional($user->birthday)->format('Y/m/d') }}
+              ({{ $user->birthday ? \Carbon\Carbon::parse($user->birthday)->age : '' }}才)
             @endif
           </td>
           <td style="border: 1px solid #000; padding: 8px;">
-            @if($user->postal_code)
+            @if(!empty($user->postal_code))
               〒{{ $user->postal_code }}<br>
             @endif
             {{ $user->address_1 }} {{ $user->address_2 }} {{ $user->address_3 }}
           </td>
           <td style="border: 1px solid #000; padding: 8px;">
-            {{ $user->created_at->format('Y/m/d') }}<br>
-            {{ $user->created_at->format('H:i') }}
+            {{ optional($user->created_at)->format('Y/m/d') }}<br>
+            {{ optional($user->created_at)->format('H:i') }}
           </td>
           <td style="border: 1px solid #000; padding: 8px;">
             <a href="{{ route('cui-insurances-info', ['id' => $user->id]) }}">保険情報</a><br>
@@ -110,6 +111,7 @@
               <button type="submit" class="delete-btn" style="background: none; border: none; color: #0d6efd; cursor: pointer;">削除</button>
             </form>
           </td>
+        @endif
         </tr>
       @empty
         <tr id="noDataRow">
