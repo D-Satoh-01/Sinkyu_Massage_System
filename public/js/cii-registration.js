@@ -17,11 +17,29 @@ function toggleMedicalAssistanceFields() {
   
   // チェックボックスの状態に応じて入力フィールドの有効/無効を切り替え
   if (checkbox.checked) {
-    publicBurdenNumber.disabled = false;
-    publicRecipientNumber.disabled = false;
+  publicBurdenNumber.disabled = false;
+  publicRecipientNumber.disabled = false;
   } else {
-    publicBurdenNumber.disabled = true;
-    publicRecipientNumber.disabled = true;
+  publicBurdenNumber.disabled = true;
+  publicRecipientNumber.disabled = true;
+  }
+}
+
+// 利用者との続柄で家族向けフィールドの有効/無効を制御
+function toggleFamilyFields() {
+  const relationship = document.getElementById('relationship');
+  const municipalCodeFamily = document.getElementById('municipal_code_family');
+  const recipientNumberFamily = document.getElementById('recipient_number_family');
+  
+  if (relationship && relationship.value === '家族') {
+  municipalCodeFamily.disabled = false;
+  recipientNumberFamily.disabled = false;
+  } else {
+  municipalCodeFamily.disabled = true;
+  recipientNumberFamily.disabled = true;
+  // 本人の場合は値をクリア
+  if (municipalCodeFamily) municipalCodeFamily.value = '';
+  if (recipientNumberFamily) recipientNumberFamily.value = '';
   }
 }
 
@@ -38,17 +56,17 @@ function validateInsurerNumber() {
 
   // 桁数チェック
   if (numbersOnly.length === 0) {
-    // 入力がない場合は警告を非表示
-    warningElement.style.display = 'none';
-    return true;
+  // 入力がない場合は警告を非表示
+  warningElement.style.display = 'none';
+  return true;
   } else if (numbersOnly.length === 6 || numbersOnly.length === 8) {
-    // 6桁または8桁の場合は有効
-    warningElement.style.display = 'none';
-    return true;
+  // 6桁または8桁の場合は有効
+  warningElement.style.display = 'none';
+  return true;
   } else {
-    // それ以外の桁数は無効
-    warningElement.style.display = 'block';
-    return false;
+  // それ以外の桁数は無効
+  warningElement.style.display = 'block';
+  return false;
   }
 }
 
@@ -57,14 +75,31 @@ document.addEventListener('DOMContentLoaded', function() {
   // 医療助成対象チェックボックスによるフィールド切り替え関数
   toggleMedicalAssistanceFields();
 
+  // 利用者との続柄によるフィールド切り替え関数
+  toggleFamilyFields();
+
   // 保険者番号入力フィールドにイベントリスナーを追加
   const insurerNumberInput = document.getElementById('new_insurer_number');
+  if (insurerNumberInput) {
   insurerNumberInput.addEventListener('input', validateInsurerNumber);
+  }
+
+  // 利用者との続柄の変更リスナーを追加
+  const relationship = document.getElementById('relationship');
+  if (relationship) {
+  relationship.addEventListener('change', toggleFamilyFields);
+  }
+
+  // 医療助成対象チェックボックスの変更リスナーを追加
+  const medicalCheckbox = document.getElementById('medical_assistance_target');
+  if (medicalCheckbox) {
+  medicalCheckbox.addEventListener('change', toggleMedicalAssistanceFields);
+  }
 
   // 画面更新時に選択された保険者情報をインプットボックスに反映
   const selectedInsurer = document.getElementById('selected_insurer');
-  if (selectedInsurer.value !== '') {
-    updateInsurerFields();
+  if (selectedInsurer && selectedInsurer.value !== '') {
+  updateInsurerFields();
   }
 });
 
@@ -80,29 +115,29 @@ function updateInsurerFields() {
   const newRecipientName = document.getElementById('new_recipient_name');
 
   if (select.value === '') {
-    // 非選択の場合、入力フォームを有効化してクリア
-    newInsurerNumber.disabled = false;
-    newInsurerName.disabled = false;
-    newPostalCode.disabled = false;
-    newAddress.disabled = false;
-    newRecipientName.disabled = false;
-    newInsurerNumber.value = '';
-    newInsurerName.value = '';
-    newPostalCode.value = '';
-    newAddress.value = '';
-    newRecipientName.value = '';
+  // 非選択の場合、入力フォームを有効化してクリア
+  newInsurerNumber.disabled = false;
+  newInsurerName.disabled = false;
+  newPostalCode.disabled = false;
+  newAddress.disabled = false;
+  newRecipientName.disabled = false;
+  newInsurerNumber.value = '';
+  newInsurerName.value = '';
+  newPostalCode.value = '';
+  newAddress.value = '';
+  newRecipientName.value = '';
   } else {
-    // 選択されている場合、情報を表示して入力無効化
-    newInsurerNumber.disabled = true;
-    newInsurerName.disabled = true;
-    newPostalCode.disabled = true;
-    newAddress.disabled = true;
-    newRecipientName.disabled = true;
-    newInsurerNumber.value = selectedOption.getAttribute('data-number') || '';
-    newInsurerName.value = selectedOption.getAttribute('data-name') || '';
-    newPostalCode.value = selectedOption.getAttribute('data-postal') || '';
-    newAddress.value = selectedOption.getAttribute('data-address') || '';
-    newRecipientName.value = selectedOption.getAttribute('data-recipient') || '';
+  // 選択されている場合、情報を表示して入力無効化
+  newInsurerNumber.disabled = true;
+  newInsurerName.disabled = true;
+  newPostalCode.disabled = true;
+  newAddress.disabled = true;
+  newRecipientName.disabled = true;
+  newInsurerNumber.value = selectedOption.getAttribute('data-number') || '';
+  newInsurerName.value = selectedOption.getAttribute('data-name') || '';
+  newPostalCode.value = selectedOption.getAttribute('data-postal') || '';
+  newAddress.value = selectedOption.getAttribute('data-address') || '';
+  newRecipientName.value = selectedOption.getAttribute('data-recipient') || '';
   }
 }
 
@@ -117,53 +152,58 @@ async function searchNewAddress() {
 
   // 7桁の数字かチェック
   if (cleanPostalCode.length !== 7) {
-    return; // エラーメッセージは表示せず、単に終了
+  return; // エラーメッセージは表示せず、単に終了
   }
 
   try {
-    // 郵便番号API呼び出し（zipcloud API使用）
-    const response = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${cleanPostalCode}`);
-    const data = await response.json();
+  // 郵便番号API呼び出し（zipcloud API使用）
+  const response = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${cleanPostalCode}`);
+  const data = await response.json();
 
-    if (data.status === 200 && data.results && data.results.length > 0) {
-      const result = data.results[0];
+  if (data.status === 200 && data.results && data.results.length > 0) {
+    const result = data.results[0];
 
-      // 都道府県と市区町村を設定
-      addressEl.value = result.address1 + result.address2 + result.address3;
-    } else {
-      // 該当する住所が無い場合は空欄
-      addressEl.value = '';
-    }
+    // 都道府県と市区町村を設定
+    addressEl.value = result.address1 + result.address2 + result.address3;
+  } else {
+    // 該当する住所が無い場合は空欄
+    addressEl.value = '';
+  }
 
   } catch (error) {
-    console.error('New address search error:', error);
+  console.error('New address search error:', error);
   }
 }
 
 // 新規登録郵便番号入力時の処理
-document.getElementById('new_postal_code').addEventListener('input', function(e) {
-  let value = this.value;
+document.addEventListener('DOMContentLoaded', function() {
+  const newPostalCodeInput = document.getElementById('new_postal_code');
+  if (newPostalCodeInput) {
+  newPostalCodeInput.addEventListener('input', function(e) {
+    let value = this.value;
 
-  // ハイフンを除去して数字のみに
-  const numbersOnly = value.replace(/[^\d]/g, '');
+    // ハイフンを除去して数字のみに
+    const numbersOnly = value.replace(/[^\d]/g, '');
 
-  // 7桁になったら自動で住所検索を実行
-  if (numbersOnly.length === 7) {
+    // 7桁になったら自動で住所検索を実行
+    if (numbersOnly.length === 7) {
     // 表示用にハイフンを挿入（123-4567の形式）
     this.value = numbersOnly.substring(0, 3) + '-' + numbersOnly.substring(3);
 
     // 自動で住所検索を実行
     searchNewAddress();
-  } else if (numbersOnly.length > 7) {
+    } else if (numbersOnly.length > 7) {
     // 7桁を超える場合は7桁でカット
     const truncated = numbersOnly.substring(0, 7);
     this.value = truncated.substring(0, 3) + '-' + truncated.substring(3);
     searchNewAddress();
-  } else if (numbersOnly.length <= 3) {
+    } else if (numbersOnly.length <= 3) {
     // 3桁以下の場合はそのまま
     this.value = numbersOnly;
-  } else {
+    } else {
     // 4-6桁の場合はハイフンを挿入
     this.value = numbersOnly.substring(0, 3) + '-' + numbersOnly.substring(3);
+    }
+  });
   }
 });

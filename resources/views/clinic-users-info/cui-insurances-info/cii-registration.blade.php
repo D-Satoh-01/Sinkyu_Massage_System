@@ -2,26 +2,26 @@
 
 
 <x-app-layout>
-    <h2>{{ $name }} 様の保険情報新規登録</h2>
-    <br><br>
+  <h2>{{ $name }} 様の保険情報新規登録</h2>
+  <br><br>
 
-    @if($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+  @if($errors->any())
+    <div class="alert alert-danger">
+      <ul>
+        @foreach($errors->all() as $error)
+          <li>{{ $error }}</li>
+        @endforeach
+      </ul>
+    </div>
+  @endif
 
-    <form action="{{ route('cui-insurances-info.confirm', $id) }}" method="POST">
-        @include('clinic-users-info.cui-insurances-info.components.insurance-form', [
-            'isEdit' => false,
-            'insurance' => null,
-            'insurers' => $insurers,
-            'submitLabel' => '登録確認へ',
-            'cancelRoute' => route('cui-insurances-info', $id)
-        ])
-    </form>
+  <form action="{{ route('cui-insurances-info.confirm', $id) }}" method="POST">
+    @include('clinic-users-info.cui-insurances-info.components.insurance-form', [
+      'isEdit' => false,
+      'insurance' => null,
+      'insurers' => $insurers,
+      'submitLabel' => '登録確認へ',
+      'cancelRoute' => route('cui-insurances-info', $id)
+    ])
+  </form>
 </x-app-layout>
