@@ -16,78 +16,130 @@ class ClinicUserController extends Controller
   public function insuranceUpdate(Request $request, $id, $insurance_id)
   {
   $insurance = Insurance::findOrFail($insurance_id);
-  $validated = $request->validate([
+
+  $rules = [
     'insurance_type_1' => 'required|string',
     'insurance_type_2' => 'required|string',
     'insurance_type_3' => 'required|string',
     'insured_person_type' => 'required|string',
-    'insured_number' => 'required|string',
-    'symbol' => 'nullable|string',
-    'number' => 'nullable|string',
-    'qualification_date' => 'nullable|date',
+    'insured_number' => 'required|integer',
+    'code_number' => 'nullable|string',
+    'account_number' => 'nullable|string',
+    'locality_code' => 'nullable|string',
+    'recipient_code' => 'nullable|string',
+    'license_acquisition_date' => 'nullable|date',
     'certification_date' => 'nullable|date',
     'issue_date' => 'nullable|date',
-    'copayment_rate' => 'nullable|string',
-    'expiration_date' => 'nullable|date',
-    'reimbursement_target' => 'nullable|boolean',
-    'insured_person_name' => 'nullable|string',
-    'relationship' => 'nullable|string',
-    'medical_assistance_target' => 'nullable|boolean',
-    'public_burden_number' => 'nullable|string',
-    'public_recipient_number' => 'nullable|string',
-    'municipal_code' => 'nullable|string',
-    'recipient_number' => 'nullable|string'
-  ]);
-  $insurance->fill($validated);
+    'expenses_borne_ratio' => 'nullable|string',
+    'expiry_date' => 'nullable|date',
+    'is_redeemed' => 'nullable|boolean',
+    'insured_name' => 'nullable|string|max:255',
+    'relationship_with_clinic_user' => 'nullable|string',
+    'is_healthcare_subsidized' => 'nullable|boolean',
+    'public_funds_payer_code' => 'nullable|string',
+    'public_funds_recipient_code' => 'nullable|string',
+    'locality_code_family' => 'nullable|string',
+    'recipient_code_family' => 'nullable|string',
+    'selected_insurer' => 'nullable|integer|exists:insurers,id',
+    'new_insurer_number' => 'nullable|string|regex:/^\d{6}(\d{2})?$/',
+    'new_insurer_name' => 'nullable|string|max:255',
+    'new_postal_code' => 'nullable|string|max:8',
+    'new_address' => 'nullable|string|max:255',
+    'new_recipient_name' => 'nullable|string|max:255'
+  ];
+
+  // 選択された保険者がない場合、新規保険者番号をチェック
+  if (!$request->filled('selected_insurer') && !$insurance->insurers_id) {
+    $rules['new_insurer_number'] = 'required|string|regex:/^\d{6}(\d{2})?$/';
+  }
+
+  $messages = [
+    'new_insurer_number.required' => '保険者番号を入力してください。',
+    'new_insurer_number.regex' => '保険者番号は6桁または8桁の数字を入力してください。',
+  ];
+
+  $validated = $request->validate($rules, $messages);
+
+  // チェックボックスの処理
+  $validated['is_redeemed'] = $request->has('is_redeemed');
+  $validated['is_healthcare_subsidized'] = $request->has('is_healthcare_subsidized');
+
+  // insurers_idを取得または新規作成
+  $insurersId = $insurance->insurers_id; // 既存の保険者IDを保持
+  if (isset($validated['selected_insurer']) && $validated['selected_insurer']) {
+    // 既存の保険者を選択した場合
+    $insurersId = $validated['selected_insurer'];
+  } elseif (isset($validated['new_insurer_number']) && $validated['new_insurer_number']) {
+    // 新規保険者作成
+    $newInsurer = Insurer::create([
+      'insurer_number' => $validated['new_insurer_number'],
+      'insurer_name' => $validated['new_insurer_name'],
+      'postal_code' => $validated['new_postal_code'],
+      'address' => $validated['new_address'],
+      'recipient_name' => $validated['new_recipient_name']
+    ]);
+    $insurersId = $newInsurer->id;
+  }
+
+  // 保存用データの準備
+  $saveData = [
+    'insurers_id' => $insurersId,
+    'insured_number' => $validated['insured_number'],
+    'code_number' => $validated['code_number'] ?? null,
+    'account_number' => $validated['account_number'] ?? null,
+    'locality_code' => $validated['locality_code'] ?? null,
+    'recipient_code' => $validated['recipient_code'] ?? null,
+    'license_acquisition_date' => $validated['license_acquisition_date'] ?? null,
+    'certification_date' => $validated['certification_date'] ?? null,
+    'issue_date' => $validated['issue_date'] ?? null,
+    'expiry_date' => $validated['expiry_date'] ?? null,
+    'is_redeemed' => $validated['is_redeemed'],
+    'insured_name' => $validated['insured_name'] ?? null,
+    'is_healthcare_subsidized' => $validated['is_healthcare_subsidized'],
+    'public_funds_payer_code' => $validated['public_funds_payer_code'] ?? null,
+    'public_funds_recipient_code' => $validated['public_funds_recipient_code'] ?? null,
+    'locality_code_family' => $validated['locality_code_family'] ?? null,
+    'recipient_code_family' => $validated['recipient_code_family'] ?? null,
+  ];
+
+  // 保険種別をIDに変換
+  if (isset($validated['insurance_type_1'])) {
+    $type1 = DB::table('insurance_types_1')->where('insurance_type_1', $validated['insurance_type_1'])->first();
+    $saveData['insurance_type_1_id'] = $type1 ? $type1->id : null;
+  }
+  if (isset($validated['insurance_type_2'])) {
+    $type2 = DB::table('insurance_types_2')->where('insurance_type_2', $validated['insurance_type_2'])->first();
+    $saveData['insurance_type_2_id'] = $type2 ? $type2->id : null;
+  }
+  if (isset($validated['insurance_type_3'])) {
+    $type3 = DB::table('insurance_types_3')->where('insurance_type_3', $validated['insurance_type_3'])->first();
+    $saveData['insurance_type_3_id'] = $type3 ? $type3->id : null;
+  }
+  if (isset($validated['insured_person_type'])) {
+    $selfFamily = DB::table('self_or_family')->where('subject_type', $validated['insured_person_type'])->first();
+    $saveData['self_or_family_id'] = $selfFamily ? $selfFamily->id : null;
+  }
+  if (isset($validated['relationship_with_clinic_user'])) {
+    $rel = DB::table('relationships_with_clinic_user')->where('relationship', $validated['relationship_with_clinic_user'])->first();
+    $saveData['relationship_with_clinic_user_id'] = $rel ? $rel->id : null;
+  }
+  if (isset($validated['expenses_borne_ratio'])) {
+    $ratio = DB::table('expenses_borne_ratios')->where('expenses_borne_ratio', $validated['expenses_borne_ratio'])->first();
+    $saveData['expenses_borne_ratio_id'] = $ratio ? $ratio->id : null;
+  }
+
+  $insurance->fill($saveData);
   $insurance->save();
+
   return redirect()->route('cui-insurances-info', $id)->with('success', '保険情報を更新しました。');
   }
   // 一覧表示
-  public function index(Request $request)
+  public function index()
   {
-  $perPage = $request->input('per_page', 10);
-  $search = $request->input('search', '');
-  $sortBy = $request->input('sort_by', 'id');
-  $sortOrder = $request->input('sort_order', 'desc');
+  // DataTablesを使用するため、全件取得
+  $clinicUsers = ClinicUserModel::orderBy('id', 'desc')->get();
 
-  $query = ClinicUserModel::query();
-
-  // 検索処理
-  if ($search) {
-    $query->where(function($q) use ($search) {
-    $q->where('id', 'like', "%{$search}%")
-      ->orWhere('clinic_user_name', 'like', "%{$search}%")
-      ->orWhere('furigana', 'like', "%{$search}%")
-      ->orWhere('birthday', 'like', "%{$search}%")
-      ->orWhere('postal_code', 'like', "%{$search}%")
-      ->orWhere('address_1', 'like', "%{$search}%")
-      ->orWhere('address_2', 'like', "%{$search}%")
-      ->orWhere('address_3', 'like', "%{$search}%")
-      ->orWhere('created_at', 'like', "%{$search}%");
-    });
-  }
-
-  // ソート処理
-  $clinicUsers = $query->orderBy($sortBy, $sortOrder)->paginate($perPage);
-
-  if ($request->ajax()) {
-    return response()->json([
-    'clinicUsers' => $clinicUsers->items(),
-    'pagination' => [
-      'current_page' => $clinicUsers->currentPage(),
-      'last_page' => $clinicUsers->lastPage(),
-      'per_page' => $clinicUsers->perPage(),
-      'total' => $clinicUsers->total(),
-      'links' => $clinicUsers->links()->toHtml(),
-    ],
-    'perPage' => $perPage,
-    'search' => $search,
-    'sortBy' => $sortBy,
-    'sortOrder' => $sortOrder,
-    ]);
-  }
-
-  return view('clinic-users-info.cui-home', compact('clinicUsers', 'perPage', 'search', 'sortBy', 'sortOrder'));
+  return view('clinic-users-info.cui-home', compact('clinicUsers'));
   }
 
   public function create()
@@ -102,7 +154,7 @@ class ClinicUserController extends Controller
     'clinic_user_name' => 'required|string|max:255',
     'furigana' => 'required|string|max:255',
     'birthday' => 'nullable|date',
-    'age' => 'required|integer|min:0|max:150',
+    'age' => 'nullable|integer|min:0|max:150',
     'gender_id' => 'nullable|integer|in:1,2',
     'postal_code' => 'required|string|max:8',
     'address_1' => 'required|string|max:255',
@@ -160,6 +212,7 @@ class ClinicUserController extends Controller
     'page_title' => '基本情報登録完了',
     'message' => '入力された内容を登録しました。',
     'home_route' => 'cui-home',
+    'home_id' => null,
     'list_route' => null
   ]);
   }
@@ -179,7 +232,7 @@ class ClinicUserController extends Controller
     'clinic_user_name' => 'required|string|max:255',
     'furigana' => 'required|string|max:255',
     'birthday' => 'nullable|date',
-    'age' => 'required|integer|min:0|max:150',
+    'age' => 'nullable|integer|min:0|max:150',
     'gender_id' => 'nullable|integer|in:1,2',
     'postal_code' => 'required|string|max:8',
     'address_1' => 'required|string|max:255',
@@ -238,6 +291,7 @@ class ClinicUserController extends Controller
     'page_title' => '基本情報更新完了',
     'message' => '入力された内容を更新しました。',
     'home_route' => 'cui-home',
+    'home_id' => null,
     'list_route' => null
   ]);
   }
@@ -252,36 +306,20 @@ class ClinicUserController extends Controller
   }
 
   // 保険情報画面
-  public function ciiHome(Request $request, $id)
+  public function ciiHome($id)
   {
   $user = ClinicUserModel::findOrFail($id);
-  $sortBy = $request->input('sort_by', 'created_at');
-  $sortOrder = $request->input('sort_order', 'desc');
 
-  // 有効な並び替えカラムを定義
-  $validSortColumns = [
-    'insured_number',
-    'license_acquisition_date',
-    'expiry_date',
-    'created_at'
-  ];
-
-  // 並び替えカラムのバリデーション
-  if (!in_array($sortBy, $validSortColumns)) {
-    $sortBy = 'created_at';
-  }
-
+  // DataTablesを使用するため、全件取得
   $insurances = Insurance::where('clinic_user_id', $id)
     ->with('insurer')
-    ->orderBy($sortBy, $sortOrder)
+    ->orderBy('created_at', 'desc')
     ->get();
 
   return view('clinic-users-info.cui-insurances-info.cii-home', [
     'id' => $id,
     'name' => $user->clinic_user_name,
-    'insurances' => $insurances,
-    'sortBy' => $sortBy,
-    'sortOrder' => $sortOrder
+    'insurances' => $insurances
   ]);
   }
 
@@ -294,7 +332,11 @@ class ClinicUserController extends Controller
   // セッションからデータを取得して old() にセット
   $sessionData = session('insurance_registration_data');
   if ($sessionData) {
+    // セッションデータを再度フラッシュして old() で利用可能にする
+    request()->merge($sessionData);
     session()->flashInput($sessionData);
+    // セッションデータを保持（確認画面に戻った場合にも利用できるように）
+    session()->put('insurance_registration_data', $sessionData);
   }
 
   return view('clinic-users-info.cui-insurances-info.cii-registration', ['id' => $id, 'name' => $user->clinic_user_name, 'insurers' => $insurers]);
@@ -309,21 +351,23 @@ class ClinicUserController extends Controller
     'insurance_type_3' => 'required|string',
     'insured_person_type' => 'required|string',
     'insured_number' => 'required|integer',
-    'symbol' => 'nullable|string',
-    'number' => 'nullable|string',
-    'qualification_date' => 'nullable|date',
+    'code_number' => 'nullable|string',
+    'account_number' => 'nullable|string',
+    'locality_code' => 'nullable|string',
+    'recipient_code' => 'nullable|string',
+    'license_acquisition_date' => 'nullable|date',
     'certification_date' => 'nullable|date',
     'issue_date' => 'nullable|date',
-    'copayment_rate' => 'nullable|string',
-    'expiration_date' => 'nullable|date',
-    'reimbursement_target' => 'nullable|boolean',
-    'insured_person_name' => 'nullable|string|max:255',
-    'relationship' => 'nullable|string',
-    'medical_assistance_target' => 'nullable|boolean',
-    'public_burden_number' => 'nullable|string',
-    'public_recipient_number' => 'nullable|string',
-    'municipal_code' => 'nullable|string',
-    'recipient_number' => 'nullable|string',
+    'expenses_borne_ratio' => 'nullable|string',
+    'expiry_date' => 'nullable|date',
+    'is_redeemed' => 'nullable|boolean',
+    'insured_name' => 'nullable|string|max:255',
+    'relationship_with_clinic_user' => 'nullable|string',
+    'is_healthcare_subsidized' => 'nullable|boolean',
+    'public_funds_payer_code' => 'nullable|string',
+    'public_funds_recipient_code' => 'nullable|string',
+    'locality_code_family' => 'nullable|string',
+    'recipient_code_family' => 'nullable|string',
     'selected_insurer' => 'nullable|integer|exists:insurers,id',
     'new_insurer_number' => 'nullable|string|regex:/^\d{6}(\d{2})?$/',
     'new_insurer_name' => 'nullable|string|max:255',
@@ -337,11 +381,16 @@ class ClinicUserController extends Controller
     $rules['new_insurer_number'] = 'required|string|regex:/^\d{6}(\d{2})?$/';
   }
 
-  $validated = $request->validate($rules);
+  $messages = [
+    'new_insurer_number.required' => '保険者番号を入力してください。',
+    'new_insurer_number.regex' => '保険者番号は6桁または8桁の数字を入力してください。',
+  ];
+
+  $validated = $request->validate($rules, $messages);
 
   // チェックボックスの処理
-  $validated['reimbursement_target'] = $request->has('reimbursement_target');
-  $validated['medical_assistance_target'] = $request->has('medical_assistance_target');
+  $validated['is_redeemed'] = $request->has('is_redeemed');
+  $validated['is_healthcare_subsidized'] = $request->has('is_healthcare_subsidized');
 
   // セッションに保存
   $request->session()->put('insurance_registration_data', $validated);
@@ -392,19 +441,21 @@ class ClinicUserController extends Controller
     'clinic_user_id' => $id,
     'insurers_id' => $insurersId,
     'insured_number' => $data['insured_number'],
-    'code_number' => $data['symbol'] ?? null,
-    'account_number' => $data['number'] ?? null,
-    'license_acquisition_date' => $data['qualification_date'] ?? null,
+    'code_number' => $data['code_number'] ?? null,
+    'account_number' => $data['account_number'] ?? null,
+    'locality_code' => $data['locality_code'] ?? null,
+    'recipient_code' => $data['recipient_code'] ?? null,
+    'license_acquisition_date' => $data['license_acquisition_date'] ?? null,
     'certification_date' => $data['certification_date'] ?? null,
     'issue_date' => $data['issue_date'] ?? null,
-    'expiry_date' => $data['expiration_date'] ?? null,
-    'is_redeemed' => $data['reimbursement_target'] ?? false,
-    'insured_name' => $data['insured_person_name'] ?? null,
-    'is_healthcare_subsidized' => $data['medical_assistance_target'] ?? false,
-    'public_funds_payer_code' => $data['public_burden_number'] ?? null,
-    'public_funds_recipient_code' => $data['public_recipient_number'] ?? null,
-    'locality_code' => $data['municipal_code'] ?? null,
-    'recipient_code' => $data['recipient_number'] ?? null,
+    'expiry_date' => $data['expiry_date'] ?? null,
+    'is_redeemed' => $data['is_redeemed'] ?? false,
+    'insured_name' => $data['insured_name'] ?? null,
+    'is_healthcare_subsidized' => $data['is_healthcare_subsidized'] ?? false,
+    'public_funds_payer_code' => $data['public_funds_payer_code'] ?? null,
+    'public_funds_recipient_code' => $data['public_funds_recipient_code'] ?? null,
+    'locality_code_family' => $data['locality_code_family'] ?? null,
+    'recipient_code_family' => $data['recipient_code_family'] ?? null,
   ];
 
   // 保険種別をIDに変換
@@ -424,12 +475,12 @@ class ClinicUserController extends Controller
     $selfFamily = DB::table('self_or_family')->where('subject_type', $data['insured_person_type'])->first();
     $saveData['self_or_family_id'] = $selfFamily ? $selfFamily->id : null;
   }
-  if (isset($data['relationship'])) {
-    $rel = DB::table('relationships_with_clinic_user')->where('relationship', $data['relationship'])->first();
+  if (isset($data['relationship_with_clinic_user'])) {
+    $rel = DB::table('relationships_with_clinic_user')->where('relationship', $data['relationship_with_clinic_user'])->first();
     $saveData['relationship_with_clinic_user_id'] = $rel ? $rel->id : null;
   }
-  if (isset($data['copayment_rate'])) {
-    $ratio = DB::table('expenses_borne_ratios')->where('expenses_borne_ratio', $data['copayment_rate'])->first();
+  if (isset($data['expenses_borne_ratio'])) {
+    $ratio = DB::table('expenses_borne_ratios')->where('expenses_borne_ratio', $data['expenses_borne_ratio'])->first();
     $saveData['expenses_borne_ratio_id'] = $ratio ? $ratio->id : null;
   }
 
@@ -475,12 +526,13 @@ class ClinicUserController extends Controller
   public function insuranceEdit($id, $insurance_id)
   {
   $user = ClinicUserModel::findOrFail($id);
-  $insurance = Insurance::findOrFail($insurance_id);
-  return view('clinic-users-info.cui-insurances-info.cii-edit', compact('user', 'insurance'));
+  $insurance = Insurance::with('insurer')->findOrFail($insurance_id);
+  $insurers = Insurer::all();
+  return view('clinic-users-info.cui-insurances-info.cii-edit', compact('user', 'insurance', 'insurers'));
   }
 
   // 保険情報複製
-  public function insuranceDuplicate(Request $request, $id, $insurance_id)
+  public function insuranceDuplicate($id, $insurance_id)
   {
   $original = Insurance::findOrFail($insurance_id);
   $duplicate = $original->replicate();
@@ -530,21 +582,23 @@ class ClinicUserController extends Controller
     'insurance_type_3' => '保険種別３',
     'insured_person_type' => '本人・家族',
     'insured_number' => '被保険者番号',
-    'symbol' => '記号',
-    'number' => '番号',
-    'qualification_date' => '資格取得年月日',
+    'code_number' => '記号',
+    'account_number' => '番号',
+    'locality_code' => '区市町村番号',
+    'recipient_code' => '受給者番号',
+    'license_acquisition_date' => '資格取得年月日',
     'certification_date' => '認定年月日',
     'issue_date' => '発行（交付）年月日',
-    'copayment_rate' => '一部負担金の割合',
-    'expiration_date' => '有効期限',
-    'reimbursement_target' => '償還対象',
-    'insured_person_name' => '被保険者氏名',
-    'relationship' => '利用者との続柄',
-    'medical_assistance_target' => '医療助成対象',
-    'public_burden_number' => '公費負担者番号',
-    'public_recipient_number' => '公費受給者番号',
-    'municipal_code' => '区市町村番号',
-    'recipient_number' => '受給者番号',
+    'expenses_borne_ratio' => '一部負担金の割合',
+    'expiry_date' => '有効期限',
+    'is_redeemed' => '償還対象',
+    'insured_name' => '被保険者氏名',
+    'relationship_with_clinic_user' => '利用者との続柄',
+    'is_healthcare_subsidized' => '医療助成対象',
+    'public_funds_payer_code' => '公費負担者番号',
+    'public_funds_recipient_code' => '公費受給者番号',
+    'locality_code_family' => '区市町村番号（家族）',
+    'recipient_code_family' => '受給者番号（家族）',
     'new_insurer_number' => '保険者番号',
     'new_insurer_name' => '保険者名称',
     'new_postal_code' => '郵便番号',

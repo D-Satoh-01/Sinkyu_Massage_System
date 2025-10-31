@@ -11,35 +11,49 @@ function hideInsuranceForm() {
 
 // 医療助成対象チェックボックスでフィールド有効/無効（チェックなしで入力不可）
 function toggleMedicalAssistanceFields() {
-  const checkbox = document.getElementById('medical_assistance_target');
-  const publicBurdenNumber = document.getElementById('public_burden_number');
-  const publicRecipientNumber = document.getElementById('public_recipient_number');
-  
+  const checkbox = document.getElementById('is_healthcare_subsidized');
+  const publicBurdenNumber = document.getElementById('public_funds_payer_code');
+  const publicRecipientNumber = document.getElementById('public_funds_recipient_code');
+
+  // 要素が存在しない場合は処理を終了
+  if (!checkbox || !publicBurdenNumber || !publicRecipientNumber) {
+    return;
+  }
+
   // チェックボックスの状態に応じて入力フィールドの有効/無効を切り替え
   if (checkbox.checked) {
-  publicBurdenNumber.disabled = false;
-  publicRecipientNumber.disabled = false;
+    publicBurdenNumber.disabled = false;
+    publicRecipientNumber.disabled = false;
   } else {
-  publicBurdenNumber.disabled = true;
-  publicRecipientNumber.disabled = true;
+    publicBurdenNumber.disabled = true;
+    publicRecipientNumber.disabled = true;
+    // チェックが外されたときにフィールドをクリア
+    publicBurdenNumber.value = '';
+    publicRecipientNumber.value = '';
   }
 }
 
 // 利用者との続柄で家族向けフィールドの有効/無効を制御
 function toggleFamilyFields() {
-  const relationship = document.getElementById('relationship');
-  const municipalCodeFamily = document.getElementById('municipal_code_family');
-  const recipientNumberFamily = document.getElementById('recipient_number_family');
-  
-  if (relationship && relationship.value === '家族') {
-  municipalCodeFamily.disabled = false;
-  recipientNumberFamily.disabled = false;
+  const relationship = document.getElementById('relationship_with_clinic_user');
+  const localityCodeFamily = document.getElementById('locality_code_family');
+  const recipientCodeFamily = document.getElementById('recipient_code_family');
+
+  // 要素が存在しない場合は処理を終了
+  if (!relationship || !localityCodeFamily || !recipientCodeFamily) {
+    return;
+  }
+
+  // 利用者との続柄が「家族」の場合のみ有効化
+  if (relationship.value === '家族') {
+    localityCodeFamily.disabled = false;
+    recipientCodeFamily.disabled = false;
   } else {
-  municipalCodeFamily.disabled = true;
-  recipientNumberFamily.disabled = true;
-  // 本人の場合は値をクリア
-  if (municipalCodeFamily) municipalCodeFamily.value = '';
-  if (recipientNumberFamily) recipientNumberFamily.value = '';
+    localityCodeFamily.disabled = true;
+    recipientCodeFamily.disabled = true;
+    // 家族以外の場合は値をクリア
+    localityCodeFamily.value = '';
+    recipientCodeFamily.value = '';
   }
 }
 
@@ -47,6 +61,19 @@ function toggleFamilyFields() {
 function validateInsurerNumber() {
   const insurerNumberInput = document.getElementById('new_insurer_number');
   const warningElement = document.getElementById('insurer_number_warning');
+  const selectedInsurer = document.getElementById('selected_insurer');
+
+  // 要素が存在しない場合は処理を終了
+  if (!insurerNumberInput || !warningElement) {
+    console.log('保険者番号フィールドまたは警告要素が見つかりません');
+    return true;
+  }
+
+  // 保険者が選択されている場合は、新規登録フィールドのバリデーションは不要
+  if (selectedInsurer && selectedInsurer.value !== '') {
+    warningElement.style.display = 'none';
+    return true;
+  }
 
   // 入力値から空白を削除
   const value = insurerNumberInput.value.trim();
@@ -54,19 +81,22 @@ function validateInsurerNumber() {
   // 数字のみを抽出
   const numbersOnly = value.replace(/[^\d]/g, '');
 
+  console.log('保険者番号バリデーション - 入力値:', value, '数字のみ:', numbersOnly, '桁数:', numbersOnly.length);
+
   // 桁数チェック
   if (numbersOnly.length === 0) {
-  // 入力がない場合は警告を非表示
-  warningElement.style.display = 'none';
-  return true;
+    // 入力がない場合は警告を非表示
+    warningElement.style.display = 'none';
+    return true;
   } else if (numbersOnly.length === 6 || numbersOnly.length === 8) {
-  // 6桁または8桁の場合は有効
-  warningElement.style.display = 'none';
-  return true;
+    // 6桁または8桁の場合は有効
+    warningElement.style.display = 'none';
+    return true;
   } else {
-  // それ以外の桁数は無効
-  warningElement.style.display = 'block';
-  return false;
+    // それ以外の桁数は無効
+    console.log('警告メッセージを表示します');
+    warningElement.style.display = 'block';
+    return false;
   }
 }
 
@@ -81,19 +111,21 @@ document.addEventListener('DOMContentLoaded', function() {
   // 保険者番号入力フィールドにイベントリスナーを追加
   const insurerNumberInput = document.getElementById('new_insurer_number');
   if (insurerNumberInput) {
-  insurerNumberInput.addEventListener('input', validateInsurerNumber);
+    insurerNumberInput.addEventListener('input', validateInsurerNumber);
+    // ページ読み込み時にも一度バリデーションを実行（既存の入力値がある場合）
+    validateInsurerNumber();
   }
 
   // 利用者との続柄の変更リスナーを追加
-  const relationship = document.getElementById('relationship');
+  const relationship = document.getElementById('relationship_with_clinic_user');
   if (relationship) {
-  relationship.addEventListener('change', toggleFamilyFields);
+    relationship.addEventListener('change', toggleFamilyFields);
   }
 
   // 医療助成対象チェックボックスの変更リスナーを追加
-  const medicalCheckbox = document.getElementById('medical_assistance_target');
+  const medicalCheckbox = document.getElementById('is_healthcare_subsidized');
   if (medicalCheckbox) {
-  medicalCheckbox.addEventListener('change', toggleMedicalAssistanceFields);
+    medicalCheckbox.addEventListener('change', toggleMedicalAssistanceFields);
   }
 
   // 画面更新時に選択された保険者情報をインプットボックスに反映
@@ -113,31 +145,40 @@ function updateInsurerFields() {
   const newPostalCode = document.getElementById('new_postal_code');
   const newAddress = document.getElementById('new_address');
   const newRecipientName = document.getElementById('new_recipient_name');
+  const warningElement = document.getElementById('insurer_number_warning');
 
   if (select.value === '') {
-  // 非選択の場合、入力フォームを有効化してクリア
-  newInsurerNumber.disabled = false;
-  newInsurerName.disabled = false;
-  newPostalCode.disabled = false;
-  newAddress.disabled = false;
-  newRecipientName.disabled = false;
-  newInsurerNumber.value = '';
-  newInsurerName.value = '';
-  newPostalCode.value = '';
-  newAddress.value = '';
-  newRecipientName.value = '';
+    // 非選択の場合、入力フォームを有効化してクリア
+    newInsurerNumber.disabled = false;
+    newInsurerName.disabled = false;
+    newPostalCode.disabled = false;
+    newAddress.disabled = false;
+    newRecipientName.disabled = false;
+    newInsurerNumber.value = '';
+    newInsurerName.value = '';
+    newPostalCode.value = '';
+    newAddress.value = '';
+    newRecipientName.value = '';
+    // 警告メッセージを非表示
+    if (warningElement) {
+      warningElement.style.display = 'none';
+    }
   } else {
-  // 選択されている場合、情報を表示して入力無効化
-  newInsurerNumber.disabled = true;
-  newInsurerName.disabled = true;
-  newPostalCode.disabled = true;
-  newAddress.disabled = true;
-  newRecipientName.disabled = true;
-  newInsurerNumber.value = selectedOption.getAttribute('data-number') || '';
-  newInsurerName.value = selectedOption.getAttribute('data-name') || '';
-  newPostalCode.value = selectedOption.getAttribute('data-postal') || '';
-  newAddress.value = selectedOption.getAttribute('data-address') || '';
-  newRecipientName.value = selectedOption.getAttribute('data-recipient') || '';
+    // 選択されている場合、情報を表示して入力無効化
+    newInsurerNumber.disabled = true;
+    newInsurerName.disabled = true;
+    newPostalCode.disabled = true;
+    newAddress.disabled = true;
+    newRecipientName.disabled = true;
+    newInsurerNumber.value = selectedOption.getAttribute('data-number') || '';
+    newInsurerName.value = selectedOption.getAttribute('data-name') || '';
+    newPostalCode.value = selectedOption.getAttribute('data-postal') || '';
+    newAddress.value = selectedOption.getAttribute('data-address') || '';
+    newRecipientName.value = selectedOption.getAttribute('data-recipient') || '';
+    // 保険者が選択されているため警告メッセージを非表示
+    if (warningElement) {
+      warningElement.style.display = 'none';
+    }
   }
 }
 

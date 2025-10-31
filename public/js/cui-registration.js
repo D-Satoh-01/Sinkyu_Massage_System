@@ -23,7 +23,7 @@ async function searchAddress() {
 
   if (data.status === 200 && data.results && data.results.length > 0) {
     const result = data.results[0];
-    
+
     // 都道府県と市区町村を設定
     address1El.value = result.address1;
     address2El.value = result.address2 + result.address3;
@@ -54,18 +54,42 @@ function showMessage(message, type) {
   }
 }
 
+// 生年月日から年齢を計算する関数
+function calculateAge() {
+  const birthdayInput = document.getElementById('birthday');
+  const ageInput = document.getElementById('age');
+
+  if (!birthdayInput.value) {
+    ageInput.value = '';
+    return;
+  }
+
+  const birthday = new Date(birthdayInput.value);
+  const today = new Date();
+
+  let age = today.getFullYear() - birthday.getFullYear();
+  const monthDiff = today.getMonth() - birthday.getMonth();
+
+  // 誕生日がまだ来ていない場合は年齢を1減らす
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthday.getDate())) {
+    age--;
+  }
+
+  ageInput.value = age >= 0 ? age : '';
+}
+
 // 郵便番号入力時の処理
 document.getElementById('postal_code').addEventListener('input', function(e) {
   let value = this.value;
-  
+
   // ハイフンを除去して数字のみに
   const numbersOnly = value.replace(/[^\d]/g, '');
-  
+
   // 7桁になったら自動で住所検索を実行
   if (numbersOnly.length === 7) {
   // 表示用にハイフンを挿入（123-4567の形式）
   this.value = numbersOnly.substring(0, 3) + '-' + numbersOnly.substring(3);
-  
+
   // 自動で住所検索を実行
   searchAddress();
   } else if (numbersOnly.length > 7) {
@@ -79,5 +103,49 @@ document.getElementById('postal_code').addEventListener('input', function(e) {
   } else {
   // 4-6桁の場合はハイフンを挿入
   this.value = numbersOnly.substring(0, 3) + '-' + numbersOnly.substring(3);
+  }
+});
+
+// 生年月日入力時に年齢を自動計算
+document.getElementById('birthday').addEventListener('change', calculateAge);
+
+// ページ読み込み時に既に生年月日が入力されていれば年齢を計算
+document.addEventListener('DOMContentLoaded', function() {
+  if (document.getElementById('birthday').value) {
+    calculateAge();
+  }
+
+  // カスタムツールチップの実装
+  const ageInput = document.getElementById('age');
+  const tooltip = document.getElementById('age-tooltip');
+
+  if (ageInput && tooltip) {
+    // マウスオーバーで即座にツールチップを表示
+    ageInput.addEventListener('mouseenter', function(e) {
+      const tooltipText = this.getAttribute('data-tooltip');
+      if (tooltipText) {
+        tooltip.textContent = tooltipText;
+        tooltip.style.display = 'block';
+
+        // 初期位置をカーソル位置に設定
+        const rect = this.getBoundingClientRect();
+        tooltip.style.position = 'fixed';
+        tooltip.style.top = (e.clientY + 15) + 'px';
+        tooltip.style.left = (e.clientX + 10) + 'px';
+      }
+    });
+
+    // マウス移動でツールチップをカーソルに追従
+    ageInput.addEventListener('mousemove', function(e) {
+      if (tooltip.style.display === 'block') {
+        tooltip.style.top = (e.clientY + 15) + 'px';
+        tooltip.style.left = (e.clientX + 10) + 'px';
+      }
+    });
+
+    // マウスアウトでツールチップを非表示
+    ageInput.addEventListener('mouseleave', function() {
+      tooltip.style.display = 'none';
+    });
   }
 });

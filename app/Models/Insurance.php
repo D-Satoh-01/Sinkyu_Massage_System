@@ -23,6 +23,8 @@ class Insurance extends Model
   'insured_number',
   'code_number',
   'account_number',
+  'locality_code',
+  'recipient_code',
   'license_acquisition_date',
   'certification_date',
   'issue_date',
@@ -34,8 +36,8 @@ class Insurance extends Model
   'is_healthcare_subsidized',
   'public_funds_payer_code',
   'public_funds_recipient_code',
-  'locality_code',
-  'recipient_code'
+  'locality_code_family',
+  'recipient_code_family'
   ];
 
   protected $casts = [

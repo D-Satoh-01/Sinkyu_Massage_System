@@ -95,28 +95,28 @@
   </div>
 
   <div class="mb-3">
-  <label for="symbol">記号</label><br>
-  <input type="text" id="symbol" name="symbol" value="{{ old('symbol', ($insurance->code_number ?? '')) }}">
+  <label for="code_number">記号</label><br>
+  <input type="text" id="code_number" name="code_number" value="{{ old('code_number', ($insurance->code_number ?? '')) }}">
   </div>
 
   <div class="mb-3">
-  <label for="number">番号</label><br>
-  <input type="text" id="number" name="number" value="{{ old('number', ($insurance->account_number ?? '')) }}">
+  <label for="account_number">番号</label><br>
+  <input type="text" id="account_number" name="account_number" value="{{ old('account_number', ($insurance->account_number ?? '')) }}">
   </div>
 
   <div class="mb-3">
-  <label for="municipal_code_before">区市町村番号</label><br>
-  <input type="text" id="municipal_code_before" name="municipal_code_before" value="{{ old('municipal_code_before', ($insurance->locality_code ?? '')) }}">
+  <label for="locality_code">区市町村番号</label><br>
+  <input type="text" id="locality_code" name="locality_code" value="{{ old('locality_code', ($insurance->locality_code ?? '')) }}">
   </div>
 
   <div class="mb-3">
-  <label for="recipient_number_before">受給者番号</label><br>
-  <input type="text" id="recipient_number_before" name="recipient_number_before" value="{{ old('recipient_number_before', ($insurance->recipient_code ?? '')) }}">
+  <label for="recipient_code">受給者番号</label><br>
+  <input type="text" id="recipient_code" name="recipient_code" value="{{ old('recipient_code', ($insurance->recipient_code ?? '')) }}">
   </div>
 
   <div class="mb-3">
-  <label for="qualification_date">資格取得年月日</label><br>
-  <input type="date" id="qualification_date" name="qualification_date" value="{{ old('qualification_date', ($insurance && $insurance->license_acquisition_date) ? $insurance->license_acquisition_date->format('Y-m-d') : '') }}">
+  <label for="license_acquisition_date">資格取得年月日</label><br>
+  <input type="date" id="license_acquisition_date" name="license_acquisition_date" value="{{ old('license_acquisition_date', ($insurance && $insurance->license_acquisition_date) ? $insurance->license_acquisition_date->format('Y-m-d') : '') }}">
   </div>
 
   <div class="mb-3">
@@ -130,12 +130,12 @@
   </div>
 
   <div class="mb-3">
-  <label for="copayment_rate">一部負担金の割合</label><br>
-  <select id="copayment_rate" name="copayment_rate">
+  <label for="expenses_borne_ratio">一部負担金の割合</label><br>
+  <select id="expenses_borne_ratio" name="expenses_borne_ratio">
     <option value="">----</option>
     @php
     $copaymentMap = [1 => '1割', 2 => '2割', 3 => '3割'];
-    $currentCopayment = old('copayment_rate', (isset($insurance) && $insurance && $insurance->expenses_borne_ratio_id) ? $copaymentMap[$insurance->expenses_borne_ratio_id] : '');
+    $currentCopayment = old('expenses_borne_ratio', (isset($insurance) && $insurance && $insurance->expenses_borne_ratio_id) ? $copaymentMap[$insurance->expenses_borne_ratio_id] : '');
     @endphp
     <option value="1割" {{ $currentCopayment == '1割' ? 'selected' : '' }}>1割</option>
     <option value="2割" {{ $currentCopayment == '2割' ? 'selected' : '' }}>2割</option>
@@ -144,29 +144,29 @@
   </div>
 
   <div class="mb-3">
-  <label for="expiration_date">有効期限</label><br>
-  <input type="date" id="expiration_date" name="expiration_date" value="{{ old('expiration_date', ($insurance && $insurance->expiry_date) ? $insurance->expiry_date->format('Y-m-d') : '') }}">
+  <label for="expiry_date">有効期限</label><br>
+  <input type="date" id="expiry_date" name="expiry_date" value="{{ old('expiry_date', ($insurance && $insurance->expiry_date) ? $insurance->expiry_date->format('Y-m-d') : '') }}">
   </div>
 
   <div class="mb-3">
   <div class="checkbox-group">
-    <label for="reimbursement_target">償還対象</label><br>
-    <input type="checkbox" id="reimbursement_target" name="reimbursement_target" value="1" {{ old('reimbursement_target', ($insurance->is_redeemed ?? false)) ? 'checked' : '' }}>
+    <label for="is_redeemed">償還対象</label><br>
+    <input type="checkbox" id="is_redeemed" name="is_redeemed" value="1" {{ old('is_redeemed', $insurance->is_redeemed ?? false) ? 'checked' : '' }}>
   </div>
   </div>
 
   <div class="mb-3">
-  <label for="insured_person_name">被保険者氏名</label><br>
-  <input type="text" id="insured_person_name" name="insured_person_name" value="{{ old('insured_person_name', ($insurance->insured_name ?? '')) }}">
+  <label for="insured_name">被保険者氏名</label><br>
+  <input type="text" id="insured_name" name="insured_name" value="{{ old('insured_name', $insurance->insured_name ?? '') }}">
   </div>
 
   <div class="mb-3">
-  <label for="relationship">利用者との続柄</label><br>
-  <select id="relationship" name="relationship">
+  <label for="relationship_with_clinic_user">利用者との続柄</label><br>
+  <select id="relationship_with_clinic_user" name="relationship_with_clinic_user">
     <option value="">----</option>
     @php
     $relationshipMap = [1 => '本人', 2 => '家族'];
-    $currentRelationship = old('relationship', (isset($insurance) && $insurance && $insurance->relationship_with_clinic_user_id) ? $relationshipMap[$insurance->relationship_with_clinic_user_id] : '');
+    $currentRelationship = old('relationship_with_clinic_user', (isset($insurance) && $insurance && $insurance->relationship_with_clinic_user_id) ? $relationshipMap[$insurance->relationship_with_clinic_user_id] : '');
     @endphp
     <option value="本人" {{ $currentRelationship == '本人' ? 'selected' : '' }}>本人</option>
     <option value="家族" {{ $currentRelationship == '家族' ? 'selected' : '' }}>家族</option>
@@ -175,41 +175,40 @@
 
   <div class="mb-3">
   <div class="checkbox-group">
-    <label for="medical_assistance_target">医療助成対象</label><br>
-    <input type="checkbox" id="medical_assistance_target" name="medical_assistance_target" value="1" {{ old('medical_assistance_target', ($insurance->is_healthcare_subsidized ?? false)) ? 'checked' : '' }} onchange="toggleMedicalAssistanceFields()">
+    <label for="is_healthcare_subsidized">医療助成対象</label><br>
+    <input type="checkbox" id="is_healthcare_subsidized" name="is_healthcare_subsidized" value="1" {{ old('is_healthcare_subsidized', $insurance->is_healthcare_subsidized ?? false) ? 'checked' : '' }}>
   </div>
   </div>
 
-  <div id="medical-assistance-fields" style="{{ old('medical_assistance_target', ($insurance->is_healthcare_subsidized ?? false)) ? '' : 'display: none;' }}">
+  <div id="medical-assistance-fields">
   <div class="mb-3">
-    <label for="public_burden_number">公費負担者番号</label><br>
-    <input type="text" id="public_burden_number" name="public_burden_number" value="{{ old('public_burden_number', ($insurance->public_funds_payer_code ?? '')) }}">
-  </div>
-
-  <div class="mb-3">
-    <label for="public_recipient_number">公費受給者番号</label><br>
-    <input type="text" id="public_recipient_number" name="public_recipient_number" value="{{ old('public_recipient_number', ($insurance->public_funds_recipient_code ?? '')) }}">
+    <label for="public_funds_payer_code">公費負担者番号</label><br>
+    <input type="text" id="public_funds_payer_code" name="public_funds_payer_code" value="{{ old('public_funds_payer_code', $insurance->public_funds_payer_code ?? '') }}">
   </div>
 
   <div class="mb-3">
-    <label for="municipal_code_family">区市町村番号（家族）</label><br>
-    <input type="text" id="municipal_code_family" name="municipal_code_family" value="{{ old('municipal_code_family', '') }}" disabled>
+    <label for="public_funds_recipient_code">公費受給者番号</label><br>
+    <input type="text" id="public_funds_recipient_code" name="public_funds_recipient_code" value="{{ old('public_funds_recipient_code', $insurance->public_funds_recipient_code ?? '') }}">
   </div>
 
   <div class="mb-3">
-    <label for="recipient_number_family">受給者番号（家族）</label><br>
-    <input type="text" id="recipient_number_family" name="recipient_number_family" value="{{ old('recipient_number_family', '') }}" disabled>
+    <label for="locality_code_family">区市町村番号（家族）</label><br>
+    <input type="text" id="locality_code_family" name="locality_code_family" value="{{ old('locality_code_family', ($insurance->locality_code_family ?? '')) }}">
+  </div>
+
+  <div class="mb-3">
+    <label for="recipient_code_family">受給者番号（家族）</label><br>
+    <input type="text" id="recipient_code_family" name="recipient_code_family" value="{{ old('recipient_code_family', ($insurance->recipient_code_family ?? '')) }}">
   </div>
   </div>
 
-  @if(!$isEdit)
   <div class="mb-3">
     <label for="selected_insurer">保険者情報</label><br>
     <select id="selected_insurer" name="selected_insurer" onchange="updateInsurerFields()">
     <option value="">登録済みデータから選択［保険者名称｜保険者番号｜保険者住所｜提出先名称］</option>
     @foreach($insurers as $insurer)
-      <option value="{{ $insurer->id }}" 
-        {{ old('selected_insurer') == $insurer->id ? 'selected' : '' }}
+      <option value="{{ $insurer->id }}"
+        {{ old('selected_insurer', $isEdit && isset($insurance) && $insurance->insurers_id == $insurer->id ? $insurer->id : '') == $insurer->id ? 'selected' : '' }}
         data-number="{{ $insurer->insurer_number }}"
         data-name="{{ $insurer->insurer_name }}"
         data-postal="{{ $insurer->postal_code }}"
@@ -225,7 +224,7 @@
 
   <div class="mb-3">
     <label for="new_insurer_number">保険者番号</label><br>
-    <input type="text" id="new_insurer_number" name="new_insurer_number" value="{{ old('new_insurer_number', old('selected_insurer') ? '' : '') }}">
+    <input type="text" id="new_insurer_number" name="new_insurer_number" value="{{ old('new_insurer_number', '') }}">
     <div id="insurer_number_warning" class="text-danger" style="display: none;">保険者番号は6桁または8桁の数字を入力してください</div>
     @error('new_insurer_number')
     <div class="text-danger">{{ $message }}</div>
@@ -234,25 +233,24 @@
 
   <div class="mb-3">
     <label for="new_insurer_name">保険者名称</label><br>
-    <input type="text" id="new_insurer_name" name="new_insurer_name" value="{{ old('new_insurer_name', old('selected_insurer') ? '' : '') }}">
+    <input type="text" id="new_insurer_name" name="new_insurer_name" value="{{ old('new_insurer_name', '') }}">
   </div>
 
   <div class="mb-3">
     <label for="new_postal_code">郵便番号</label><br>
-    <input type="text" id="new_postal_code" name="new_postal_code" placeholder="000-0000" maxlength="8" value="{{ old('new_postal_code', old('selected_insurer') ? '' : '') }}">
+    <input type="text" id="new_postal_code" name="new_postal_code" placeholder="000-0000" maxlength="8" value="{{ old('new_postal_code', '') }}">
     <div id="new-address-message" class="loading" style="display: none; margin-top: 5px;"></div>
   </div>
 
   <div class="mb-3">
     <label for="new_address">住所</label><br>
-    <input type="text" id="new_address" name="new_address" value="{{ old('new_address', old('selected_insurer') ? '' : '') }}">
+    <input type="text" id="new_address" name="new_address" value="{{ old('new_address', '') }}">
   </div>
 
   <div class="mb-3">
     <label for="new_recipient_name">提出先名称</label><br>
-    <input type="text" id="new_recipient_name" name="new_recipient_name" value="{{ old('new_recipient_name', old('selected_insurer') ? '' : '') }}">
+    <input type="text" id="new_recipient_name" name="new_recipient_name" value="{{ old('new_recipient_name', '') }}">
   </div>
-  @endif
 
   <button type="submit">{{ $submitLabel }}</button>
   <a href="{{ $cancelRoute }}">
@@ -261,14 +259,5 @@
 </div>
 
 @push('scripts')
-  <script>
-  function toggleMedicalAssistanceFields() {
-    const medicalAssistanceTarget = document.getElementById('medical_assistance_target');
-    const medicalAssistanceFields = document.getElementById('medical-assistance-fields');
-    medicalAssistanceFields.style.display = medicalAssistanceTarget.checked ? 'block' : 'none';
-  }
-  </script>
-  @if(!$isEdit)
   <script src="{{ asset('js/cii-registration.js') }}"></script>
-  @endif
 @endpush

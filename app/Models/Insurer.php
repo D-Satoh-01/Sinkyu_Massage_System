@@ -16,6 +16,7 @@ class Insurer extends Model
   protected $fillable = [
   'insurer_number',
   'insurer_name',
+  'postal_code',
   'address',
   'recipient_name'
   ];
