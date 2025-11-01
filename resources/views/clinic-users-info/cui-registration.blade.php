@@ -20,7 +20,7 @@
   </div>
   @endif
 
-  @include('clinic-users-info._form', [
+  @include('clinic-users-info.cui-form', [
   'action' => route('cui-registration.confirm'),
   'sessionKey' => 'registration_data',
   'clinicUser' => null,

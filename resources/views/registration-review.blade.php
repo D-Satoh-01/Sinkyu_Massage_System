@@ -16,8 +16,17 @@
         {{ $data[$key] == 1 ? '男性' : ($data[$key] == 2 ? '女性' : '') }}
       @elseif($key === 'is_redeemed' || $key === 'reimbursement_target' || $key === 'is_healthcare_subsidized')
         {{ $data[$key] ? '対象' : '非対象' }}
-      @elseif($key === 'birthday' || $key === 'qualification_date' || $key === 'certification_date' || $key === 'issue_date' || $key === 'expiration_date')
-        {{ date('Y年n月j日', strtotime($data[$key])) }}
+      @elseif(in_array($key, ['birthday', 'qualification_date', 'certification_date', 'issue_date', 'expiration_date', 'license_acquisition_date', 'expiry_date']))
+        @php
+          $dateValue = $data[$key];
+          if (is_object($dateValue) && method_exists($dateValue, 'format')) {
+            echo $dateValue->format('Y年n月j日');
+          } elseif (is_string($dateValue) && $dateValue !== '') {
+            echo date('Y年n月j日', strtotime($dateValue));
+          } else {
+            echo $dateValue;
+          }
+        @endphp
       @else
         {{ $data[$key] }}
       @endif
@@ -31,7 +40,11 @@
 
   <br>
 
-  @if(isset($back_id))
+  @if(isset($back_insurance_id))
+  <a href="{{ route($back_route, ['id' => $back_id, 'insurance_id' => $back_insurance_id]) }}">
+    <button class="me-3">◀ 戻る</button>
+  </a>
+  @elseif(isset($back_id))
   <a href="{{ route($back_route, ['id' => $back_id]) }}">
     <button class="me-3">◀ 戻る</button>
   </a>
@@ -41,7 +54,13 @@
   </form>
   @endif
 
-  <form action="{{ isset($back_id) ? route($store_route, ['id' => $back_id]) : route($store_route) }}" method="POST" style="display: inline-block;">
+  @if(isset($back_insurance_id))
+  <form action="{{ route($store_route, ['id' => $back_id, 'insurance_id' => $back_insurance_id]) }}" method="POST" style="display: inline-block;">
+  @elseif(isset($back_id))
+  <form action="{{ route($store_route, ['id' => $back_id]) }}" method="POST" style="display: inline-block;">
+  @else
+  <form action="{{ route($store_route) }}" method="POST" style="display: inline-block;">
+  @endif
   @csrf
   <button type="submit" class="me-3">登録する</button>
   </form>

@@ -12,3 +12,21 @@ body {
 [href] {
   text-decoration-line: none;
 }
+
+/* 読み取り専用フィールドのスタイル */
+.readonly-field {
+  background-color: #e9ecef;
+  cursor: default;
+  color: #6c757d;
+}
+
+input[readonly].readonly-field {
+  opacity: 0.8;
+}
+
+/* 読み取り専用フィールドのボーダー強調表示無効化 */
+.readonly-field:focus,
+.readonly-field:active {
+  outline: none;
+  box-shadow: none;
+}

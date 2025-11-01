@@ -41,9 +41,14 @@ Route::middleware('auth')->group(function () {
   Route::get('/clinic-users-info/cui-insurances-info/{id}/edit/{insurance_id}', [ClinicUserController::class, 'insuranceEdit'])->name('cui-insurances-info.edit');
     // cii編集機能
     Route::get('/clinic-users-info/cui-insurances-info/{id}/cii-edit/{insurance_id}', [ClinicUserController::class, 'insuranceEdit'])->name('cii-edit');
-    Route::put('/clinic-users-info/cui-insurances-info/{id}/cii-edit/{insurance_id}', [ClinicUserController::class, 'insuranceUpdate'])->name('cii-edit.update');
-  Route::post('/clinic-users-info/cui-insurances-info/{id}/duplicate/{insurance_id}', [ClinicUserController::class, 'insuranceDuplicate'])->name('cui-insurances-info.duplicate');
+    Route::post('/clinic-users-info/cui-insurances-info/{id}/cii-edit/{insurance_id}/confirm', [ClinicUserController::class, 'insuranceEditConfirm'])->name('cii-edit.confirm');
+    Route::post('/clinic-users-info/cui-insurances-info/{id}/cii-edit/{insurance_id}', [ClinicUserController::class, 'insuranceUpdate'])->name('cii-edit.update');
+  // cii複製機能
+  Route::get('/clinic-users-info/cui-insurances-info/{id}/duplicate/{insurance_id}', [ClinicUserController::class, 'insuranceDuplicateForm'])->name('cui-insurances-info.duplicate');
+  Route::post('/clinic-users-info/cui-insurances-info/{id}/duplicate/{insurance_id}/confirm', [ClinicUserController::class, 'insuranceDuplicateConfirm'])->name('cui-insurances-info.duplicate.confirm');
+  Route::post('/clinic-users-info/cui-insurances-info/{id}/duplicate/{insurance_id}/store', [ClinicUserController::class, 'insuranceDuplicateStore'])->name('cui-insurances-info.duplicate.store');
   Route::delete('/clinic-users-info/cui-insurances-info/{id}/delete/{insurance_id}', [ClinicUserController::class, 'insuranceDestroy'])->name('cui-insurances-info.delete');
+  Route::get('/clinic-users-info/cui-insurances-info/{id}/print-history', [ClinicUserController::class, 'printInsuranceHistory'])->name('cui-insurances-info.print-history');
   Route::get('/clinic-users-info/cui-consenting-doctor-history-massage/{id}', [ClinicUserController::class, 'ccdhmHome'])->name('cui-consenting-doctor-history-massage');
   Route::get('/clinic-users-info/cui-consenting-doctor-history-acupuncture/{id}', [ClinicUserController::class, 'ccdhaHome'])->name('cui-consenting-doctor-history-acupuncture');
   Route::get('/clinic-users-info/cui-plans-info/{id}', [ClinicUserController::class, 'cpiHome'])->name('cui-plans-info');

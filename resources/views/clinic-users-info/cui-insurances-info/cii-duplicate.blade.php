@@ -1,5 +1,5 @@
 <x-app-layout>
-  <h2>{{ $user->clinic_user_name }} 様の保険情報編集</h2>
+  <h2>{{ $user->clinic_user_name }} 様の保険情報複製</h2>
   <br><br>
 
   @if($errors->any())
@@ -12,7 +12,7 @@
     </div>
   @endif
 
-  <form method="POST" action="{{ route('cii-edit.confirm', [$user->id, $insurance->id]) }}">
+  <form method="POST" action="{{ route('cui-insurances-info.duplicate.confirm', [$user->id, $insurance->id]) }}">
     @include('clinic-users-info.cui-insurances-info.components.insurance-form', [
       'isEdit' => true,
       'insurance' => $insurance,

@@ -1,4 +1,4 @@
-<!-- resources/views/clinic-users-info/_form.blade.php -->
+<!-- resources/views/clinic-users-info/cui-form.blade.php -->
 
 @php
   // 呼び出し元が渡す変数一覧:

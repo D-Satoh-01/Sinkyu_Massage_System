@@ -149,11 +149,16 @@ function updateInsurerFields() {
 
   if (select.value === '') {
     // 非選択の場合、入力フォームを有効化してクリア
-    newInsurerNumber.disabled = false;
-    newInsurerName.disabled = false;
-    newPostalCode.disabled = false;
-    newAddress.disabled = false;
-    newRecipientName.disabled = false;
+    newInsurerNumber.readOnly = false;
+    newInsurerName.readOnly = false;
+    newPostalCode.readOnly = false;
+    newAddress.readOnly = false;
+    newRecipientName.readOnly = false;
+    newInsurerNumber.classList.remove('readonly-field');
+    newInsurerName.classList.remove('readonly-field');
+    newPostalCode.classList.remove('readonly-field');
+    newAddress.classList.remove('readonly-field');
+    newRecipientName.classList.remove('readonly-field');
     newInsurerNumber.value = '';
     newInsurerName.value = '';
     newPostalCode.value = '';
@@ -164,12 +169,17 @@ function updateInsurerFields() {
       warningElement.style.display = 'none';
     }
   } else {
-    // 選択されている場合、情報を表示して入力無効化
-    newInsurerNumber.disabled = true;
-    newInsurerName.disabled = true;
-    newPostalCode.disabled = true;
-    newAddress.disabled = true;
-    newRecipientName.disabled = true;
+    // 選択されている場合、情報を表示して読み取り専用化
+    newInsurerNumber.readOnly = true;
+    newInsurerName.readOnly = true;
+    newPostalCode.readOnly = true;
+    newAddress.readOnly = true;
+    newRecipientName.readOnly = true;
+    newInsurerNumber.classList.add('readonly-field');
+    newInsurerName.classList.add('readonly-field');
+    newPostalCode.classList.add('readonly-field');
+    newAddress.classList.add('readonly-field');
+    newRecipientName.classList.add('readonly-field');
     newInsurerNumber.value = selectedOption.getAttribute('data-number') || '';
     newInsurerName.value = selectedOption.getAttribute('data-name') || '';
     newPostalCode.value = selectedOption.getAttribute('data-postal') || '';

@@ -25,6 +25,9 @@
   <a href="{{ route('cui-insurances-info.registration', $id) }}">
   <button>保険情報新規登録</button>
   </a>
+
+  <!-- 医療保険履歴印刷ボタン -->
+  <button type="button" id="printInsuranceHistory" style="margin-left: 10px;">医療保険履歴印刷</button>
   <br><br>
 
   <!-- 保険情報一覧テーブル -->
@@ -70,10 +73,7 @@
       {{ $insurance->created_at->format('Y/m/d') }}
       </td>
       <td>
-      <form action="{{ route('cui-insurances-info.duplicate', ['id' => $id, 'insurance_id' => $insurance->id]) }}" method="POST" style="display: inline;">
-        @csrf
-        <button type="submit" style="background: none; border: none; color: #0d6efd; cursor: pointer;">[複製]</button>
-      </form>
+      <a href="{{ route('cui-insurances-info.duplicate', ['id' => $id, 'insurance_id' => $insurance->id]) }}">[複製]</a>
       </td>
       <td>
       <form action="{{ route('cui-insurances-info.delete', ['id' => $id, 'insurance_id' => $insurance->id]) }}" method="POST" class="delete-form" style="display: inline;">
@@ -126,6 +126,14 @@
         if (confirm('一度削除したデータは元に戻せません。\n削除してもよろしいですか？')) {
           this.submit();
         }
+      });
+
+      // 医療保険履歴印刷
+      $('#printInsuranceHistory').on('click', function() {
+        const url = '{{ route('cui-insurances-info.print-history', $id) }}';
+        const windowName = 'InsuranceHistoryPDF_' + new Date().getTime();
+        const windowFeatures = 'popup=yes,width=1200,height=800,left=100,top=100,menubar=yes,toolbar=yes,location=yes,status=yes,scrollbars=yes,resizable=yes';
+        window.open(url, windowName, windowFeatures);
       });
     });
   </script>

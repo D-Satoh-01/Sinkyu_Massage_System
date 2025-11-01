@@ -2,9 +2,6 @@
 
 <div class="insurance-form">
   @csrf
-  @if($isEdit)
-  @method('PUT')
-  @endif
 
   <div class="mb-3">
   <label>保険種別１</label><br>
