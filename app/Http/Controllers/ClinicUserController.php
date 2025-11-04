@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\ClinicUserModel;
 use App\Models\Insurer;
 use App\Models\Insurance;
+use App\Models\ConsentingDoctorHistoryMassage;
 use Illuminate\Support\Facades\DB;
 
 class ClinicUserController extends Controller
@@ -471,7 +472,266 @@ class ClinicUserController extends Controller
   public function ccdhmHome($id)
   {
   $user = ClinicUserModel::findOrFail($id);
-  return view('clinic-users-info.cui-consenting-doctor-history-massage.ccdhm-home', ['id' => $id, 'name' => $user->clinic_user_name]);
+  $consentingHistories = ConsentingDoctorHistoryMassage::where('clinic_user_id', $id)
+    ->orderBy('created_at', 'desc')
+    ->get();
+
+  return view('clinic-users-info.cui-consenting-doctor-history-massage.ccdhm-home', [
+    'id' => $id,
+    'name' => $user->clinic_user_name,
+    'consentingHistories' => $consentingHistories
+  ]);
+  }
+
+  // 同意医師履歴（あんま・マッサージ）新規登録フォーム
+  public function ccdhmRegistration($id)
+  {
+  $user = ClinicUserModel::findOrFail($id);
+  return view('clinic-users-info.cui-consenting-doctor-history-massage.ccdhm-registration', [
+    'id' => $id,
+    'name' => $user->clinic_user_name
+  ]);
+  }
+
+  // 同意医師履歴（あんま・マッサージ）登録確認
+  public function ccdhmConfirm(Request $request, $id)
+  {
+  // バリデーションとセッション保存
+  $validated = $request->validate([
+    'consenting_doctor_name' => 'required|string|max:255',
+    'consenting_date' => 'nullable|date',
+    'consenting_start_date' => 'nullable|date',
+    'consenting_end_date' => 'nullable|date',
+    'benefit_period_start_date' => 'nullable|date',
+    'benefit_period_end_date' => 'nullable|date',
+    'first_care_date' => 'nullable|date',
+    'reconsenting_expiry' => 'nullable|date',
+    'onset_and_injury_date' => 'nullable|date',
+    'notes' => 'nullable|string|max:255',
+  ], [
+    'consenting_doctor_name.required' => '同意医師名は必須です。',
+    'consenting_doctor_name.max' => '同意医師名は255文字以内で入力してください。',
+    'consenting_date.date' => '同意日は正しい日付形式で入力してください。',
+    'consenting_start_date.date' => '同意開始日は正しい日付形式で入力してください。',
+    'consenting_end_date.date' => '同意終了日は正しい日付形式で入力してください。',
+    'benefit_period_start_date.date' => '給付期間開始日は正しい日付形式で入力してください。',
+    'benefit_period_end_date.date' => '給付期間終了日は正しい日付形式で入力してください。',
+    'first_care_date.date' => '初療日は正しい日付形式で入力してください。',
+    'reconsenting_expiry.date' => '再同意期限は正しい日付形式で入力してください。',
+    'onset_and_injury_date.date' => '発症・負傷日は正しい日付形式で入力してください。',
+    'notes.max' => '備考は255文字以内で入力してください。',
+  ]);
+
+  $request->session()->put('ccdhm_registration_data', $validated);
+
+  $labels = $this->getConsentingDoctorHistoryMassageLabels();
+
+  return view('registration-review', [
+    'data' => $validated,
+    'labels' => $labels,
+    'back_route' => 'cui-consenting-doctor-history-massage.registration',
+    'back_id' => $id,
+    'store_route' => 'cui-consenting-doctor-history-massage.store',
+    'page_title' => '同意医師履歴（あんま・マッサージ）登録内容確認',
+    'registration_message' => '同意医師履歴（あんま・マッサージ）の登録を行います。',
+  ]);
+  }
+
+  // 同意医師履歴（あんま・マッサージ）保存
+  public function ccdhmStore(Request $request, $id)
+  {
+  $data = $request->session()->get('ccdhm_registration_data');
+
+  if (!$data) {
+    return redirect()->route('cui-consenting-doctor-history-massage.registration', $id)
+      ->with('error', 'セッションが切れました。もう一度入力してください。');
+  }
+
+  $data['clinic_user_id'] = $id;
+
+  ConsentingDoctorHistoryMassage::create($data);
+
+  $request->session()->forget('ccdhm_registration_data');
+
+  return redirect()->route('cui-consenting-doctor-history-massage', $id)
+    ->with('success', '同意医師履歴が登録されました。');
+  }
+
+  // 同意医師履歴（あんま・マッサージ）編集フォーム
+  public function ccdhmEdit($id, $history_id)
+  {
+  $user = ClinicUserModel::findOrFail($id);
+  $history = ConsentingDoctorHistoryMassage::findOrFail($history_id);
+
+  return view('clinic-users-info.cui-consenting-doctor-history-massage.ccdhm-edit', [
+    'id' => $id,
+    'name' => $user->clinic_user_name,
+    'history' => $history
+  ]);
+  }
+
+  // 同意医師履歴（あんま・マッサージ）編集確認
+  public function ccdhmEditConfirm(Request $request, $id, $history_id)
+  {
+  $validated = $request->validate([
+    'consenting_doctor_name' => 'required|string|max:255',
+    'consenting_date' => 'nullable|date',
+    'consenting_start_date' => 'nullable|date',
+    'consenting_end_date' => 'nullable|date',
+    'benefit_period_start_date' => 'nullable|date',
+    'benefit_period_end_date' => 'nullable|date',
+    'first_care_date' => 'nullable|date',
+    'reconsenting_expiry' => 'nullable|date',
+    'onset_and_injury_date' => 'nullable|date',
+    'notes' => 'nullable|string|max:255',
+  ], [
+    'consenting_doctor_name.required' => '同意医師名は必須です。',
+    'consenting_doctor_name.max' => '同意医師名は255文字以内で入力してください。',
+    'consenting_date.date' => '同意日は正しい日付形式で入力してください。',
+    'consenting_start_date.date' => '同意開始日は正しい日付形式で入力してください。',
+    'consenting_end_date.date' => '同意終了日は正しい日付形式で入力してください。',
+    'benefit_period_start_date.date' => '給付期間開始日は正しい日付形式で入力してください。',
+    'benefit_period_end_date.date' => '給付期間終了日は正しい日付形式で入力してください。',
+    'first_care_date.date' => '初療日は正しい日付形式で入力してください。',
+    'reconsenting_expiry.date' => '再同意期限は正しい日付形式で入力してください。',
+    'onset_and_injury_date.date' => '発症・負傷日は正しい日付形式で入力してください。',
+    'notes.max' => '備考は255文字以内で入力してください。',
+  ]);
+
+  $request->session()->put('ccdhm_edit_data', $validated);
+
+  $labels = $this->getConsentingDoctorHistoryMassageLabels();
+
+  return view('registration-review', [
+    'data' => $validated,
+    'labels' => $labels,
+    'back_route' => 'cui-consenting-doctor-history-massage.edit',
+    'back_id' => $id,
+    'back_history_id' => $history_id,
+    'store_route' => 'cui-consenting-doctor-history-massage.update',
+    'page_title' => '同意医師履歴（あんま・マッサージ）更新内容確認',
+    'registration_message' => '同意医師履歴（あんま・マッサージ）の更新を行います。',
+  ]);
+  }
+
+  // 同意医師履歴（あんま・マッサージ）更新
+  public function ccdhmUpdate(Request $request, $id, $history_id)
+  {
+  $data = $request->session()->get('ccdhm_edit_data');
+
+  if (!$data) {
+    return redirect()->route('cui-consenting-doctor-history-massage.edit', [$id, $history_id])
+      ->with('error', 'セッションが切れました。もう一度入力してください。');
+  }
+
+  $history = ConsentingDoctorHistoryMassage::findOrFail($history_id);
+  $history->update($data);
+
+  $request->session()->forget('ccdhm_edit_data');
+
+  return redirect()->route('cui-consenting-doctor-history-massage', $id)
+    ->with('success', '同意医師履歴が更新されました。');
+  }
+
+  // 同意医師履歴（あんま・マッサージ）複製フォーム
+  public function ccdhmDuplicateForm($id, $history_id)
+  {
+  $user = ClinicUserModel::findOrFail($id);
+  $history = ConsentingDoctorHistoryMassage::findOrFail($history_id);
+
+  return view('clinic-users-info.cui-consenting-doctor-history-massage.ccdhm-duplicate', [
+    'id' => $id,
+    'name' => $user->clinic_user_name,
+    'history' => $history
+  ]);
+  }
+
+  // 同意医師履歴（あんま・マッサージ）複製確認
+  public function ccdhmDuplicateConfirm(Request $request, $id, $history_id)
+  {
+  $validated = $request->validate([
+    'consenting_doctor_name' => 'required|string|max:255',
+    'consenting_date' => 'nullable|date',
+    'consenting_start_date' => 'nullable|date',
+    'consenting_end_date' => 'nullable|date',
+    'benefit_period_start_date' => 'nullable|date',
+    'benefit_period_end_date' => 'nullable|date',
+    'first_care_date' => 'nullable|date',
+    'reconsenting_expiry' => 'nullable|date',
+    'onset_and_injury_date' => 'nullable|date',
+    'notes' => 'nullable|string|max:255',
+  ], [
+    'consenting_doctor_name.required' => '同意医師名は必須です。',
+    'consenting_doctor_name.max' => '同意医師名は255文字以内で入力してください。',
+    'consenting_date.date' => '同意日は正しい日付形式で入力してください。',
+    'consenting_start_date.date' => '同意開始日は正しい日付形式で入力してください。',
+    'consenting_end_date.date' => '同意終了日は正しい日付形式で入力してください。',
+    'benefit_period_start_date.date' => '給付期間開始日は正しい日付形式で入力してください。',
+    'benefit_period_end_date.date' => '給付期間終了日は正しい日付形式で入力してください。',
+    'first_care_date.date' => '初療日は正しい日付形式で入力してください。',
+    'reconsenting_expiry.date' => '再同意期限は正しい日付形式で入力してください。',
+    'onset_and_injury_date.date' => '発症・負傷日は正しい日付形式で入力してください。',
+    'notes.max' => '備考は255文字以内で入力してください。',
+  ]);
+
+  $request->session()->put('ccdhm_duplicate_data', $validated);
+
+  $labels = $this->getConsentingDoctorHistoryMassageLabels();
+
+  return view('registration-review', [
+    'data' => $validated,
+    'labels' => $labels,
+    'back_route' => 'cui-consenting-doctor-history-massage.duplicate',
+    'back_id' => $id,
+    'back_history_id' => $history_id,
+    'store_route' => 'cui-consenting-doctor-history-massage.duplicate.store',
+    'page_title' => '同意医師履歴（あんま・マッサージ）複製内容確認',
+    'registration_message' => '同意医師履歴（あんま・マッサージ）の複製を行います。',
+  ]);
+  }
+
+  // 同意医師履歴（あんま・マッサージ）複製保存
+  public function ccdhmDuplicateStore(Request $request, $id, $history_id)
+  {
+  $data = $request->session()->get('ccdhm_duplicate_data');
+
+  if (!$data) {
+    return redirect()->route('cui-consenting-doctor-history-massage.duplicate', [$id, $history_id])
+      ->with('error', 'セッションが切れました。もう一度入力してください。');
+  }
+
+  $data['clinic_user_id'] = $id;
+
+  ConsentingDoctorHistoryMassage::create($data);
+
+  $request->session()->forget('ccdhm_duplicate_data');
+
+  return redirect()->route('cui-consenting-doctor-history-massage', $id)
+    ->with('success', '同意医師履歴が複製されました。');
+  }
+
+  // 同意医師履歴（あんま・マッサージ）削除
+  public function ccdhmDestroy($id, $history_id)
+  {
+  $history = ConsentingDoctorHistoryMassage::findOrFail($history_id);
+  $history->delete();
+
+  return redirect()->route('cui-consenting-doctor-history-massage', $id)
+    ->with('success', '同意医師履歴が削除されました。');
+  }
+
+  // 同意医師履歴（あんま・マッサージ）印刷
+  public function printCcdhmHistory($id)
+  {
+  $user = ClinicUserModel::findOrFail($id);
+  $histories = ConsentingDoctorHistoryMassage::where('clinic_user_id', $id)
+    ->orderBy('created_at', 'desc')
+    ->get();
+
+  return view('clinic-users-info.cui-consenting-doctor-history-massage.ccdhm-history-pdf', [
+    'user' => $user,
+    'histories' => $histories
+  ]);
   }
 
   // 同意医師履歴（はり・きゅう）
@@ -852,5 +1112,22 @@ class ClinicUserController extends Controller
     'new_address' => '住所',
     'new_recipient_name' => '提出先名称'
   ];
+  }
+
+  // 同意医師履歴（あんま・マッサージ）のラベル取得
+  private function getConsentingDoctorHistoryMassageLabels()
+  {
+    return [
+      'consenting_doctor_name' => '同意医師名',
+      'consenting_date' => '同意日',
+      'consenting_start_date' => '同意開始日',
+      'consenting_end_date' => '同意終了日',
+      'benefit_period_start_date' => '給付期間開始日',
+      'benefit_period_end_date' => '給付期間終了日',
+      'first_care_date' => '初療日',
+      'reconsenting_expiry' => '再同意期限',
+      'onset_and_injury_date' => '発症・負傷日',
+      'notes' => '備考'
+    ];
   }
 }

@@ -51,19 +51,19 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 5%;">状態</th>
-        <th style="width: 8%;">保険区分</th>
-        <th style="width: 10%;">被保険者番号</th>
-        <th style="width: 8%;">資格取得年月日</th>
-        <th style="width: 8%;">認定年月日</th>
-        <th style="width: 8%;">発行年月日</th>
-        <th style="width: 7%;">一部負担金の割合</th>
-        <th style="width: 8%;">有効期限</th>
-        <th style="width: 8%;">世帯主氏名</th>
-        <th style="width: 8%;">被保険者氏名</th>
-        <th style="width: 5%;">医療助成対象</th>
-        <th style="width: 8%;">公費負担者番号</th>
-        <th style="width: 8%;">公費受給者番号</th>
+        <th style="width: 4%;">状態</th>
+        <th style="width: 7%;">保険区分</th>
+        <th style="width: 8%;">被保険者番号</th>
+        <th style="width: 7%;">資格取得年月日</th>
+        <th style="width: 7%;">認定年月日</th>
+        <th style="width: 7%;">発行年月日</th>
+        <th style="width: 5%;">一部負担金の割合</th>
+        <th style="width: 7%;">有効期限</th>
+        <th style="width: 7%;">世帯主氏名</th>
+        <th style="width: 7%;">被保険者氏名</th>
+        <th style="width: 4%;">医療助成対象</th>
+        <th style="width: 7%;">公費負担者番号</th>
+        <th style="width: 7%;">公費受給者番号</th>
         <th style="width: 8%;">保険者番号</th>
         <th style="width: 8%;">保険者名称</th>
       </tr>
@@ -71,10 +71,10 @@
     <tbody>
       @forelse($insurances as $index => $insurance)
       <tr>
-        <td class="@if($index === 0) status-latest @else status-updated @endif">
+        <td style="width: 4%;" class="@if($index === 0) status-latest @else status-updated @endif">
           {{ $index === 0 ? '最新' : '更新済み' }}
         </td>
-        <td>
+        <td style="width: 7%;">
           @php
             $insurerNumberLength = strlen($insurance->insurer?->insurer_number ?? '');
           @endphp
@@ -86,51 +86,51 @@
             保険
           @endif
         </td>
-        <td>{{ $insurance->insured_number }}</td>
-        <td>
+        <td style="width: 8%;">{{ $insurance->insured_number }}</td>
+        <td style="width: 7%;">
           @if($insurance->license_acquisition_date)
             {{ $insurance->license_acquisition_date->format('Y/m/d') }}
           @endif
         </td>
-        <td>
+        <td style="width: 7%;">
           @if($insurance->certification_date)
             {{ $insurance->certification_date->format('Y/m/d') }}
           @endif
         </td>
-        <td>
+        <td style="width: 7%;">
           @if($insurance->issue_date)
             {{ $insurance->issue_date->format('Y/m/d') }}
           @endif
         </td>
-        <td style="text-align: center;">
+        <td style="width: 5%; text-align: center;">
           {{ $insurance->copayment_rate }}
         </td>
-        <td>
+        <td style="width: 7%;">
           @if($insurance->expiry_date)
             {{ $insurance->expiry_date->format('Y/m/d') }}
           @endif
         </td>
-        <td>
+        <td style="width: 7%;">
           @if($insurance->relationship !== '本人')
             {{ $insurance->insured_name }}
           @endif
         </td>
-        <td>
+        <td style="width: 7%;">
           @if($insurance->relationship === '本人')
             {{ $insurance->insured_name }}
           @endif
         </td>
-        <td class="checkbox">
+        <td style="width: 4%; text-align: center;">
           @if($insurance->is_healthcare_subsidized)
-            ☑
+            対象
           @else
-            ☐
+            非対象
           @endif
         </td>
-        <td>{{ $insurance->locality_code ?? $insurance->public_funds_payer_code }}</td>
-        <td>{{ $insurance->recipient_code ?? $insurance->public_funds_recipient_code }}</td>
-        <td>{{ $insurance->insurer?->insurer_number }}</td>
-        <td>{{ $insurance->insurer?->insurer_name }}</td>
+        <td style="width: 7%;">{{ $insurance->locality_code ?? $insurance->public_funds_payer_code }}</td>
+        <td style="width: 7%;">{{ $insurance->recipient_code ?? $insurance->public_funds_recipient_code }}</td>
+        <td style="width: 8%;">{{ $insurance->insurer?->insurer_number }}</td>
+        <td style="width: 8%;">{{ $insurance->insurer?->insurer_name }}</td>
       </tr>
       @empty
       <tr>
