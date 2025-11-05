@@ -20,7 +20,7 @@ class ClinicUserController extends Controller
   $data = $request->session()->get('insurance_edit_data');
 
   if (!$data) {
-    return redirect()->route('cii-edit', [$id, $insurance_id])->with('error', 'セッションが切れました。もう一度入力してください。');
+    return redirect()->route('clinic-users-info.insurances-info.edit', [$id, $insurance_id])->with('error', 'セッションが切れました。もう一度入力してください。');
   }
 
   $insurance = Insurance::findOrFail($insurance_id);
@@ -98,7 +98,7 @@ class ClinicUserController extends Controller
   // セッションをクリア
   $request->session()->forget('insurance_edit_data');
 
-  return redirect()->route('cui-insurances-info', $id)->with('success', '保険情報を更新しました。');
+  return redirect()->route('clinic-users-info.insurances-info.index', $id)->with('success', '保険情報を更新しました。');
   }
   // 一覧表示
   public function index()
@@ -106,7 +106,7 @@ class ClinicUserController extends Controller
   // DataTablesを使用するため、全件取得
   $clinicUsers = ClinicUserModel::orderBy('id', 'desc')->get();
 
-  return view('clinic-users-info.cui-home', compact('clinicUsers'));
+  return view('clinic-users-info.index', compact('clinicUsers'));
   }
 
   public function create()
@@ -150,8 +150,8 @@ class ClinicUserController extends Controller
   return view('registration-review', [
     'data' => $validated,
     'labels' => $labels,
-    'back_route' => 'cui-registration',
-    'store_route' => 'cui-registration.store',
+    'back_route' => 'clinic-users-info.registration',
+    'store_route' => 'clinic-users-info.registration.store',
     'page_title' => '利用者登録内容確認',
     'registration_message' => '利用者情報の登録を行います。',
   ]);
@@ -164,7 +164,7 @@ class ClinicUserController extends Controller
   $data = $request->session()->get('registration_data');
 
   if (!$data) {
-    return redirect()->route('cui-registration')->with('error', 'セッションが切れました。もう一度入力してください。');
+    return redirect()->route('clinic-users-info.registration')->with('error', 'セッションが切れました。もう一度入力してください。');
   }
 
   // データベースに保存
@@ -178,8 +178,8 @@ class ClinicUserController extends Controller
   return view('registration-done', [
     'page_title' => '基本情報登録完了',
     'message' => '入力された内容を登録しました。',
-    'home_route' => 'cui-home',
-    'home_id' => null,
+    'index_route' => 'clinic-users-info.index',
+    'index_id' => null,
     'list_route' => null
   ]);
   }
@@ -228,9 +228,9 @@ class ClinicUserController extends Controller
   return view('registration-review', [
     'data' => $validated,
     'labels' => $labels,
-    'back_route' => 'cui-edit',
+    'back_route' => 'clinic-users-info.edit',
     'back_id' => $validated['id'],
-    'store_route' => 'cui-edit.update',
+    'store_route' => 'clinic-users-info.edit.update',
     'page_title' => '利用者情報更新内容確認',
     'registration_message' => '利用者情報の更新を行います。',
   ]);
@@ -243,7 +243,7 @@ class ClinicUserController extends Controller
   $data = $request->session()->get('edit_data');
 
   if (!$data) {
-    return redirect()->route('cui-home')->with('error', 'セッションが切れました。もう一度入力してください。');
+    return redirect()->route('clinic-users-info.index')->with('error', 'セッションが切れました。もう一度入力してください。');
   }
 
   // データベースを更新
@@ -257,8 +257,8 @@ class ClinicUserController extends Controller
   return view('registration-done', [
     'page_title' => '基本情報更新完了',
     'message' => '入力された内容を更新しました。',
-    'home_route' => 'cui-home',
-    'home_id' => null,
+    'index_route' => 'clinic-users-info.index',
+    'index_id' => null,
     'list_route' => null
   ]);
   }
@@ -269,11 +269,11 @@ class ClinicUserController extends Controller
   $clinicUser = ClinicUserModel::findOrFail($id);
   $clinicUser->delete();
 
-  return redirect()->route('cui-home')->with('success', '利用者情報を削除しました。');
+  return redirect()->route('clinic-users-info.index')->with('success', '利用者情報を削除しました。');
   }
 
   // 保険情報画面
-  public function ciiHome($id)
+  public function ciiIndex($id)
   {
   $user = ClinicUserModel::findOrFail($id);
 
@@ -283,7 +283,7 @@ class ClinicUserController extends Controller
     ->orderBy('created_at', 'desc')
     ->get();
 
-  return view('clinic-users-info.cui-insurances-info.cii-home', [
+  return view('clinic-users-info.cui-insurances-info.index', [
     'id' => $id,
     'name' => $user->clinic_user_name,
     'insurances' => $insurances
@@ -368,9 +368,9 @@ class ClinicUserController extends Controller
   return view('registration-review', [
     'data' => $validated,
     'labels' => $labels,
-    'back_route' => 'cui-insurances-info.registration',
+    'back_route' => 'clinic-users-info.insurances-info.registration',
     'back_id' => $id,
-    'store_route' => 'cui-insurances-info.store',
+    'store_route' => 'clinic-users-info.insurances-info.store',
     'page_title' => '保険情報登録内容確認',
     'registration_message' => '保険情報の登録を行います。',
   ]);
@@ -383,7 +383,7 @@ class ClinicUserController extends Controller
   $data = $request->session()->get('insurance_registration_data');
 
   if (!$data) {
-    return redirect()->route('cui-insurances-info.registration', $id)->with('error', 'セッションが切れました。もう一度入力してください。');
+    return redirect()->route('clinic-users-info.insurances-info.registration', $id)->with('error', 'セッションが切れました。もう一度入力してください。');
   }
 
   // insurers_idを取得または新規作成
@@ -462,21 +462,21 @@ class ClinicUserController extends Controller
   return view('registration-done', [
     'page_title' => '保険情報登録完了',
     'message' => '保険情報を登録しました。',
-    'home_route' => 'cui-insurances-info',
-    'home_id' => $id,
+    'index_route' => 'clinic-users-info.insurances-info.index',
+    'index_id' => $id,
     'list_route' => null
-  ])->with('home_id', $id);
+  ])->with('index_id', $id);
   }
 
   // 同意医師履歴（あんま・マッサージ）
-  public function ccdhmHome($id)
+  public function ccdhmIndex($id)
   {
   $user = ClinicUserModel::findOrFail($id);
   $consentingHistories = ConsentingDoctorHistoryMassage::where('clinic_user_id', $id)
     ->orderBy('created_at', 'desc')
     ->get();
 
-  return view('clinic-users-info.cui-consenting-doctor-history-massage.ccdhm-home', [
+  return view('clinic-users-info.cui-consenting-doctor-history-massage.index', [
     'id' => $id,
     'name' => $user->clinic_user_name,
     'consentingHistories' => $consentingHistories
@@ -529,9 +529,9 @@ class ClinicUserController extends Controller
   return view('registration-review', [
     'data' => $validated,
     'labels' => $labels,
-    'back_route' => 'cui-consenting-doctor-history-massage.registration',
+    'back_route' => 'clinic-users-info.consenting-doctor-history-massage.registration',
     'back_id' => $id,
-    'store_route' => 'cui-consenting-doctor-history-massage.store',
+    'store_route' => 'clinic-users-info.consenting-doctor-history-massage.store',
     'page_title' => '同意医師履歴（あんま・マッサージ）登録内容確認',
     'registration_message' => '同意医師履歴（あんま・マッサージ）の登録を行います。',
   ]);
@@ -543,7 +543,7 @@ class ClinicUserController extends Controller
   $data = $request->session()->get('ccdhm_registration_data');
 
   if (!$data) {
-    return redirect()->route('cui-consenting-doctor-history-massage.registration', $id)
+    return redirect()->route('clinic-users-info.consenting-doctor-history-massage.registration', $id)
       ->with('error', 'セッションが切れました。もう一度入力してください。');
   }
 
@@ -553,7 +553,7 @@ class ClinicUserController extends Controller
 
   $request->session()->forget('ccdhm_registration_data');
 
-  return redirect()->route('cui-consenting-doctor-history-massage', $id)
+  return redirect()->route('clinic-users-info.consenting-doctor-history-massage.index', $id)
     ->with('success', '同意医師履歴が登録されました。');
   }
 
@@ -605,10 +605,10 @@ class ClinicUserController extends Controller
   return view('registration-review', [
     'data' => $validated,
     'labels' => $labels,
-    'back_route' => 'cui-consenting-doctor-history-massage.edit',
+    'back_route' => 'clinic-users-info.consenting-doctor-history-massage.edit',
     'back_id' => $id,
     'back_history_id' => $history_id,
-    'store_route' => 'cui-consenting-doctor-history-massage.update',
+    'store_route' => 'clinic-users-info.consenting-doctor-history-massage.update',
     'page_title' => '同意医師履歴（あんま・マッサージ）更新内容確認',
     'registration_message' => '同意医師履歴（あんま・マッサージ）の更新を行います。',
   ]);
@@ -620,7 +620,7 @@ class ClinicUserController extends Controller
   $data = $request->session()->get('ccdhm_edit_data');
 
   if (!$data) {
-    return redirect()->route('cui-consenting-doctor-history-massage.edit', [$id, $history_id])
+    return redirect()->route('clinic-users-info.consenting-doctor-history-massage.edit', [$id, $history_id])
       ->with('error', 'セッションが切れました。もう一度入力してください。');
   }
 
@@ -629,7 +629,7 @@ class ClinicUserController extends Controller
 
   $request->session()->forget('ccdhm_edit_data');
 
-  return redirect()->route('cui-consenting-doctor-history-massage', $id)
+  return redirect()->route('clinic-users-info.consenting-doctor-history-massage.index', $id)
     ->with('success', '同意医師履歴が更新されました。');
   }
 
@@ -681,10 +681,10 @@ class ClinicUserController extends Controller
   return view('registration-review', [
     'data' => $validated,
     'labels' => $labels,
-    'back_route' => 'cui-consenting-doctor-history-massage.duplicate',
+    'back_route' => 'clinic-users-info.consenting-doctor-history-massage.duplicate',
     'back_id' => $id,
     'back_history_id' => $history_id,
-    'store_route' => 'cui-consenting-doctor-history-massage.duplicate.store',
+    'store_route' => 'clinic-users-info.consenting-doctor-history-massage.duplicate.store',
     'page_title' => '同意医師履歴（あんま・マッサージ）複製内容確認',
     'registration_message' => '同意医師履歴（あんま・マッサージ）の複製を行います。',
   ]);
@@ -696,7 +696,7 @@ class ClinicUserController extends Controller
   $data = $request->session()->get('ccdhm_duplicate_data');
 
   if (!$data) {
-    return redirect()->route('cui-consenting-doctor-history-massage.duplicate', [$id, $history_id])
+    return redirect()->route('clinic-users-info.consenting-doctor-history-massage.duplicate', [$id, $history_id])
       ->with('error', 'セッションが切れました。もう一度入力してください。');
   }
 
@@ -706,7 +706,7 @@ class ClinicUserController extends Controller
 
   $request->session()->forget('ccdhm_duplicate_data');
 
-  return redirect()->route('cui-consenting-doctor-history-massage', $id)
+  return redirect()->route('clinic-users-info.consenting-doctor-history-massage.index', $id)
     ->with('success', '同意医師履歴が複製されました。');
   }
 
@@ -716,7 +716,7 @@ class ClinicUserController extends Controller
   $history = ConsentingDoctorHistoryMassage::findOrFail($history_id);
   $history->delete();
 
-  return redirect()->route('cui-consenting-doctor-history-massage', $id)
+  return redirect()->route('clinic-users-info.consenting-doctor-history-massage.index', $id)
     ->with('success', '同意医師履歴が削除されました。');
   }
 
@@ -735,17 +735,17 @@ class ClinicUserController extends Controller
   }
 
   // 同意医師履歴（はり・きゅう）
-  public function ccdhaHome($id)
+  public function ccdhaIndex($id)
   {
   $user = ClinicUserModel::findOrFail($id);
-  return view('clinic-users-info.cui-consenting-doctor-history-acupuncture.ccdha-home', ['id' => $id, 'name' => $user->clinic_user_name]);
+  return view('clinic-users-info.cui-consenting-doctor-history-acupuncture.index', ['id' => $id, 'name' => $user->clinic_user_name]);
   }
 
   // 計画情報
-  public function cpiHome($id)
+  public function cpiIndex($id)
   {
   $user = ClinicUserModel::findOrFail($id);
-  return view('clinic-users-info.cui-plans-info.cpi-home', ['id' => $id, 'name' => $user->clinic_user_name]);
+  return view('clinic-users-info.cui-plans-info.index', ['id' => $id, 'name' => $user->clinic_user_name]);
   }
 
   // 医療保険履歴印刷
@@ -866,10 +866,10 @@ class ClinicUserController extends Controller
   return view('registration-review', [
     'data' => $validated,
     'labels' => $labels,
-    'back_route' => 'cii-edit',
+    'back_route' => 'clinic-users-info.insurances-info.edit',
     'back_id' => $id,
     'back_insurance_id' => $insurance_id,
-    'store_route' => 'cii-edit.update',
+    'store_route' => 'clinic-users-info.insurances-info.edit.update',
     'page_title' => '保険情報更新内容確認',
     'registration_message' => '保険情報の更新を行います。',
   ]);
@@ -946,10 +946,10 @@ class ClinicUserController extends Controller
   return view('registration-review', [
     'data' => $validated,
     'labels' => $labels,
-    'back_route' => 'cui-insurances-info.duplicate',
+    'back_route' => 'clinic-users-info.insurances-info.duplicate',
     'back_id' => $id,
     'back_insurance_id' => $insurance_id,
-    'store_route' => 'cui-insurances-info.duplicate.store',
+    'store_route' => 'clinic-users-info.insurances-info.duplicate.store',
     'page_title' => '保険情報複製内容確認',
     'registration_message' => '保険情報の複製を行います。',
   ]);
@@ -962,7 +962,7 @@ class ClinicUserController extends Controller
   $data = $request->session()->get('insurance_duplicate_data');
 
   if (!$data) {
-    return redirect()->route('cui-insurances-info.duplicate', [$id, $insurance_id])->with('error', 'セッションが切れました。もう一度入力してください。');
+    return redirect()->route('clinic-users-info.insurances-info.duplicate', [$id, $insurance_id])->with('error', 'セッションが切れました。もう一度入力してください。');
   }
 
   // バリデーション済みデータを使用
@@ -1044,7 +1044,7 @@ class ClinicUserController extends Controller
   // セッションをクリア
   $request->session()->forget('insurance_duplicate_data');
 
-  return redirect()->route('cui-insurances-info', $id)->with('success', '保険情報を複製しました。');
+  return redirect()->route('clinic-users-info.insurances-info.index', $id)->with('success', '保険情報を複製しました。');
   }
 
   // 保険情報削除
@@ -1052,7 +1052,7 @@ class ClinicUserController extends Controller
   {
   $insurance = Insurance::findOrFail($insurance_id);
   $insurance->delete();
-  return redirect()->route('cui-insurances-info', $id)->with('success', '保険情報を削除しました。');
+  return redirect()->route('clinic-users-info.insurances-info.index', $id)->with('success', '保険情報を削除しました。');
   }
 
   // ラベル設定（共通処理）

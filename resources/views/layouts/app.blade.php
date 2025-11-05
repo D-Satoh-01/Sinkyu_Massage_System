@@ -44,6 +44,49 @@
 		<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 		<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 
+		<!-- セッション管理スクリプト -->
+		<script>
+			(function() {
+				// 外部サイトへのリンククリックを検出
+				document.addEventListener('click', function(e) {
+					const target = e.target.closest('a');
+					if (!target) return;
+
+					const href = target.getAttribute('href');
+					if (!href) return;
+
+					// 外部リンクかどうかをチェック
+					try {
+						const currentDomain = window.location.hostname;
+						const url = new URL(href, window.location.origin);
+
+						// 外部ドメインへのリンクの場合
+						if (url.hostname !== currentDomain) {
+							// セッションを無効化するためのリクエストを送信
+							fetch('{{ route("logout") }}', {
+								method: 'POST',
+								headers: {
+									'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+									'Content-Type': 'application/json',
+								},
+								credentials: 'same-origin'
+							}).catch(function(error) {
+								console.log('Logout request failed:', error);
+							});
+						}
+					} catch (err) {
+						// URLが相対パスの場合などは何もしない
+					}
+				});
+
+				// ページ離脱時（beforeunload）の検出
+				window.addEventListener('beforeunload', function(e) {
+					// 次のページが同じドメインかどうかは判定できないため、
+					// ミドルウェア側で処理
+				});
+			})();
+		</script>
+
 		@stack('scripts')
 	</body>
 </html>

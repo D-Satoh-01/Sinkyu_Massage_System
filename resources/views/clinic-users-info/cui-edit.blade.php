@@ -21,7 +21,7 @@
   @endif
 
   @include('clinic-users-info.cui-form', [
-  'action' => route('cui-edit.confirm'),
+  'action' => route('clinic-users-info.edit.confirm'),
   'sessionKey' => 'edit_data',
   'clinicUser' => $clinicUser,
   'isEdit' => true,

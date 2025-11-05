@@ -1,4 +1,4 @@
-<!-- resources/views/clinic-users-info/cui-consenting-doctor-history-massage/ccdhm-home.blade.php -->
+<!-- resources/views/clinic-users-info/cui-consenting-doctor-history-massage/ccdhm-index.blade.php -->
 
 
 <x-app-layout>
@@ -22,7 +22,7 @@
   @endif
 
   <!-- 同意医師履歴新規登録ボタン -->
-  <a href="{{ route('cui-consenting-doctor-history-massage.registration', $id) }}">
+  <a href="{{ route('clinic-users-info.consenting-doctor-history-massage.registration', $id) }}">
   <button>同意医師履歴新規登録</button>
   </a>
 
@@ -47,7 +47,7 @@
     @forelse($consentingHistories as $history)
     <tr>
       <td>
-      <a href="{{ route('cui-consenting-doctor-history-massage.edit', ['id' => $id, 'history_id' => $history->id]) }}">{{ $history->consenting_doctor_name }} [編集]</a>
+      <a href="{{ route('clinic-users-info.consenting-doctor-history-massage.edit', ['id' => $id, 'history_id' => $history->id]) }}">{{ $history->consenting_doctor_name }} [編集]</a>
       </td>
       <td data-order="{{ $history->consenting_date ? strtotime($history->consenting_date) : 0 }}">
       @if($history->consenting_date)
@@ -68,10 +68,10 @@
       {{ \Carbon\Carbon::parse($history->created_at)->format('Y/m/d') }}
       </td>
       <td>
-      <a href="{{ route('cui-consenting-doctor-history-massage.duplicate', ['id' => $id, 'history_id' => $history->id]) }}">[複製]</a>
+      <a href="{{ route('clinic-users-info.consenting-doctor-history-massage.duplicate', ['id' => $id, 'history_id' => $history->id]) }}">[複製]</a>
       </td>
       <td>
-      <form action="{{ route('cui-consenting-doctor-history-massage.delete', ['id' => $id, 'history_id' => $history->id]) }}" method="POST" class="delete-form" style="display: inline;">
+      <form action="{{ route('clinic-users-info.consenting-doctor-history-massage.delete', ['id' => $id, 'history_id' => $history->id]) }}" method="POST" class="delete-form" style="display: inline;">
         @csrf
         @method('DELETE')
         <button type="submit" class="delete-btn" style="background: none; border: none; color: #0d6efd; cursor: pointer;">[削除]</button>
@@ -125,7 +125,7 @@
 
       // 同意医師履歴印刷
       $('#printConsentingHistory').on('click', function() {
-        const url = '{{ route('cui-consenting-doctor-history-massage.print-history', $id) }}';
+        const url = '{{ route('clinic-users-info.consenting-doctor-history-massage.print-history', $id) }}';
         const windowName = 'ConsentingHistoryPDF_' + new Date().getTime();
         const windowFeatures = 'popup=yes,width=1200,height=800,left=100,top=100,menubar=yes,toolbar=yes,location=yes,status=yes,scrollbars=yes,resizable=yes';
         window.open(url, windowName, windowFeatures);

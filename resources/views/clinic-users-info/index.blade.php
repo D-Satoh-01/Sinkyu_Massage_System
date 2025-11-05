@@ -1,12 +1,12 @@
-<!-- resources/views/clinic-users-info/cui-home.blade.php -->
+<!-- resources/views/clinic-users-info/index.blade.php -->
 
 
 <x-app-layout>
   <h2>利用者情報</h2>
-  
+
   <br><br>
 
-  <a href="{{ route('cui-registration') }}">
+  <a href="{{ route('clinic-users-info.registration') }}">
   <button>利用者新規登録</button>
   </a>
 
@@ -30,7 +30,7 @@
     <tr>
       <td>{{ $user->id }}</td>
       <td>
-      <a href="{{ route('cui-edit', ['id' => $user->id]) }}">{{ $user->clinic_user_name }} [編集]</a><br>
+      <a href="{{ route('clinic-users-info.edit', ['id' => $user->id]) }}">{{ $user->clinic_user_name }} [編集]</a><br>
       {{ $user->furigana }}
       </td>
       <td>
@@ -50,13 +50,13 @@
       {{ optional($user->created_at)->format('H:i') }}
       </td>
       <td>
-      <a href="{{ route('cui-insurances-info', ['id' => $user->id]) }}">保険情報</a><br>
-      <a href="{{ route('cui-consenting-doctor-history-massage', ['id' => $user->id]) }}">同意医師履歴（あんま・マッサージ）</a><br>
-      <a href="{{ route('cui-consenting-doctor-history-acupuncture', ['id' => $user->id]) }}">同意医師履歴（はり・きゅう）</a><br>
-      <a href="{{ route('cui-plans-info', ['id' => $user->id]) }}">計画情報</a>
+      <a href="{{ route('clinic-users-info.insurances-info.index', ['id' => $user->id]) }}">保険情報</a><br>
+      <a href="{{ route('clinic-users-info.consenting-doctor-history-massage.index', ['id' => $user->id]) }}">同意医師履歴（あんま・マッサージ）</a><br>
+      <a href="{{ route('clinic-users-info.consenting-doctor-history-acupuncture.index', ['id' => $user->id]) }}">同意医師履歴（はり・きゅう）</a><br>
+      <a href="{{ route('clinic-users-info.plans-info.index', ['id' => $user->id]) }}">計画情報</a>
       </td>
       <td>
-      <form action="{{ route('cui-delete', ['id' => $user->id]) }}" method="POST" class="delete-form" style="display: inline;">
+      <form action="{{ route('clinic-users-info.delete', ['id' => $user->id]) }}" method="POST" class="delete-form" style="display: inline;">
         @csrf
         @method('DELETE')
         <button type="submit" class="delete-btn" style="background: none; border: none; color: #0d6efd; cursor: pointer;">削除</button>

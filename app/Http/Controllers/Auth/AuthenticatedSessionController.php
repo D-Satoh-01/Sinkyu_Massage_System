@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -24,11 +25,42 @@ class AuthenticatedSessionController extends Controller
    */
   public function store(LoginRequest $request): RedirectResponse
   {
-    $request->authenticate();
+    Log::info('Login attempt started', [
+      'login_id' => $request->input('login_id'),
+      'remember' => $request->input('remember'),
+      'ip' => $request->ip()
+    ]);
+
+    try {
+      $request->authenticate();
+      Log::info('Authentication successful');
+    } catch (\Exception $e) {
+      Log::error('Authentication failed', [
+        'error' => $e->getMessage(),
+        'trace' => $e->getTraceAsString()
+      ]);
+      throw $e;
+    }
 
     $request->session()->regenerate();
 
-    return redirect()->route('home');
+    // セッションに「ログイン状態を保持」フラグを保存
+    $rememberLogin = $request->boolean('remember');
+    $request->session()->put('remember_login', $rememberLogin);
+
+    if ($rememberLogin) {
+      // ログイン状態を保持する場合: 72時間（4320分）
+      config(['session.lifetime' => 4320]);
+      Log::info('Session configured with remember: 72 hours (4320 minutes)');
+    } else {
+      // ログイン状態を保持しない場合: デフォルト値（ミドルウェアで制御）
+      config(['session.lifetime' => 120]);
+      Log::info('Session configured without remember: controlled by middleware');
+    }
+
+    Log::info('Session regenerated, redirecting to index');
+
+    return redirect()->route('index');
   }
 
   /**

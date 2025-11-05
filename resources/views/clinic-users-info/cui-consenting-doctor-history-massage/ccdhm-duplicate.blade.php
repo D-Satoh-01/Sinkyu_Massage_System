@@ -20,11 +20,11 @@
     (同意日: {{ $history->consenting_date?->format('Y年m月d日') ?? '未設定' }})
   </div>
 
-  <form action="{{ route('cui-consenting-doctor-history-massage.duplicate.confirm', [$id, $history->id]) }}" method="POST">
+  <form action="{{ route('clinic-users-info.consenting-doctor-history-massage.duplicate.confirm', [$id, $history->id]) }}" method="POST">
     @include('clinic-users-info.cui-consenting-doctor-history-massage.components.consenting-form', [
       'history' => $history,
       'submitLabel' => '複製確認へ',
-      'cancelRoute' => route('cui-consenting-doctor-history-massage', $id)
+      'cancelRoute' => route('clinic-users-info.consenting-doctor-history-massage.index', $id)
     ])
   </form>
 </x-app-layout>

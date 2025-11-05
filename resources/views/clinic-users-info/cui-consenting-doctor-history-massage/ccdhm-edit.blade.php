@@ -15,11 +15,11 @@
     </div>
   @endif
 
-  <form action="{{ route('cui-consenting-doctor-history-massage.edit.confirm', [$id, $history->id]) }}" method="POST">
+  <form action="{{ route('clinic-users-info.consenting-doctor-history-massage.edit.confirm', [$id, $history->id]) }}" method="POST">
     @include('clinic-users-info.cui-consenting-doctor-history-massage.components.consenting-form', [
       'history' => $history,
       'submitLabel' => '更新確認へ',
-      'cancelRoute' => route('cui-consenting-doctor-history-massage', $id)
+      'cancelRoute' => route('clinic-users-info.consenting-doctor-history-massage.index', $id)
     ])
   </form>
 </x-app-layout>

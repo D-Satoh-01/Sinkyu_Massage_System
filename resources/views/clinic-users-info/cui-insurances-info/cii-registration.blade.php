@@ -15,13 +15,13 @@
     </div>
   @endif
 
-  <form action="{{ route('cui-insurances-info.confirm', $id) }}" method="POST">
+  <form action="{{ route('clinic-users-info.insurances-info.confirm', $id) }}" method="POST">
     @include('clinic-users-info.cui-insurances-info.components.insurance-form', [
       'isEdit' => false,
       'insurance' => null,
       'insurers' => $insurers,
       'submitLabel' => '登録確認へ',
-      'cancelRoute' => route('cui-insurances-info', $id)
+      'cancelRoute' => route('clinic-users-info.insurances-info.index', $id)
     ])
   </form>
 </x-app-layout>

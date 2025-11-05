@@ -21,7 +21,7 @@
   @endif
 
   @include('clinic-users-info.cui-form', [
-  'action' => route('cui-registration.confirm'),
+  'action' => route('clinic-users-info.registration.confirm'),
   'sessionKey' => 'registration_data',
   'clinicUser' => null,
   'isEdit' => false,

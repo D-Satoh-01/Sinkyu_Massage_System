@@ -2,7 +2,6 @@
   "permissions": {
     "allow": [
       "Read(//c/Users/user/.vscode/extensions/anthropic.claude-code-2.0.28/**)",
-      "Bash(git commit -m \"$(cat <<''EOF''\n保険情報管理機能を大幅に改善し、DataTablesによるテーブル機能を実装\n\n## 主な変更内容\n\n### コントローラー (ClinicUserController.php)\n- 保険情報の更新・登録処理を全面的にリファクタリング\n- フィールド名を統一（locality_code、recipient_code、is_redeemed等）\n- 保険者の新規作成または既存選択のロジックを改善\n- バリデーションルールとエラーメッセージを日本語化\n- DataTablesへの移行に伴い、ページネーション・検索・ソート機能をクライアントサイドに移行\n\n### モデル (Insurance.php, Insurer.php)\n- fillable属性にlocality_code、recipient_code、locality_code_family、recipient_code_familyを追加\n- Insurerモデルにpostal_codeフィールドを追加\n\n### フロントエンド\n- DataTables日本語化ファイル (dataTables-ja.json) を追加\n- cui-home.js を削除（DataTablesに機能を統合）\n- cii-registration.js のバリデーション機能を強化\n  - 医療助成対象フィールドの制御を改善\n  - 利用者との続柄による家族向けフィールドの有効/無効化を実装\n  - 保険者番号のバリデーションロジックを改善\n\n### ビューファイル\n- 保険情報フォーム (insurance-form.blade.php) のフィールド名を更新\n- cui-home.blade.php と cii-home.blade.php にDataTablesを統合\n- 一覧表示のソート、検索、ページネーション機能をDataTablesで実装\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
       "Bash(git push:*)",
       "Bash(php artisan tinker:*)",
       "Bash(composer dump-autoload:*)",
@@ -14,7 +13,9 @@
       "Bash(composer remove:*)",
       "Bash(unzip:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(mv:*)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []

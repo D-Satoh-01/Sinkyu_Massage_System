@@ -6,7 +6,7 @@
 
   <p>{{ $message }}</p><br>
 
-  <a href="{{ route($home_route, $home_id) }}">
+  <a href="{{ route($index_route, $index_id) }}">
   <button>◀ 利用者情報一覧に戻る</button>
   </a>
 

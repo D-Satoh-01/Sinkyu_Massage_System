@@ -6,66 +6,68 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClinicUserController;
 
-Route::view('/','auth.login');
-
-Route::view('/auth/login','auth.login')->name('login');
+Route::get('/', fn() => redirect()->route('login'));
 
 Route::middleware('auth')->group(function () {
 	Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 	Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 	Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-	Route::view('/home', 'home')->name('home');
-	
-	Route::view('/master-registration/mr-home', 'master-registration.mr-home')->name('mr-home');
-	
-  // 登録機能
-  Route::get('/clinic-users-info/cui-home', [ClinicUserController::class, 'index'])->name('cui-home');
-  Route::get('/clinic-users-info/cui-home/registration', [ClinicUserController::class, 'create'])->name('cui-registration');
-  Route::post('/clinic-users-info/cui-home/registration/confirm', [ClinicUserController::class, 'confirm'])->name('cui-registration.confirm');
-  Route::post('/clinic-users-info/cui-home/registration/store', [ClinicUserController::class, 'store'])->name('cui-registration.store');
-  
-  // 編集機能
-  Route::get('/clinic-users-info/cui-home/edit/{id}', [ClinicUserController::class, 'edit'])->name('cui-edit');
-  Route::post('/clinic-users-info/cui-home/edit/confirm', [ClinicUserController::class, 'editConfirm'])->name('cui-edit.confirm');
-  Route::post('/clinic-users-info/cui-home/edit/update', [ClinicUserController::class, 'update'])->name('cui-edit.update');
-  
-  // 削除機能
-  Route::delete('/clinic-users-info/cui-delete/{id}', [ClinicUserController::class, 'destroy'])->name('cui-delete');
+	Route::view('/index', 'index')->name('index');
 
-  // 利用者関連情報ルート
-  Route::get('/clinic-users-info/cui-insurances-info/{id}', [ClinicUserController::class, 'ciiHome'])->name('cui-insurances-info');
-  Route::get('/clinic-users-info/cui-insurances-info/{id}/registration', [ClinicUserController::class, 'ciiRegistration'])->name('cui-insurances-info.registration');
-  Route::post('/clinic-users-info/cui-insurances-info/{id}/confirm', [ClinicUserController::class, 'insuranceConfirm'])->name('cui-insurances-info.confirm');
-  Route::post('/clinic-users-info/cui-insurances-info/{id}/store', [ClinicUserController::class, 'insuranceStore'])->name('cui-insurances-info.store');
-  Route::get('/clinic-users-info/cui-insurances-info/{id}/edit/{insurance_id}', [ClinicUserController::class, 'insuranceEdit'])->name('cui-insurances-info.edit');
-    // cii編集機能
-    Route::get('/clinic-users-info/cui-insurances-info/{id}/cii-edit/{insurance_id}', [ClinicUserController::class, 'insuranceEdit'])->name('cii-edit');
-    Route::post('/clinic-users-info/cui-insurances-info/{id}/cii-edit/{insurance_id}/confirm', [ClinicUserController::class, 'insuranceEditConfirm'])->name('cii-edit.confirm');
-    Route::post('/clinic-users-info/cui-insurances-info/{id}/cii-edit/{insurance_id}', [ClinicUserController::class, 'insuranceUpdate'])->name('cii-edit.update');
-  // cii複製機能
-  Route::get('/clinic-users-info/cui-insurances-info/{id}/duplicate/{insurance_id}', [ClinicUserController::class, 'insuranceDuplicateForm'])->name('cui-insurances-info.duplicate');
-  Route::post('/clinic-users-info/cui-insurances-info/{id}/duplicate/{insurance_id}/confirm', [ClinicUserController::class, 'insuranceDuplicateConfirm'])->name('cui-insurances-info.duplicate.confirm');
-  Route::post('/clinic-users-info/cui-insurances-info/{id}/duplicate/{insurance_id}/store', [ClinicUserController::class, 'insuranceDuplicateStore'])->name('cui-insurances-info.duplicate.store');
-  Route::delete('/clinic-users-info/cui-insurances-info/{id}/delete/{insurance_id}', [ClinicUserController::class, 'insuranceDestroy'])->name('cui-insurances-info.delete');
-  Route::get('/clinic-users-info/cui-insurances-info/{id}/print-history', [ClinicUserController::class, 'printInsuranceHistory'])->name('cui-insurances-info.print-history');
+	Route::view('/master-registration/index', 'master-registration.index')->name('master-registration.index');
+
+  // 利用者情報
+  Route::get('/master-registration/clinic-users-info/index', [ClinicUserController::class, 'index'])->name('clinic-users-info.index');
+  Route::get('/master-registration/clinic-users-info/registration', [ClinicUserController::class, 'create'])->name('clinic-users-info.registration');
+  Route::post('/master-registration/clinic-users-info/registration/confirm', [ClinicUserController::class, 'confirm'])->name('clinic-users-info.registration.confirm');
+  Route::post('/master-registration/clinic-users-info/registration/store', [ClinicUserController::class, 'store'])->name('clinic-users-info.registration.store');
+
+  Route::get('/master-registration/clinic-users-info/{id}/edit', [ClinicUserController::class, 'edit'])->name('clinic-users-info.edit');
+  Route::post('/master-registration/clinic-users-info/{id}/edit/confirm', [ClinicUserController::class, 'editConfirm'])->name('clinic-users-info.edit.confirm');
+  Route::post('/master-registration/clinic-users-info/{id}/edit/update', [ClinicUserController::class, 'update'])->name('clinic-users-info.edit.update');
+
+  Route::delete('/master-registration/clinic-users-info/{id}', [ClinicUserController::class, 'destroy'])->name('clinic-users-info.delete');
+
+  // 保険情報
+  Route::get('/master-registration/clinic-users-info/{id}/insurances-info', [ClinicUserController::class, 'ciiIndex'])->name('clinic-users-info.insurances-info.index');
+  Route::get('/master-registration/clinic-users-info/{id}/insurances-info/registration', [ClinicUserController::class, 'ciiRegistration'])->name('clinic-users-info.insurances-info.registration');
+  Route::post('/master-registration/clinic-users-info/{id}/insurances-info/confirm', [ClinicUserController::class, 'insuranceConfirm'])->name('clinic-users-info.insurances-info.confirm');
+  Route::post('/master-registration/clinic-users-info/{id}/insurances-info/store', [ClinicUserController::class, 'insuranceStore'])->name('clinic-users-info.insurances-info.store');
+
+  Route::get('/master-registration/clinic-users-info/{id}/insurances-info/{insurance_id}/edit', [ClinicUserController::class, 'insuranceEdit'])->name('clinic-users-info.insurances-info.edit');
+  Route::post('/master-registration/clinic-users-info/{id}/insurances-info/{insurance_id}/edit/confirm', [ClinicUserController::class, 'insuranceEditConfirm'])->name('clinic-users-info.insurances-info.edit.confirm');
+  Route::post('/master-registration/clinic-users-info/{id}/insurances-info/{insurance_id}/edit/update', [ClinicUserController::class, 'insuranceUpdate'])->name('clinic-users-info.insurances-info.edit.update');
+
+  Route::get('/master-registration/clinic-users-info/{id}/insurances-info/{insurance_id}/duplicate', [ClinicUserController::class, 'insuranceDuplicateForm'])->name('clinic-users-info.insurances-info.duplicate');
+  Route::post('/master-registration/clinic-users-info/{id}/insurances-info/{insurance_id}/duplicate/confirm', [ClinicUserController::class, 'insuranceDuplicateConfirm'])->name('clinic-users-info.insurances-info.duplicate.confirm');
+  Route::post('/master-registration/clinic-users-info/{id}/insurances-info/{insurance_id}/duplicate/store', [ClinicUserController::class, 'insuranceDuplicateStore'])->name('clinic-users-info.insurances-info.duplicate.store');
+
+  Route::delete('/master-registration/clinic-users-info/{id}/insurances-info/{insurance_id}', [ClinicUserController::class, 'insuranceDestroy'])->name('clinic-users-info.insurances-info.delete');
+  Route::get('/master-registration/clinic-users-info/{id}/insurances-info/print-history', [ClinicUserController::class, 'printInsuranceHistory'])->name('clinic-users-info.insurances-info.print-history');
 
   // 同意医師履歴（あんま・マッサージ）
-  Route::get('/clinic-users-info/cui-consenting-doctor-history-massage/{id}', [ClinicUserController::class, 'ccdhmHome'])->name('cui-consenting-doctor-history-massage');
-  Route::get('/clinic-users-info/cui-consenting-doctor-history-massage/{id}/registration', [ClinicUserController::class, 'ccdhmRegistration'])->name('cui-consenting-doctor-history-massage.registration');
-  Route::post('/clinic-users-info/cui-consenting-doctor-history-massage/{id}/confirm', [ClinicUserController::class, 'ccdhmConfirm'])->name('cui-consenting-doctor-history-massage.confirm');
-  Route::post('/clinic-users-info/cui-consenting-doctor-history-massage/{id}/store', [ClinicUserController::class, 'ccdhmStore'])->name('cui-consenting-doctor-history-massage.store');
-  Route::get('/clinic-users-info/cui-consenting-doctor-history-massage/{id}/edit/{history_id}', [ClinicUserController::class, 'ccdhmEdit'])->name('cui-consenting-doctor-history-massage.edit');
-  Route::post('/clinic-users-info/cui-consenting-doctor-history-massage/{id}/edit/{history_id}/confirm', [ClinicUserController::class, 'ccdhmEditConfirm'])->name('cui-consenting-doctor-history-massage.edit.confirm');
-  Route::post('/clinic-users-info/cui-consenting-doctor-history-massage/{id}/edit/{history_id}', [ClinicUserController::class, 'ccdhmUpdate'])->name('cui-consenting-doctor-history-massage.update');
-  Route::get('/clinic-users-info/cui-consenting-doctor-history-massage/{id}/duplicate/{history_id}', [ClinicUserController::class, 'ccdhmDuplicateForm'])->name('cui-consenting-doctor-history-massage.duplicate');
-  Route::post('/clinic-users-info/cui-consenting-doctor-history-massage/{id}/duplicate/{history_id}/confirm', [ClinicUserController::class, 'ccdhmDuplicateConfirm'])->name('cui-consenting-doctor-history-massage.duplicate.confirm');
-  Route::post('/clinic-users-info/cui-consenting-doctor-history-massage/{id}/duplicate/{history_id}/store', [ClinicUserController::class, 'ccdhmDuplicateStore'])->name('cui-consenting-doctor-history-massage.duplicate.store');
-  Route::delete('/clinic-users-info/cui-consenting-doctor-history-massage/{id}/delete/{history_id}', [ClinicUserController::class, 'ccdhmDestroy'])->name('cui-consenting-doctor-history-massage.delete');
-  Route::get('/clinic-users-info/cui-consenting-doctor-history-massage/{id}/print-history', [ClinicUserController::class, 'printCcdhmHistory'])->name('cui-consenting-doctor-history-massage.print-history');
+  Route::get('/master-registration/clinic-users-info/{id}/consenting-doctor-history-massage', [ClinicUserController::class, 'ccdhmIndex'])->name('clinic-users-info.consenting-doctor-history-massage.index');
+  Route::get('/master-registration/clinic-users-info/{id}/consenting-doctor-history-massage/registration', [ClinicUserController::class, 'ccdhmRegistration'])->name('clinic-users-info.consenting-doctor-history-massage.registration');
+  Route::post('/master-registration/clinic-users-info/{id}/consenting-doctor-history-massage/confirm', [ClinicUserController::class, 'ccdhmConfirm'])->name('clinic-users-info.consenting-doctor-history-massage.confirm');
+  Route::post('/master-registration/clinic-users-info/{id}/consenting-doctor-history-massage/store', [ClinicUserController::class, 'ccdhmStore'])->name('clinic-users-info.consenting-doctor-history-massage.store');
 
-  Route::get('/clinic-users-info/cui-consenting-doctor-history-acupuncture/{id}', [ClinicUserController::class, 'ccdhaHome'])->name('cui-consenting-doctor-history-acupuncture');
-  Route::get('/clinic-users-info/cui-plans-info/{id}', [ClinicUserController::class, 'cpiHome'])->name('cui-plans-info');
+  Route::get('/master-registration/clinic-users-info/{id}/consenting-doctor-history-massage/{history_id}/edit', [ClinicUserController::class, 'ccdhmEdit'])->name('clinic-users-info.consenting-doctor-history-massage.edit');
+  Route::post('/master-registration/clinic-users-info/{id}/consenting-doctor-history-massage/{history_id}/edit/confirm', [ClinicUserController::class, 'ccdhmEditConfirm'])->name('clinic-users-info.consenting-doctor-history-massage.edit.confirm');
+  Route::post('/master-registration/clinic-users-info/{id}/consenting-doctor-history-massage/{history_id}/edit/update', [ClinicUserController::class, 'ccdhmUpdate'])->name('clinic-users-info.consenting-doctor-history-massage.edit.update');
+
+  Route::get('/master-registration/clinic-users-info/{id}/consenting-doctor-history-massage/{history_id}/duplicate', [ClinicUserController::class, 'ccdhmDuplicateForm'])->name('clinic-users-info.consenting-doctor-history-massage.duplicate');
+  Route::post('/master-registration/clinic-users-info/{id}/consenting-doctor-history-massage/{history_id}/duplicate/confirm', [ClinicUserController::class, 'ccdhmDuplicateConfirm'])->name('clinic-users-info.consenting-doctor-history-massage.duplicate.confirm');
+  Route::post('/master-registration/clinic-users-info/{id}/consenting-doctor-history-massage/{history_id}/duplicate/store', [ClinicUserController::class, 'ccdhmDuplicateStore'])->name('clinic-users-info.consenting-doctor-history-massage.duplicate.store');
+
+  Route::delete('/master-registration/clinic-users-info/{id}/consenting-doctor-history-massage/{history_id}', [ClinicUserController::class, 'ccdhmDestroy'])->name('clinic-users-info.consenting-doctor-history-massage.delete');
+  Route::get('/master-registration/clinic-users-info/{id}/consenting-doctor-history-massage/print-history', [ClinicUserController::class, 'printCcdhmHistory'])->name('clinic-users-info.consenting-doctor-history-massage.print-history');
+
+  // 同意医師履歴（鍼灸）
+  Route::get('/master-registration/clinic-users-info/{id}/consenting-doctor-history-acupuncture', [ClinicUserController::class, 'ccdhaIndex'])->name('clinic-users-info.consenting-doctor-history-acupuncture.index');
+
+  // 計画情報
+  Route::get('/master-registration/clinic-users-info/{id}/plans-info', [ClinicUserController::class, 'cpiIndex'])->name('clinic-users-info.plans-info.index');
 });
 
 require __DIR__.'/auth.php';

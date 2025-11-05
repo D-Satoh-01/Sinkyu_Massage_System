@@ -17,7 +17,7 @@ class ConsentingDoctorHistoryMassage extends Model
     'clinic_user_id',
     'consenting_doctor_name',
     'consenting_date',
-    'consenting__start_date',
+    'consenting_start_date',
     'consenting_end_date',
     'benefit_period_start_date',
     'benefit_period_end_date',
@@ -47,7 +47,7 @@ class ConsentingDoctorHistoryMassage extends Model
 
   protected $casts = [
     'consenting_date' => 'date',
-    'consenting__start_date' => 'date',
+    'consenting_start_date' => 'date',
     'consenting_end_date' => 'date',
     'benefit_period_start_date' => 'date',
     'benefit_period_end_date' => 'date',
@@ -61,18 +61,6 @@ class ConsentingDoctorHistoryMassage extends Model
     'is_therapy_type_2' => 'boolean',
     'is_housecall_required' => 'boolean'
   ];
-
-  // アクセサ: consenting_start_date (アンダースコア2つのフィールドにアクセスするため)
-  public function getConsentingStartDateAttribute()
-  {
-    return $this->consenting__start_date;
-  }
-
-  // ミューテータ: consenting_start_date
-  public function setConsentingStartDateAttribute($value)
-  {
-    $this->attributes['consenting__start_date'] = $value;
-  }
 
   public function clinicUser()
   {

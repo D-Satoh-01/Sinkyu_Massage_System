@@ -12,12 +12,12 @@
     </div>
   @endif
 
-  <form method="POST" action="{{ route('cui-insurances-info.duplicate.confirm', [$user->id, $insurance->id]) }}">
+  <form method="POST" action="{{ route('clinic-users-info.insurances-info.duplicate.confirm', [$user->id, $insurance->id]) }}">
     @include('clinic-users-info.cui-insurances-info.components.insurance-form', [
       'isEdit' => true,
       'insurance' => $insurance,
       'submitLabel' => '登録確認へ',
-      'cancelRoute' => route('cui-insurances-info', $user->id)
+      'cancelRoute' => route('clinic-users-info.insurances-info.index', $user->id)
     ])
   </form>
 </x-app-layout>
