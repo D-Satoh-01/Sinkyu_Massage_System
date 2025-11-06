@@ -1,0 +1,98 @@
+<!-- resources/views/doctors-info/di-index.blade.php -->
+
+
+<x-app-layout>
+  <h2>医師情報</h2>
+
+  <br><br>
+
+  <a href="{{ route('doctors-info.create') }}">
+  <button>医師新規登録</button>
+  </a>
+
+  <br><br>
+
+  <!-- 医師情報一覧テーブル -->
+  <table id="doctorTable" class="table table-bordered table-striped">
+  <thead>
+    <tr>
+    <th>名前 [編集] / カナ</th>
+    <th>医療機関名</th>
+    <th>住所 / TEL</th>
+    <th>データ登録日</th>
+    <th>複製</th>
+    <th>削除</th>
+    </tr>
+  </thead>
+  <tbody>
+    @forelse($doctors as $doctor)
+    <tr>
+      <td>
+      <a href="{{ route('doctors-info.edit', $doctor->id) }}">{{ $doctor->doctor_name }} [編集]</a><br>
+      {{ $doctor->furigana }}
+      </td>
+      <td>
+      {{ $doctor->medical_institution_name }}
+      </td>
+      <td>
+      @if(!empty($doctor->postal_code))
+        〒{{ $doctor->postal_code }}<br>
+      @endif
+      {{ $doctor->address_1 }} {{ $doctor->address_2 }} {{ $doctor->address_3 }}
+      @if(!empty($doctor->phone))
+        <br>TEL: {{ $doctor->phone }}
+      @endif
+      </td>
+      <td data-order="{{ $doctor->created_at ? strtotime($doctor->created_at) : 0 }}">
+      {{ $doctor->created_at ? \Carbon\Carbon::parse($doctor->created_at)->format('Y/m/d') : '' }}<br>
+      {{ $doctor->created_at ? \Carbon\Carbon::parse($doctor->created_at)->format('H:i') : '' }}
+      </td>
+      <td>
+      <a href="{{ route('doctors-info.duplicate', $doctor->id) }}">複製</a>
+      </td>
+      <td>
+      <form action="{{ route('doctors-info.delete', ['id' => $doctor->id]) }}" method="POST" class="delete-form" style="display: inline;">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="delete-btn" style="background: none; border: none; color: #0d6efd; cursor: pointer;">削除</button>
+      </form>
+      </td>
+    </tr>
+    @empty
+    <tr>
+      <td colspan="6" class="text-center">データがありません</td>
+    </tr>
+    @endforelse
+  </tbody>
+  </table>
+
+  @push('scripts')
+  <script>
+    $(document).ready(function() {
+      $('#doctorTable').DataTable({
+        language: {
+          url: '{{ asset('js/dataTables-ja.json') }}',
+          paginate: {
+            previous: '◂ 前へ',
+            next: '次へ ▸'
+          }
+        },
+        order: [[3, 'desc']],
+        pageLength: 10,
+        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+        columnDefs: [
+          { orderable: false, targets: [4, 5] }
+        ]
+      });
+
+      // 削除確認
+      $(document).on('submit', '.delete-form', function(e) {
+        e.preventDefault();
+        if (confirm('一度削除したデータは元に戻せません。\n削除してもよろしいですか？')) {
+          this.submit();
+        }
+      });
+    });
+  </script>
+  @endpush
+</x-app-layout>

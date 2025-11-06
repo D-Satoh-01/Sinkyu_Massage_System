@@ -106,12 +106,16 @@ class ClinicUserController extends Controller
   // DataTablesを使用するため、全件取得
   $clinicUsers = ClinicUserModel::orderBy('id', 'desc')->get();
 
-  return view('clinic-users-info.index', compact('clinicUsers'));
+  return view('clinic-users-info.cui-index', compact('clinicUsers'));
   }
 
   public function create()
   {
-  return view('clinic-users-info.cui-registration');
+  return view('clinic-users-info.cui-registration', [
+    'mode' => 'create',
+    'title' => '利用者新規登録',
+    'clinicUser' => null
+  ]);
   }
 
   // 新規登録：確認画面の表示
@@ -150,8 +154,8 @@ class ClinicUserController extends Controller
   return view('registration-review', [
     'data' => $validated,
     'labels' => $labels,
-    'back_route' => 'clinic-users-info.registration',
-    'store_route' => 'clinic-users-info.registration.store',
+    'back_route' => 'clinic-users-info.create',
+    'store_route' => 'clinic-users-info.store',
     'page_title' => '利用者登録内容確認',
     'registration_message' => '利用者情報の登録を行います。',
   ]);
@@ -164,7 +168,7 @@ class ClinicUserController extends Controller
   $data = $request->session()->get('registration_data');
 
   if (!$data) {
-    return redirect()->route('clinic-users-info.registration')->with('error', 'セッションが切れました。もう一度入力してください。');
+    return redirect()->route('clinic-users-info.create')->with('error', 'セッションが切れました。もう一度入力してください。');
   }
 
   // データベースに保存
@@ -188,7 +192,11 @@ class ClinicUserController extends Controller
   public function edit($id)
   {
   $clinicUser = ClinicUserModel::findOrFail($id);
-  return view('clinic-users-info.cui-edit', compact('clinicUser'));
+  return view('clinic-users-info.cui-registration', [
+    'mode' => 'edit',
+    'title' => '利用者情報編集',
+    'clinicUser' => $clinicUser
+  ]);
   }
 
   // 編集：確認画面の表示
@@ -283,7 +291,7 @@ class ClinicUserController extends Controller
     ->orderBy('created_at', 'desc')
     ->get();
 
-  return view('clinic-users-info.cui-insurances-info.index', [
+  return view('clinic-users-info.cui-insurances-info.cii-index', [
     'id' => $id,
     'name' => $user->clinic_user_name,
     'insurances' => $insurances
@@ -291,7 +299,7 @@ class ClinicUserController extends Controller
   }
 
   // 保険情報新規登録画面
-  public function ciiRegistration($id)
+  public function ciiCreate($id)
   {
   $user = ClinicUserModel::findOrFail($id);
   $insurers = Insurer::all();
@@ -306,7 +314,13 @@ class ClinicUserController extends Controller
     session()->put('insurance_registration_data', $sessionData);
   }
 
-  return view('clinic-users-info.cui-insurances-info.cii-registration', ['id' => $id, 'name' => $user->clinic_user_name, 'insurers' => $insurers]);
+  return view('clinic-users-info.cui-insurances-info.cii-registration', [
+    'mode' => 'create',
+    'title' => $user->clinic_user_name . ' 様の保険情報新規登録',
+    'userId' => $id,
+    'insurance' => null,
+    'insurers' => $insurers
+  ]);
   }
 
   // 保険情報新規登録：確認画面の表示
@@ -476,7 +490,7 @@ class ClinicUserController extends Controller
     ->orderBy('created_at', 'desc')
     ->get();
 
-  return view('clinic-users-info.cui-consenting-doctor-history-massage.index', [
+  return view('clinic-users-info.cui-consenting-doctor-history-massage.ccdhm-index', [
     'id' => $id,
     'name' => $user->clinic_user_name,
     'consentingHistories' => $consentingHistories
@@ -738,14 +752,14 @@ class ClinicUserController extends Controller
   public function ccdhaIndex($id)
   {
   $user = ClinicUserModel::findOrFail($id);
-  return view('clinic-users-info.cui-consenting-doctor-history-acupuncture.index', ['id' => $id, 'name' => $user->clinic_user_name]);
+  return view('clinic-users-info.cui-consenting-doctor-history-acupuncture.ccdha-index', ['id' => $id, 'name' => $user->clinic_user_name]);
   }
 
   // 計画情報
   public function cpiIndex($id)
   {
   $user = ClinicUserModel::findOrFail($id);
-  return view('clinic-users-info.cui-plans-info.index', ['id' => $id, 'name' => $user->clinic_user_name]);
+  return view('clinic-users-info.cui-plans-info.cpi-index', ['id' => $id, 'name' => $user->clinic_user_name]);
   }
 
   // 医療保険履歴印刷
@@ -801,7 +815,13 @@ class ClinicUserController extends Controller
   $user = ClinicUserModel::findOrFail($id);
   $insurance = Insurance::with('insurer')->findOrFail($insurance_id);
   $insurers = Insurer::all();
-  return view('clinic-users-info.cui-insurances-info.cii-edit', compact('user', 'insurance', 'insurers'));
+  return view('clinic-users-info.cui-insurances-info.cii-registration', [
+    'mode' => 'edit',
+    'title' => $user->clinic_user_name . ' 様の保険情報編集',
+    'userId' => $id,
+    'insurance' => $insurance,
+    'insurers' => $insurers
+  ]);
   }
 
   // 保険情報編集：確認画面の表示
@@ -881,7 +901,13 @@ class ClinicUserController extends Controller
   $user = ClinicUserModel::findOrFail($id);
   $insurance = Insurance::with('insurer')->findOrFail($insurance_id);
   $insurers = Insurer::all();
-  return view('clinic-users-info.cui-insurances-info.cii-duplicate', compact('user', 'insurance', 'insurers', 'id'));
+  return view('clinic-users-info.cui-insurances-info.cii-registration', [
+    'mode' => 'duplicate',
+    'title' => $user->clinic_user_name . ' 様の保険情報複製',
+    'userId' => $id,
+    'insurance' => $insurance,
+    'insurers' => $insurers
+  ]);
   }
 
   // 保険情報複製：確認画面の表示

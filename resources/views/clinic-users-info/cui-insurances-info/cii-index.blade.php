@@ -22,7 +22,7 @@
   @endif
 
   <!-- 保険情報新規登録ボタン -->
-  <a href="{{ route('clinic-users-info.insurances-info.registration', $id) }}">
+  <a href="{{ route('clinic-users-info.insurances-info.create', $id) }}">
   <button>保険情報新規登録</button>
   </a>
 
@@ -107,7 +107,11 @@
       if (hasData) {
         $('#insuranceTable').DataTable({
           language: {
-            url: '{{ asset('js/dataTables-ja.json') }}'
+            url: '{{ asset('js/dataTables-ja.json') }}',
+            paginate: {
+              previous: '◂ 前へ',
+              next: '次へ ▸'
+            }
           },
           order: [[4, 'desc']], // データ登録日の降順
           pageLength: 10,

@@ -2,7 +2,7 @@
 
 
 <x-app-layout>
-  <h2>{{ $name }} 様の保険情報新規登録</h2>
+  <h2>{{ $title }}</h2>
   <br><br>
 
   @if($errors->any())
@@ -15,13 +15,27 @@
     </div>
   @endif
 
-  <form action="{{ route('clinic-users-info.insurances-info.confirm', $id) }}" method="POST">
+  @php
+    // モードに応じたフォームの送信先を設定
+    if ($mode === 'create') {
+      $formAction = route('clinic-users-info.insurances-info.confirm', $userId);
+      $isEdit = false;
+    } elseif ($mode === 'edit') {
+      $formAction = route('clinic-users-info.insurances-info.edit.confirm', [$userId, $insurance->id]);
+      $isEdit = true;
+    } else { // duplicate
+      $formAction = route('clinic-users-info.insurances-info.duplicate.confirm', [$userId, $insurance->id]);
+      $isEdit = true;
+    }
+  @endphp
+
+  <form action="{{ $formAction }}" method="POST">
     @include('clinic-users-info.cui-insurances-info.components.insurance-form', [
-      'isEdit' => false,
-      'insurance' => null,
-      'insurers' => $insurers,
+      'isEdit' => $isEdit,
+      'insurance' => $insurance,
+      'insurers' => $insurers ?? null,
       'submitLabel' => '登録確認へ',
-      'cancelRoute' => route('clinic-users-info.insurances-info.index', $id)
+      'cancelRoute' => route('clinic-users-info.insurances-info.index', $userId)
     ])
   </form>
 </x-app-layout>

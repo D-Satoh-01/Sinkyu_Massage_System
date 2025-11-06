@@ -2,14 +2,14 @@
 
 
 <x-app-layout>
-  <h2>利用者新規登録</h2><br><br>
+  <h2>{{ $title }}</h2><br><br>
 
   @if(session('error'))
   <div class="alert alert-danger">
     {{ session('error') }}
   </div>
   @endif
-  
+
   @if($errors->any())
   <div class="alert alert-danger">
     <ul>
@@ -20,11 +20,26 @@
   </div>
   @endif
 
+  @php
+    // モードに応じたフォームの送信先を設定
+    if ($mode === 'create') {
+      $formAction = route('clinic-users-info.confirm');
+      $sessionKey = 'registration_data';
+      $isEdit = false;
+      $includeId = false;
+    } else { // edit
+      $formAction = route('clinic-users-info.edit.confirm');
+      $sessionKey = 'edit_data';
+      $isEdit = true;
+      $includeId = true;
+    }
+  @endphp
+
   @include('clinic-users-info.cui-form', [
-  'action' => route('clinic-users-info.registration.confirm'),
-  'sessionKey' => 'registration_data',
-  'clinicUser' => null,
-  'isEdit' => false,
-  'includeId' => false,
+  'action' => $formAction,
+  'sessionKey' => $sessionKey,
+  'clinicUser' => $clinicUser,
+  'isEdit' => $isEdit,
+  'includeId' => $includeId,
   ])
 </x-app-layout>

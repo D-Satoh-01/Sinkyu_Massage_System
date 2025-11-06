@@ -1,4 +1,4 @@
-<!-- resources/views/clinic-users-info/index.blade.php -->
+<!-- resources/views/clinic-users-info/cui-index.blade.php -->
 
 
 <x-app-layout>
@@ -6,7 +6,7 @@
 
   <br><br>
 
-  <a href="{{ route('clinic-users-info.registration') }}">
+  <a href="{{ route('clinic-users-info.create') }}">
   <button>利用者新規登録</button>
   </a>
 

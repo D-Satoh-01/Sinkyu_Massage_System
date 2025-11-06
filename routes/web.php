@@ -5,6 +5,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClinicUserController;
+use App\Http\Controllers\DoctorInfoController;
 
 Route::get('/', fn() => redirect()->route('login'));
 
@@ -15,13 +16,29 @@ Route::middleware('auth')->group(function () {
 
 	Route::view('/index', 'index')->name('index');
 
-	Route::view('/master-registration/index', 'master-registration.index')->name('master-registration.index');
+	Route::view('/master-registration/index', 'master-registration.mr-index')->name('master-registration.index');
+
+  // 医師情報
+  Route::get('/master-registration/doctors-info/index', [DoctorInfoController::class, 'index'])->name('doctors-info.index');
+  Route::get('/master-registration/doctors-info/create', [DoctorInfoController::class, 'create'])->name('doctors-info.create');
+  Route::post('/master-registration/doctors-info/confirm', [DoctorInfoController::class, 'confirm'])->name('doctors-info.confirm');
+  Route::post('/master-registration/doctors-info/store', [DoctorInfoController::class, 'store'])->name('doctors-info.store');
+
+  Route::get('/master-registration/doctors-info/{id}/edit', [DoctorInfoController::class, 'edit'])->name('doctors-info.edit');
+  Route::post('/master-registration/doctors-info/{id}/edit/confirm', [DoctorInfoController::class, 'editConfirm'])->name('doctors-info.edit.confirm');
+  Route::post('/master-registration/doctors-info/{id}/update', [DoctorInfoController::class, 'update'])->name('doctors-info.update');
+
+  Route::get('/master-registration/doctors-info/{id}/duplicate', [DoctorInfoController::class, 'duplicate'])->name('doctors-info.duplicate');
+  Route::post('/master-registration/doctors-info/duplicate/confirm', [DoctorInfoController::class, 'duplicateConfirm'])->name('doctors-info.duplicate.confirm');
+  Route::post('/master-registration/doctors-info/duplicate/store', [DoctorInfoController::class, 'duplicateStore'])->name('doctors-info.duplicate.store');
+
+  Route::delete('/master-registration/doctors-info/{id}', [DoctorInfoController::class, 'destroy'])->name('doctors-info.delete');
 
   // 利用者情報
   Route::get('/master-registration/clinic-users-info/index', [ClinicUserController::class, 'index'])->name('clinic-users-info.index');
-  Route::get('/master-registration/clinic-users-info/registration', [ClinicUserController::class, 'create'])->name('clinic-users-info.registration');
-  Route::post('/master-registration/clinic-users-info/registration/confirm', [ClinicUserController::class, 'confirm'])->name('clinic-users-info.registration.confirm');
-  Route::post('/master-registration/clinic-users-info/registration/store', [ClinicUserController::class, 'store'])->name('clinic-users-info.registration.store');
+  Route::get('/master-registration/clinic-users-info/create', [ClinicUserController::class, 'create'])->name('clinic-users-info.create');
+  Route::post('/master-registration/clinic-users-info/confirm', [ClinicUserController::class, 'confirm'])->name('clinic-users-info.confirm');
+  Route::post('/master-registration/clinic-users-info/store', [ClinicUserController::class, 'store'])->name('clinic-users-info.store');
 
   Route::get('/master-registration/clinic-users-info/{id}/edit', [ClinicUserController::class, 'edit'])->name('clinic-users-info.edit');
   Route::post('/master-registration/clinic-users-info/{id}/edit/confirm', [ClinicUserController::class, 'editConfirm'])->name('clinic-users-info.edit.confirm');
@@ -31,7 +48,7 @@ Route::middleware('auth')->group(function () {
 
   // 保険情報
   Route::get('/master-registration/clinic-users-info/{id}/insurances-info', [ClinicUserController::class, 'ciiIndex'])->name('clinic-users-info.insurances-info.index');
-  Route::get('/master-registration/clinic-users-info/{id}/insurances-info/registration', [ClinicUserController::class, 'ciiRegistration'])->name('clinic-users-info.insurances-info.registration');
+  Route::get('/master-registration/clinic-users-info/{id}/insurances-info/create', [ClinicUserController::class, 'ciiCreate'])->name('clinic-users-info.insurances-info.create');
   Route::post('/master-registration/clinic-users-info/{id}/insurances-info/confirm', [ClinicUserController::class, 'insuranceConfirm'])->name('clinic-users-info.insurances-info.confirm');
   Route::post('/master-registration/clinic-users-info/{id}/insurances-info/store', [ClinicUserController::class, 'insuranceStore'])->name('clinic-users-info.insurances-info.store');
 

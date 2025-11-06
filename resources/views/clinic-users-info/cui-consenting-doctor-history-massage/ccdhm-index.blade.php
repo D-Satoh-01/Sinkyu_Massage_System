@@ -102,7 +102,11 @@
       if (hasData) {
         $('#consentingTable').DataTable({
           language: {
-            url: '{{ asset('js/dataTables-ja.json') }}'
+            url: '{{ asset('js/dataTables-ja.json') }}',
+            paginate: {
+              previous: '◂ 前へ',
+              next: '次へ ▸'
+            }
           },
           order: [[4, 'desc']], // データ登録日の降順
           pageLength: 10,
