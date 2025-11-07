@@ -1,5 +1,19 @@
 //-- public/js/cii-registration.js --//
 
+
+// 郵便番号から住所を検索する関数
+async function searchAddress() {
+  await searchAndFillAddress('new_postal_code', {
+    combined: true,
+    address: 'new_address'
+  });
+}
+
+// 新規登録郵便番号入力時の処理
+document.addEventListener('DOMContentLoaded', function() {
+  setupPostalCodeInput('new_postal_code', searchAddress);
+});
+
 // フォーム表示/非表示
 function showInsuranceForm() {
   document.getElementById('insurance-form').style.display = 'block';
@@ -22,11 +36,11 @@ function toggleMedicalAssistanceFields() {
 
   // チェックボックスの状態に応じて入力フィールドの有効/無効を切り替え
   if (checkbox.checked) {
-    publicBurdenNumber.disabled = false;
-    publicRecipientNumber.disabled = false;
+    publicBurdenNumber.readOnly = false;
+    publicRecipientNumber.readOnly = false;
   } else {
-    publicBurdenNumber.disabled = true;
-    publicRecipientNumber.disabled = true;
+    publicBurdenNumber.readOnly = true;
+    publicRecipientNumber.readOnly = true;
     // チェックが外されたときにフィールドをクリア
     publicBurdenNumber.value = '';
     publicRecipientNumber.value = '';
@@ -46,11 +60,11 @@ function toggleFamilyFields() {
 
   // 利用者との続柄が「家族」の場合のみ有効化
   if (relationship.value === '家族') {
-    localityCodeFamily.disabled = false;
-    recipientCodeFamily.disabled = false;
+    localityCodeFamily.readOnly = false;
+    recipientCodeFamily.readOnly = false;
   } else {
-    localityCodeFamily.disabled = true;
-    recipientCodeFamily.disabled = true;
+    localityCodeFamily.readOnly = true;
+    recipientCodeFamily.readOnly = true;
     // 家族以外の場合は値をクリア
     localityCodeFamily.value = '';
     recipientCodeFamily.value = '';
@@ -154,11 +168,6 @@ function updateInsurerFields() {
     newPostalCode.readOnly = false;
     newAddress.readOnly = false;
     newRecipientName.readOnly = false;
-    newInsurerNumber.classList.remove('readonly-field');
-    newInsurerName.classList.remove('readonly-field');
-    newPostalCode.classList.remove('readonly-field');
-    newAddress.classList.remove('readonly-field');
-    newRecipientName.classList.remove('readonly-field');
     newInsurerNumber.value = '';
     newInsurerName.value = '';
     newPostalCode.value = '';
@@ -175,11 +184,6 @@ function updateInsurerFields() {
     newPostalCode.readOnly = true;
     newAddress.readOnly = true;
     newRecipientName.readOnly = true;
-    newInsurerNumber.classList.add('readonly-field');
-    newInsurerName.classList.add('readonly-field');
-    newPostalCode.classList.add('readonly-field');
-    newAddress.classList.add('readonly-field');
-    newRecipientName.classList.add('readonly-field');
     newInsurerNumber.value = selectedOption.getAttribute('data-number') || '';
     newInsurerName.value = selectedOption.getAttribute('data-name') || '';
     newPostalCode.value = selectedOption.getAttribute('data-postal') || '';
@@ -191,70 +195,3 @@ function updateInsurerFields() {
     }
   }
 }
-
-// 新規登録郵便番号から住所を検索する関数
-async function searchNewAddress() {
-  const postalCode = document.getElementById('new_postal_code').value;
-  const messageEl = document.getElementById('new-address-message');
-  const addressEl = document.getElementById('new_address');
-
-  // 郵便番号を数字のみに変換
-  const cleanPostalCode = postalCode.replace(/[^\d]/g, '');
-
-  // 7桁の数字かチェック
-  if (cleanPostalCode.length !== 7) {
-  return; // エラーメッセージは表示せず、単に終了
-  }
-
-  try {
-  // 郵便番号API呼び出し（zipcloud API使用）
-  const response = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${cleanPostalCode}`);
-  const data = await response.json();
-
-  if (data.status === 200 && data.results && data.results.length > 0) {
-    const result = data.results[0];
-
-    // 都道府県と市区町村を設定
-    addressEl.value = result.address1 + result.address2 + result.address3;
-  } else {
-    // 該当する住所が無い場合は空欄
-    addressEl.value = '';
-  }
-
-  } catch (error) {
-  console.error('New address search error:', error);
-  }
-}
-
-// 新規登録郵便番号入力時の処理
-document.addEventListener('DOMContentLoaded', function() {
-  const newPostalCodeInput = document.getElementById('new_postal_code');
-  if (newPostalCodeInput) {
-  newPostalCodeInput.addEventListener('input', function(e) {
-    let value = this.value;
-
-    // ハイフンを除去して数字のみに
-    const numbersOnly = value.replace(/[^\d]/g, '');
-
-    // 7桁になったら自動で住所検索を実行
-    if (numbersOnly.length === 7) {
-    // 表示用にハイフンを挿入（123-4567の形式）
-    this.value = numbersOnly.substring(0, 3) + '-' + numbersOnly.substring(3);
-
-    // 自動で住所検索を実行
-    searchNewAddress();
-    } else if (numbersOnly.length > 7) {
-    // 7桁を超える場合は7桁でカット
-    const truncated = numbersOnly.substring(0, 7);
-    this.value = truncated.substring(0, 3) + '-' + truncated.substring(3);
-    searchNewAddress();
-    } else if (numbersOnly.length <= 3) {
-    // 3桁以下の場合はそのまま
-    this.value = numbersOnly;
-    } else {
-    // 4-6桁の場合はハイフンを挿入
-    this.value = numbersOnly.substring(0, 3) + '-' + numbersOnly.substring(3);
-    }
-  });
-  }
-});

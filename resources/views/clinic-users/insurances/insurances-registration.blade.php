@@ -18,24 +18,24 @@
   @php
     // モードに応じたフォームの送信先を設定
     if ($mode === 'create') {
-      $formAction = route('clinic-users-info.insurances-info.confirm', $userId);
+      $formAction = route('clinic-users.insurances.confirm', $userId);
       $isEdit = false;
     } elseif ($mode === 'edit') {
-      $formAction = route('clinic-users-info.insurances-info.edit.confirm', [$userId, $insurance->id]);
+      $formAction = route('clinic-users.insurances.edit.confirm', [$userId, $insurance->id]);
       $isEdit = true;
     } else { // duplicate
-      $formAction = route('clinic-users-info.insurances-info.duplicate.confirm', [$userId, $insurance->id]);
+      $formAction = route('clinic-users.insurances.duplicate.confirm', [$userId, $insurance->id]);
       $isEdit = true;
     }
   @endphp
 
   <form action="{{ $formAction }}" method="POST">
-    @include('clinic-users-info.cui-insurances-info.components.insurance-form', [
+    @include('clinic-users.insurances.components.insurances-form', [
       'isEdit' => $isEdit,
       'insurance' => $insurance,
       'insurers' => $insurers ?? null,
       'submitLabel' => '登録確認へ',
-      'cancelRoute' => route('clinic-users-info.insurances-info.index', $userId)
+      'cancelRoute' => route('clinic-users.insurances.index', $userId)
     ])
   </form>
 </x-app-layout>

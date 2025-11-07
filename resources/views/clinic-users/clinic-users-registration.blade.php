@@ -23,19 +23,19 @@
   @php
     // モードに応じたフォームの送信先を設定
     if ($mode === 'create') {
-      $formAction = route('clinic-users-info.confirm');
+      $formAction = route('clinic-users.confirm');
       $sessionKey = 'registration_data';
       $isEdit = false;
       $includeId = false;
     } else { // edit
-      $formAction = route('clinic-users-info.edit.confirm');
+      $formAction = route('clinic-users.edit.confirm', ['id' => $clinicUser->id]);
       $sessionKey = 'edit_data';
       $isEdit = true;
       $includeId = true;
     }
   @endphp
 
-  @include('clinic-users-info.cui-form', [
+  @include('clinic-users.clinic-users-form', [
   'action' => $formAction,
   'sessionKey' => $sessionKey,
   'clinicUser' => $clinicUser,

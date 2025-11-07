@@ -11,7 +11,7 @@ class ConsentingDoctorHistoryMassage extends Model
   use HasFactory;
 
   protected $connection = 'sinkyu_massage_system_db';
-  protected $table = 'consenting_doctor_history_massage';
+  protected $table = 'consents_massage';
 
   protected $fillable = [
     'clinic_user_id',

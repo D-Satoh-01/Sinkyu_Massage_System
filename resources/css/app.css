@@ -1,32 +1,25 @@
 /* resources/css/app.css */
 
-body {
+* {
   font-family: 'Noto Sans JP', sans-serif;
   scroll-behavior: smooth;
 }
 
+/* 開発中のみ目の負担を減らすため背景色をグレーに設定 */
 .bg-gray {
   background-color: #ccc;
 }
 
+/* リンクの下線を削除 */
 [href] {
   text-decoration-line: none;
 }
 
 /* 読み取り専用フィールドのスタイル */
-.readonly-field {
-  background-color: #e9ecef;
+[readonly] {
+  background-color: #eeeeee;
+  border-width: 0.1rem;
+  opacity: 0.6;
   cursor: default;
-  color: #6c757d;
-}
-
-input[readonly].readonly-field {
-  opacity: 0.8;
-}
-
-/* 読み取り専用フィールドのボーダー強調表示無効化 */
-.readonly-field:focus,
-.readonly-field:active {
   outline: none;
-  box-shadow: none;
 }

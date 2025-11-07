@@ -153,5 +153,6 @@
 </form>
 
 @push('scripts')
-  <script src="{{ asset('js/cui-registration.js') }}"></script>
+  <script src="{{ asset('js/utility.js') }}"></script>
+  <script src="{{ asset('js/clinic-users.js') }}"></script>
 @endpush

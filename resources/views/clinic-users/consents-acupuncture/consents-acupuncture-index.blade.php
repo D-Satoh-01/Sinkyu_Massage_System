@@ -1,0 +1,91 @@
+<!-- resources/views/clinic-users-info/cui-consenting-doctor-history-acupuncture/ccdha-index.blade.php -->
+
+
+<x-app-layout>
+  <h2>{{ $name }} 様の同意医師履歴（はり・きゅう）</h2><br><br>
+
+  @if(session('success'))
+  <div class="alert alert-success">
+    {{ session('success') }}
+  </div>
+  @endif
+
+  @if($errors->any())
+  <div class="alert alert-danger">
+    <ul>
+    @foreach($errors->all() as $error)
+      <li>{{ $error }}</li>
+    @endforeach
+    </ul>
+  </div>
+  @endif
+
+  <!-- 同意医師履歴新規登録ボタン -->
+  <a href="{{ route('clinic-users.consents-acupuncture.registration', $id) }}">
+  <button>同意医師履歴新規登録</button>
+  </a>
+
+  <!-- 同意医師履歴印刷ボタン -->
+  <button type="button" id="printConsentingHistory" data-print-url="{{ route('clinic-users.consents-acupuncture.print-history', $id) }}" style="margin-left: 10px;">同意医師履歴印刷</button>
+  <br><br>
+
+  <!-- 同意医師履歴一覧テーブル -->
+  <table id="consentingTable" class="table table-bordered table-striped">
+  <thead>
+    <tr>
+    <th>同意医師名</th>
+    <th>同意日</th>
+    <th>同意開始日</th>
+    <th>同意終了日</th>
+    <th>データ登録日</th>
+    <th>複製</th>
+    <th>削除</th>
+    </tr>
+  </thead>
+  <tbody>
+    @forelse($consentingHistories as $history)
+    <tr>
+      <td>
+      <a href="{{ route('clinic-users.consents-acupuncture.edit', ['id' => $id, 'history_id' => $history->id]) }}">{{ $history->consenting_doctor_name }} [編集]</a>
+      </td>
+      <td data-order="{{ $history->consenting_date ? strtotime($history->consenting_date) : 0 }}">
+      @if($history->consenting_date)
+        {{ \Carbon\Carbon::parse($history->consenting_date)->format('Y/m/d') }}
+      @endif
+      </td>
+      <td data-order="{{ $history->consenting_start_date ? strtotime($history->consenting_start_date) : 0 }}">
+      @if($history->consenting_start_date)
+        {{ \Carbon\Carbon::parse($history->consenting_start_date)->format('Y/m/d') }}
+      @endif
+      </td>
+      <td data-order="{{ $history->consenting_end_date ? strtotime($history->consenting_end_date) : 0 }}">
+      @if($history->consenting_end_date)
+        {{ \Carbon\Carbon::parse($history->consenting_end_date)->format('Y/m/d') }}
+      @endif
+      </td>
+      <td data-order="{{ strtotime($history->created_at) }}">
+      {{ \Carbon\Carbon::parse($history->created_at)->format('Y/m/d') }}
+      </td>
+      <td>
+      <a href="{{ route('clinic-users.consents-acupuncture.duplicate', ['id' => $id, 'history_id' => $history->id]) }}">[複製]</a>
+      </td>
+      <td>
+      <form action="{{ route('clinic-users.consents-acupuncture.delete', ['id' => $id, 'history_id' => $history->id]) }}" method="POST" class="delete-form" style="display: inline;">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="delete-btn" style="background: none; border: none; color: #0d6efd; cursor: pointer;">[削除]</button>
+      </form>
+      </td>
+    </tr>
+    @empty
+    <tr>
+      <td colspan="7" class="text-center">データがありません</td>
+    </tr>
+    @endforelse
+  </tbody>
+  </table>
+
+  @push('scripts')
+  <script src="{{ asset('js/consents-acupuncture.js') }}"></script>
+  @endpush
+</x-app-layout>

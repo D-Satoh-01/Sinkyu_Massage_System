@@ -6,7 +6,7 @@
 
   <br><br>
 
-  <a href="{{ route('doctors-info.create') }}">
+  <a href="{{ route('doctors.create') }}">
   <button>医師新規登録</button>
   </a>
 
@@ -28,7 +28,7 @@
     @forelse($doctors as $doctor)
     <tr>
       <td>
-      <a href="{{ route('doctors-info.edit', $doctor->id) }}">{{ $doctor->doctor_name }} [編集]</a><br>
+      <a href="{{ route('doctors.edit', $doctor->id) }}">{{ $doctor->doctor_name }} [編集]</a><br>
       {{ $doctor->furigana }}
       </td>
       <td>
@@ -48,10 +48,10 @@
       {{ $doctor->created_at ? \Carbon\Carbon::parse($doctor->created_at)->format('H:i') : '' }}
       </td>
       <td>
-      <a href="{{ route('doctors-info.duplicate', $doctor->id) }}">複製</a>
+      <a href="{{ route('doctors.duplicate', $doctor->id) }}">複製</a>
       </td>
       <td>
-      <form action="{{ route('doctors-info.delete', ['id' => $doctor->id]) }}" method="POST" class="delete-form" style="display: inline;">
+      <form action="{{ route('doctors.delete', ['id' => $doctor->id]) }}" method="POST" class="delete-form" style="display: inline;">
         @csrf
         @method('DELETE')
         <button type="submit" class="delete-btn" style="background: none; border: none; color: #0d6efd; cursor: pointer;">削除</button>

@@ -22,7 +22,7 @@
   @endif
 
   <!-- 保険情報新規登録ボタン -->
-  <a href="{{ route('clinic-users-info.insurances-info.create', $id) }}">
+  <a href="{{ route('clinic-users.insurances.create', $id) }}">
   <button>保険情報新規登録</button>
   </a>
 
@@ -51,11 +51,11 @@
         $insurerNumberLength = strlen($insurance->insurer?->insurer_number ?? '');
       @endphp
       @if($insurerNumberLength == 6)
-        <a href="{{ route('clinic-users-info.insurances-info.edit', ['id' => $id, 'insurance_id' => $insurance->id]) }}">国民健康保険 [編集]</a>
+        <a href="{{ route('clinic-users.insurances.edit', ['id' => $id, 'insurance_id' => $insurance->id]) }}">国民健康保険 [編集]</a>
       @elseif($insurerNumberLength == 8)
-        <a href="{{ route('clinic-users-info.insurances-info.edit', ['id' => $id, 'insurance_id' => $insurance->id]) }}">組合保険 [編集]</a>
+        <a href="{{ route('clinic-users.insurances.edit', ['id' => $id, 'insurance_id' => $insurance->id]) }}">組合保険 [編集]</a>
       @else
-        <a href="{{ route('clinic-users-info.insurances-info.edit', ['id' => $id, 'insurance_id' => $insurance->id]) }}">保険 [編集]</a>
+        <a href="{{ route('clinic-users.insurances.edit', ['id' => $id, 'insurance_id' => $insurance->id]) }}">保険 [編集]</a>
       @endif
       </td>
       <td>{{ $insurance->insured_number }}</td>
@@ -73,10 +73,10 @@
       {{ $insurance->created_at->format('Y/m/d') }}
       </td>
       <td>
-      <a href="{{ route('clinic-users-info.insurances-info.duplicate', ['id' => $id, 'insurance_id' => $insurance->id]) }}">[複製]</a>
+      <a href="{{ route('clinic-users.insurances.duplicate', ['id' => $id, 'insurance_id' => $insurance->id]) }}">[複製]</a>
       </td>
       <td>
-      <form action="{{ route('clinic-users-info.insurances-info.delete', ['id' => $id, 'insurance_id' => $insurance->id]) }}" method="POST" class="delete-form" style="display: inline;">
+      <form action="{{ route('clinic-users.insurances.delete', ['id' => $id, 'insurance_id' => $insurance->id]) }}" method="POST" class="delete-form" style="display: inline;">
         @csrf
         @method('DELETE')
         <button type="submit" class="delete-btn" style="background: none; border: none; color: #0d6efd; cursor: pointer;">[削除]</button>
@@ -134,7 +134,7 @@
 
       // 医療保険履歴印刷
       $('#printInsuranceHistory').on('click', function() {
-        const url = '{{ route('clinic-users-info.insurances-info.print-history', $id) }}';
+        const url = '{{ route('clinic-users.insurances.print-history', $id) }}';
         const windowName = 'InsuranceHistoryPDF_' + new Date().getTime();
         const windowFeatures = 'popup=yes,width=1200,height=800,left=100,top=100,menubar=yes,toolbar=yes,location=yes,status=yes,scrollbars=yes,resizable=yes';
         window.open(url, windowName, windowFeatures);

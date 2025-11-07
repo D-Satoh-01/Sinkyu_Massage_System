@@ -1,5 +1,5 @@
 <?php
-//-- app/Http/Controllers/DoctorInfoController.php --//
+//-- app/Http/Controllers/DoctorsController.php --//
 
 
 namespace App\Http\Controllers;
@@ -7,7 +7,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class DoctorInfoController extends Controller
+class DoctorsController extends Controller
 {
   // 医師情報一覧表示
   public function index()
@@ -22,19 +22,19 @@ class DoctorInfoController extends Controller
       ->orderBy('doctors.id', 'desc')
       ->get();
 
-    return view('doctors-info.di-index', compact('doctors'));
+    return view('doctors.doctors-index', compact('doctors'));
   }
 
   // 医師情報新規登録画面表示
   public function create()
   {
     // セッションに保存されたデータがあれば、それをフラッシュデータとして設定
-    $sessionData = session()->get('doctor_registration_data');
+    $sessionData = session()->get('doctors_registration_data');
     if ($sessionData) {
       request()->merge($sessionData);
       session()->flashInput($sessionData);
       // セッションデータを保持（確認画面に戻った場合にも利用できるように）
-      session()->put('doctor_registration_data', $sessionData);
+      session()->put('doctors_registration_data', $sessionData);
     }
 
     // 医療機関マスタを取得
@@ -42,7 +42,7 @@ class DoctorInfoController extends Controller
       ->orderBy('medical_institution_name', 'asc')
       ->get();
 
-    return view('doctors-info.di-registration', [
+    return view('doctors.doctors-registration', [
       'mode' => 'create',
       'title' => '医師情報新規登録',
       'doctor' => null,
@@ -79,7 +79,7 @@ class DoctorInfoController extends Controller
     $validated = $request->validate($rules, $messages);
 
     // セッションに保存
-    $request->session()->put('doctor_registration_data', $validated);
+    $request->session()->put('doctors_registration_data', $validated);
 
     // 確認画面のラベル設定
     $labels = $this->getDoctorLabels();
@@ -87,8 +87,8 @@ class DoctorInfoController extends Controller
     return view('registration-review', [
       'data' => $validated,
       'labels' => $labels,
-      'back_route' => 'doctors-info.create',
-      'store_route' => 'doctors-info.store',
+      'back_route' => 'doctors.create',
+      'store_route' => 'doctors.store',
       'page_title' => '医師情報登録内容確認',
       'registration_message' => '医師情報の登録を行います。',
     ]);
@@ -101,7 +101,7 @@ class DoctorInfoController extends Controller
     $data = $request->session()->get('doctor_registration_data');
 
     if (!$data) {
-      return redirect()->route('doctors-info.create')->with('error', 'セッションが切れました。もう一度入力してください。');
+      return redirect()->route('doctors.create')->with('error', 'セッションが切れました。もう一度入力してください。');
     }
 
     // 医療機関の新規登録処理
@@ -136,34 +136,34 @@ class DoctorInfoController extends Controller
     // セッションから登録データを削除
     $request->session()->forget('doctor_registration_data');
 
-    return redirect()->route('doctors-info.index')->with('success', '医師情報を登録しました。');
+    return redirect()->route('doctors.index')->with('success', '医師情報を登録しました。');
   }
 
   // 医師情報編集画面表示
   public function edit($id)
   {
     // セッションに保存されたデータがあれば、それをフラッシュデータとして設定
-    $sessionData = session()->get('doctor_edit_data');
-    $sessionId = session()->get('doctor_edit_id');
+    $sessionData = session()->get('doctors_edit_data');
+    $sessionId = session()->get('doctors_edit_id');
     if ($sessionData && $sessionId == $id) {
       request()->merge($sessionData);
       session()->flashInput($sessionData);
       // セッションデータを保持（確認画面に戻った場合にも利用できるように）
-      session()->put('doctor_edit_data', $sessionData);
-      session()->put('doctor_edit_id', $sessionId);
+      session()->put('doctors_edit_data', $sessionData);
+      session()->put('doctors_edit_id', $sessionId);
     }
 
     $doctor = DB::table('doctors')->where('id', $id)->first();
 
     if (!$doctor) {
-      return redirect()->route('doctors-info.index')->with('error', '医師情報が見つかりません。');
+      return redirect()->route('doctors.index')->with('error', '医師情報が見つかりません。');
     }
 
     $medicalInstitutions = DB::table('medical_institutions')
       ->orderBy('medical_institution_name', 'asc')
       ->get();
 
-    return view('doctors-info.di-registration', [
+    return view('doctors.di-registration', [
       'mode' => 'edit',
       'title' => '医師情報編集',
       'doctor' => $doctor,
@@ -200,8 +200,8 @@ class DoctorInfoController extends Controller
     $validated = $request->validate($rules, $messages);
 
     // セッションに保存
-    $request->session()->put('doctor_edit_data', $validated);
-    $request->session()->put('doctor_edit_id', $id);
+    $request->session()->put('doctors_edit_data', $validated);
+    $request->session()->put('doctors_edit_id', $id);
 
     // 確認画面のラベル設定
     $labels = $this->getDoctorLabels();
@@ -209,9 +209,9 @@ class DoctorInfoController extends Controller
     return view('registration-review', [
       'data' => $validated,
       'labels' => $labels,
-      'back_route' => 'doctors-info.edit',
+      'back_route' => 'doctors.edit',
       'back_id' => $id,
-      'store_route' => 'doctors-info.update',
+      'store_route' => 'doctors.update',
       'page_title' => '医師情報編集内容確認',
       'registration_message' => '医師情報の更新を行います。',
     ]);
@@ -220,11 +220,11 @@ class DoctorInfoController extends Controller
   // 医師情報更新処理
   public function update(Request $request, $id)
   {
-    $data = $request->session()->get('doctor_edit_data');
-    $sessionId = $request->session()->get('doctor_edit_id');
+    $data = $request->session()->get('doctors_edit_data');
+    $sessionId = $request->session()->get('doctors_edit_id');
 
     if (!$data || $sessionId != $id) {
-      return redirect()->route('doctors-info.edit', $id)->with('error', 'セッションが切れました。もう一度入力してください。');
+      return redirect()->route('doctors.edit', $id)->with('error', 'セッションが切れました。もう一度入力してください。');
     }
 
     // 医療機関の新規登録処理
@@ -256,35 +256,35 @@ class DoctorInfoController extends Controller
     ]);
 
     // セッションから編集データを削除
-    $request->session()->forget('doctor_edit_data');
-    $request->session()->forget('doctor_edit_id');
+    $request->session()->forget('doctors_edit_data');
+    $request->session()->forget('doctors_edit_id');
 
-    return redirect()->route('doctors-info.index')->with('success', '医師情報を更新しました。');
+    return redirect()->route('doctors.index')->with('success', '医師情報を更新しました。');
   }
 
   // 医師情報複製画面表示
   public function duplicate($id)
   {
     // セッションに保存されたデータがあれば、それをフラッシュデータとして設定
-    $sessionData = session()->get('doctor_duplicate_data');
+    $sessionData = session()->get('doctors_duplicate_data');
     if ($sessionData) {
       request()->merge($sessionData);
       session()->flashInput($sessionData);
       // セッションデータを保持（確認画面に戻った場合にも利用できるように）
-      session()->put('doctor_duplicate_data', $sessionData);
+      session()->put('doctors_duplicate_data', $sessionData);
     }
 
     $doctor = DB::table('doctors')->where('id', $id)->first();
 
     if (!$doctor) {
-      return redirect()->route('doctors-info.index')->with('error', '医師情報が見つかりません。');
+      return redirect()->route('doctors.index')->with('error', '医師情報が見つかりません。');
     }
 
     $medicalInstitutions = DB::table('medical_institutions')
       ->orderBy('medical_institution_name', 'asc')
       ->get();
 
-    return view('doctors-info.di-registration', [
+    return view('doctors.di-registration', [
       'mode' => 'duplicate',
       'title' => '医師情報複製',
       'doctor' => $doctor,
@@ -322,8 +322,8 @@ class DoctorInfoController extends Controller
     $validated = $request->validate($rules, $messages);
 
     // セッションに保存
-    $request->session()->put('doctor_duplicate_data', $validated);
-    $request->session()->put('doctor_duplicate_source_id', $validated['source_doctor_id']);
+    $request->session()->put('doctors_duplicate_data', $validated);
+    $request->session()->put('doctors_duplicate_source_id', $validated['source_doctor_id']);
 
     // 確認画面のラベル設定
     $labels = $this->getDoctorLabels();
@@ -331,9 +331,9 @@ class DoctorInfoController extends Controller
     return view('registration-review', [
       'data' => $validated,
       'labels' => $labels,
-      'back_route' => 'doctors-info.duplicate',
+      'back_route' => 'doctors.duplicate',
       'back_id' => $validated['source_doctor_id'],
-      'store_route' => 'doctors-info.duplicate.store',
+      'store_route' => 'doctors.duplicate.store',
       'page_title' => '医師情報複製内容確認',
       'registration_message' => '医師情報の複製登録を行います。',
     ]);
@@ -342,10 +342,10 @@ class DoctorInfoController extends Controller
   // 医師情報複製登録処理
   public function duplicateStore(Request $request)
   {
-    $data = $request->session()->get('doctor_duplicate_data');
+    $data = $request->session()->get('doctors_duplicate_data');
 
     if (!$data) {
-      return redirect()->route('doctors-info.index')->with('error', 'セッションが切れました。もう一度入力してください。');
+      return redirect()->route('doctors.index')->with('error', 'セッションが切れました。もう一度入力してください。');
     }
 
     // 医療機関の新規登録処理
@@ -378,9 +378,9 @@ class DoctorInfoController extends Controller
     ]);
 
     // セッションから複製データを削除
-    $request->session()->forget('doctor_duplicate_data');
+    $request->session()->forget('doctors_duplicate_data');
 
-    return redirect()->route('doctors-info.index')->with('success', '医師情報を複製登録しました。');
+    return redirect()->route('doctors.index')->with('success', '医師情報を複製登録しました。');
   }
 
   // 医師情報のラベル取得
@@ -406,6 +406,6 @@ class DoctorInfoController extends Controller
   public function destroy($id)
   {
     DB::table('doctors')->where('id', $id)->delete();
-    return redirect()->route('doctors-info.index')->with('success', '医師情報を削除しました。');
+    return redirect()->route('doctors.index')->with('success', '医師情報を削除しました。');
   }
 }

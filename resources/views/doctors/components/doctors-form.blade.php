@@ -65,7 +65,7 @@
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
     <br>
-    <input type="text" id="address_1" name="address_1" value="{{ old('address_1', $doctor->address_1 ?? '') }}">
+    <input type="text" id="address_1" name="address_1" value="{{ old('address_1', $doctor->address_1 ?? '') }}" readonly>
   </div>
 
   <div class="mb-3">
@@ -138,5 +138,6 @@
 </div>
 
 @push('scripts')
-  <script src="{{ asset('js/di-registration.js') }}"></script>
+  <script src="{{ asset('js/utility.js') }}"></script>
+  <script src="{{ asset('js/doctors.js') }}"></script>
 @endpush

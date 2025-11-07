@@ -256,5 +256,6 @@
 </div>
 
 @push('scripts')
-  <script src="{{ asset('js/cii-registration.js') }}"></script>
+  <script src="{{ asset('js/utility.js') }}"></script>
+  <script src="{{ asset('js/insurances.js') }}"></script>
 @endpush

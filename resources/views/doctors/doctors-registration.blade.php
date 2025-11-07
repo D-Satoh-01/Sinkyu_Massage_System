@@ -17,11 +17,11 @@
   @php
     // モードに応じたフォームの送信先を設定
     if ($mode === 'create') {
-      $formAction = route('doctors-info.confirm');
+      $formAction = route('doctors.confirm');
     } elseif ($mode === 'edit') {
-      $formAction = route('doctors-info.edit.confirm', $doctor->id);
+      $formAction = route('doctors.edit.confirm', $doctor->id);
     } else { // duplicate
-      $formAction = route('doctors-info.duplicate.confirm');
+      $formAction = route('doctors.duplicate.confirm');
     }
   @endphp
 
@@ -30,11 +30,11 @@
       <input type="hidden" name="source_doctor_id" value="{{ old('source_doctor_id', $doctor->id) }}">
     @endif
 
-    @include('doctors-info.components.doctor-form', [
+    @include('doctors.components.doctors-form', [
       'doctor' => $doctor,
       'medicalInstitutions' => $medicalInstitutions,
       'submitLabel' => '登録確認へ',
-      'cancelRoute' => route('doctors-info.index')
+      'cancelRoute' => route('doctors.index')
     ])
   </form>
 </x-app-layout>
