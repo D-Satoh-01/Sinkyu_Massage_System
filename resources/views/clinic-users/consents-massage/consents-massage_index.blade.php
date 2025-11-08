@@ -21,7 +21,7 @@
   @endif
 
   <!-- 同意医師履歴新規登録ボタン -->
-  <a href="{{ route('clinic-users.consents-massage.registration', $id) }}">
+  <a href="{{ route('clinic-users.consents-massage.create', $id) }}">
   <button>同意医師履歴新規登録</button>
   </a>
 

@@ -4,7 +4,7 @@
   @csrf
 
   <div class="mb-3">
-  <label>保険種別１</label><br>
+  <label class="fw-semibold">保険種別１</label><br>
   @php
     $type1Map = [1 => '社･国･組', 2 => '公費', 3 => '後期', 4 => '退職'];
     $currentType1 = old('insurance_type_1', (isset($insurance) && $insurance && $insurance->insurance_type_1_id) ? $type1Map[$insurance->insurance_type_1_id] : '');
@@ -23,7 +23,7 @@
   </div>
 
   <div class="mb-3">
-  <label>保険種別２</label><br>
+  <label class="fw-semibold">保険種別２</label><br>
   @php
     $type2Map = [1 => '単独', 2 => '２併', 3 => '３併'];
     $currentType2 = old('insurance_type_2', (isset($insurance) && $insurance && $insurance->insurance_type_2_id) ? $type2Map[$insurance->insurance_type_2_id] : '');
@@ -40,7 +40,7 @@
   </div>
 
   <div class="mb-3">
-  <label>保険種別３</label><br>
+  <label class="fw-semibold">保険種別３</label><br>
   @php
     $type3Map = [1 => '本外', 2 => '三外', 3 => '家外', 4 => '高外9', 5 => '高外8'];
     $currentType3 = old('insurance_type_3', (isset($insurance) && $insurance && $insurance->insurance_type_3_id) ? $type3Map[$insurance->insurance_type_3_id] : '');
@@ -61,7 +61,7 @@
   </div>
 
   <div class="mb-3">
-  <label>本人・家族</label><br>
+  <label class="fw-semibold">本人・家族</label><br>
   @php
     $selfOrFamilyMap = [1 => '本人', 2 => '六歳', 3 => '家族', 4 => '高齢１', 5 => '高齢', 6 => '高齢７'];
     $currentSelfOrFamily = old('insured_person_type', (isset($insurance) && $insurance && $insurance->self_or_family_id) ? $selfOrFamilyMap[$insurance->self_or_family_id] : '');
@@ -84,7 +84,7 @@
   </div>
 
   <div class="mb-3">
-  <label for="insured_number">被保険者番号</label><br>
+  <label class="fw-semibold" for="insured_number">被保険者番号</label><br>
   <input type="text" id="insured_number" name="insured_number" value="{{ old('insured_number', ($insurance->insured_number ?? '')) }}">
   @error('insured_number')
     <div class="text-danger">{{ $message }}</div>
@@ -92,42 +92,42 @@
   </div>
 
   <div class="mb-3">
-  <label for="code_number">記号</label><br>
+  <label class="fw-semibold" for="code_number">記号</label><br>
   <input type="text" id="code_number" name="code_number" value="{{ old('code_number', ($insurance->code_number ?? '')) }}">
   </div>
 
   <div class="mb-3">
-  <label for="account_number">番号</label><br>
+  <label class="fw-semibold" for="account_number">番号</label><br>
   <input type="text" id="account_number" name="account_number" value="{{ old('account_number', ($insurance->account_number ?? '')) }}">
   </div>
 
   <div class="mb-3">
-  <label for="locality_code">区市町村番号</label><br>
+  <label class="fw-semibold" for="locality_code">区市町村番号</label><br>
   <input type="text" id="locality_code" name="locality_code" value="{{ old('locality_code', ($insurance->locality_code ?? '')) }}">
   </div>
 
   <div class="mb-3">
-  <label for="recipient_code">受給者番号</label><br>
+  <label class="fw-semibold" for="recipient_code">受給者番号</label><br>
   <input type="text" id="recipient_code" name="recipient_code" value="{{ old('recipient_code', ($insurance->recipient_code ?? '')) }}">
   </div>
 
   <div class="mb-3">
-  <label for="license_acquisition_date">資格取得年月日</label><br>
+  <label class="fw-semibold" for="license_acquisition_date">資格取得年月日</label><br>
   <input type="date" id="license_acquisition_date" name="license_acquisition_date" value="{{ old('license_acquisition_date', ($insurance && $insurance->license_acquisition_date) ? $insurance->license_acquisition_date->format('Y-m-d') : '') }}">
   </div>
 
   <div class="mb-3">
-  <label for="certification_date">認定年月日</label><br>
+  <label class="fw-semibold" for="certification_date">認定年月日</label><br>
   <input type="date" id="certification_date" name="certification_date" value="{{ old('certification_date', ($insurance && $insurance->certification_date) ? $insurance->certification_date->format('Y-m-d') : '') }}">
   </div>
 
   <div class="mb-3">
-  <label for="issue_date">発行（交付）年月日</label><br>
+  <label class="fw-semibold" for="issue_date">発行（交付）年月日</label><br>
   <input type="date" id="issue_date" name="issue_date" value="{{ old('issue_date', ($insurance && $insurance->issue_date) ? $insurance->issue_date->format('Y-m-d') : '') }}">
   </div>
 
   <div class="mb-3">
-  <label for="expenses_borne_ratio">一部負担金の割合</label><br>
+  <label class="fw-semibold" for="expenses_borne_ratio">一部負担金の割合</label><br>
   <select id="expenses_borne_ratio" name="expenses_borne_ratio">
     <option value="">----</option>
     @php
@@ -141,24 +141,24 @@
   </div>
 
   <div class="mb-3">
-  <label for="expiry_date">有効期限</label><br>
+  <label class="fw-semibold" for="expiry_date">有効期限</label><br>
   <input type="date" id="expiry_date" name="expiry_date" value="{{ old('expiry_date', ($insurance && $insurance->expiry_date) ? $insurance->expiry_date->format('Y-m-d') : '') }}">
   </div>
 
   <div class="mb-3">
   <div class="checkbox-group">
-    <label for="is_redeemed">償還対象</label><br>
+    <label class="fw-semibold" for="is_redeemed">償還対象</label><br>
     <input type="checkbox" id="is_redeemed" name="is_redeemed" value="1" {{ old('is_redeemed', $insurance->is_redeemed ?? false) ? 'checked' : '' }}>
   </div>
   </div>
 
   <div class="mb-3">
-  <label for="insured_name">被保険者氏名</label><br>
+  <label class="fw-semibold" for="insured_name">被保険者氏名</label><br>
   <input type="text" id="insured_name" name="insured_name" value="{{ old('insured_name', $insurance->insured_name ?? '') }}">
   </div>
 
   <div class="mb-3">
-  <label for="relationship_with_clinic_user">利用者との続柄</label><br>
+  <label class="fw-semibold" for="relationship_with_clinic_user">利用者との続柄</label><br>
   <select id="relationship_with_clinic_user" name="relationship_with_clinic_user">
     <option value="">----</option>
     @php
@@ -172,35 +172,35 @@
 
   <div class="mb-3">
   <div class="checkbox-group">
-    <label for="is_healthcare_subsidized">医療助成対象</label><br>
+    <label class="fw-semibold" for="is_healthcare_subsidized">医療助成対象</label><br>
     <input type="checkbox" id="is_healthcare_subsidized" name="is_healthcare_subsidized" value="1" {{ old('is_healthcare_subsidized', $insurance->is_healthcare_subsidized ?? false) ? 'checked' : '' }}>
   </div>
   </div>
 
   <div id="medical-assistance-fields">
   <div class="mb-3">
-    <label for="public_funds_payer_code">公費負担者番号</label><br>
+    <label class="fw-semibold" for="public_funds_payer_code">公費負担者番号</label><br>
     <input type="text" id="public_funds_payer_code" name="public_funds_payer_code" value="{{ old('public_funds_payer_code', $insurance->public_funds_payer_code ?? '') }}">
   </div>
 
   <div class="mb-3">
-    <label for="public_funds_recipient_code">公費受給者番号</label><br>
+    <label class="fw-semibold" for="public_funds_recipient_code">公費受給者番号</label><br>
     <input type="text" id="public_funds_recipient_code" name="public_funds_recipient_code" value="{{ old('public_funds_recipient_code', $insurance->public_funds_recipient_code ?? '') }}">
   </div>
 
   <div class="mb-3">
-    <label for="locality_code_family">区市町村番号（家族）</label><br>
+    <label class="fw-semibold" for="locality_code_family">区市町村番号（家族）</label><br>
     <input type="text" id="locality_code_family" name="locality_code_family" value="{{ old('locality_code_family', ($insurance->locality_code_family ?? '')) }}">
   </div>
 
   <div class="mb-3">
-    <label for="recipient_code_family">受給者番号（家族）</label><br>
+    <label class="fw-semibold" for="recipient_code_family">受給者番号（家族）</label><br>
     <input type="text" id="recipient_code_family" name="recipient_code_family" value="{{ old('recipient_code_family', ($insurance->recipient_code_family ?? '')) }}">
   </div>
   </div>
 
   <div class="mb-3">
-    <label for="selected_insurer">保険者情報</label><br>
+    <label class="fw-semibold" for="selected_insurer">保険者情報</label><br>
     <select id="selected_insurer" name="selected_insurer" onchange="updateInsurerFields()">
     <option value="">登録済みデータから選択［保険者名称｜保険者番号｜保険者住所｜提出先名称］</option>
     @foreach($insurers as $insurer)
@@ -220,7 +220,7 @@
   <h6>▼ 保険者情報新規登録</h6>
 
   <div class="mb-3">
-    <label for="new_insurer_number">保険者番号</label><br>
+    <label class="fw-semibold" for="new_insurer_number">保険者番号</label><br>
     <input type="text" id="new_insurer_number" name="new_insurer_number" value="{{ old('new_insurer_number', '') }}">
     <div id="insurer_number_warning" class="text-danger" style="display: none;">保険者番号は6桁または8桁の数字を入力してください</div>
     @error('new_insurer_number')
@@ -229,23 +229,23 @@
   </div>
 
   <div class="mb-3">
-    <label for="new_insurer_name">保険者名称</label><br>
+    <label class="fw-semibold" for="new_insurer_name">保険者名称</label><br>
     <input type="text" id="new_insurer_name" name="new_insurer_name" value="{{ old('new_insurer_name', '') }}">
   </div>
 
   <div class="mb-3">
-    <label for="new_postal_code">郵便番号</label><br>
+    <label class="fw-semibold" for="new_postal_code">郵便番号</label><br>
     <input type="text" id="new_postal_code" name="new_postal_code" placeholder="000-0000" maxlength="8" value="{{ old('new_postal_code', '') }}">
     <div id="new-address-message" class="loading" style="display: none; margin-top: 5px;"></div>
   </div>
 
   <div class="mb-3">
-    <label for="new_address">住所</label><br>
+    <label class="fw-semibold" for="new_address">住所</label><br>
     <input type="text" id="new_address" name="new_address" value="{{ old('new_address', '') }}">
   </div>
 
   <div class="mb-3">
-    <label for="new_recipient_name">提出先名称</label><br>
+    <label class="fw-semibold" for="new_recipient_name">提出先名称</label><br>
     <input type="text" id="new_recipient_name" name="new_recipient_name" value="{{ old('new_recipient_name', '') }}">
   </div>
 

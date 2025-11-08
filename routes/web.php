@@ -16,7 +16,7 @@ Route::middleware('auth')->group(function () {
 
 	Route::view('/index', 'index')->name('index');
 
-	Route::view('/master-data/index', 'master-data.master-data-index')->name('master-data.index');
+	Route::view('/master-data/index', 'master-data.master-data_index')->name('master-data.index');
 
   // 医師情報
   Route::get('/master-data/doctors/index', [DoctorsController::class, 'index'])->name('doctors.index');

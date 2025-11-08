@@ -4,7 +4,7 @@
   @csrf
 
   <div class="mb-3">
-    <label class="fw-semibold" style="font-size: 0.9rem;" for="doctor_name">医師名 <span class="text-danger"></span></label>
+    <label class="fw-semibold" for="doctor_name">医師名 <span class="text-danger"></span></label>
     @error('doctor_name')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
@@ -13,7 +13,7 @@
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" style="font-size: 0.9rem;" for="furigana">フリガナ</label>
+    <label class="fw-semibold" for="furigana">フリガナ</label>
     @error('furigana')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
@@ -22,7 +22,7 @@
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" style="font-size: 0.9rem;" for="medical_institutions_id">医療機関</label>
+    <label class="fw-semibold" for="medical_institutions_id">医療機関</label>
     @error('medical_institutions_id')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
@@ -50,7 +50,7 @@
   <br>
 
   <div class="mb-3">
-    <label class="fw-semibold" style="font-size: 0.9rem;" for="postal_code">郵便番号</label>
+    <label class="fw-semibold" for="postal_code">郵便番号</label>
     @error('postal_code')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
@@ -60,7 +60,7 @@
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" style="font-size: 0.9rem;" for="address_1">都道府県</label>
+    <label class="fw-semibold" for="address_1">都道府県</label>
     @error('address_1')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
@@ -69,7 +69,7 @@
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" style="font-size: 0.9rem;" for="address_2">市区町村番地以下</label>
+    <label class="fw-semibold" for="address_2">市区町村番地以下</label>
     @error('address_2')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
@@ -78,7 +78,7 @@
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" style="font-size: 0.9rem;" for="address_3">アパート・マンション名等</label>
+    <label class="fw-semibold" for="address_3">アパート・マンション名等</label>
     @error('address_3')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
@@ -87,7 +87,7 @@
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" style="font-size: 0.9rem;" for="phone">電話番号</label>
+    <label class="fw-semibold" for="phone">電話番号</label>
     @error('phone')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
@@ -96,7 +96,7 @@
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" style="font-size: 0.9rem;" for="cell_phone">携帯番号</label>
+    <label class="fw-semibold" for="cell_phone">携帯番号</label>
     @error('cell_phone')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
@@ -105,7 +105,7 @@
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" style="font-size: 0.9rem;" for="fax">FAX番号</label>
+    <label class="fw-semibold" for="fax">FAX番号</label>
     @error('fax')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
@@ -114,7 +114,7 @@
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" style="font-size: 0.9rem;" for="email">メールアドレス</label>
+    <label class="fw-semibold" for="email">メールアドレス</label>
     @error('email')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
@@ -123,7 +123,7 @@
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" style="font-size: 0.9rem;" for="note">メモ</label>
+    <label class="fw-semibold" for="note">メモ</label>
     @error('note')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror

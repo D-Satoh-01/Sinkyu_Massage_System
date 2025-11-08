@@ -110,3 +110,250 @@ function setupPostalCodeInput(postalCodeInputId, searchCallback) {
     });
   }
 }
+
+/**
+ * メッセージを表示する汎用関数
+ * @param {string} message - 表示するメッセージ
+ * @param {string} type - メッセージタイプ（'success', 'error', 'info'など）
+ * @param {string} elementId - メッセージを表示する要素のID（デフォルト: 'message'）
+ * @param {number} hideDelay - メッセージを自動的に隠すまでの時間（ミリ秒、0で自動非表示なし）
+ */
+function showMessage(message, type = 'info', elementId = 'message', hideDelay = 0) {
+  const messageEl = document.getElementById(elementId);
+  if (!messageEl) {
+    console.warn(`Message element with ID '${elementId}' not found`);
+    return;
+  }
+
+  messageEl.textContent = message;
+  messageEl.className = type;
+  messageEl.style.display = 'block';
+
+  // 自動非表示が設定されている場合
+  if (hideDelay > 0) {
+    setTimeout(() => {
+      messageEl.style.display = 'none';
+    }, hideDelay);
+  }
+}
+
+/**
+ * 生年月日から年齢を計算する汎用関数
+ * @param {string|Date} birthday - 生年月日（文字列またはDateオブジェクト）
+ * @param {Date} baseDate - 基準日（デフォルト: 今日）
+ * @returns {number|null} 年齢（無効な入力の場合はnull）
+ */
+function calculateAge(birthday, baseDate = new Date()) {
+  if (!birthday) {
+    return null;
+  }
+
+  const birthDate = typeof birthday === 'string' ? new Date(birthday) : birthday;
+
+  // 無効な日付チェック
+  if (isNaN(birthDate.getTime())) {
+    return null;
+  }
+
+  let age = baseDate.getFullYear() - birthDate.getFullYear();
+  const monthDiff = baseDate.getMonth() - birthDate.getMonth();
+
+  // 誕生日がまだ来ていない場合は年齢を1減らす
+  if (monthDiff < 0 || (monthDiff === 0 && baseDate.getDate() < birthDate.getDate())) {
+    age--;
+  }
+
+  return age >= 0 ? age : null;
+}
+
+/**
+ * 生年月日入力フィールドから年齢を計算して年齢フィールドに設定する汎用関数
+ * @param {string} birthdayInputId - 生年月日入力フィールドのID
+ * @param {string} ageInputId - 年齢入力フィールドのID
+ */
+function calculateAndFillAge(birthdayInputId, ageInputId) {
+  const birthdayInput = document.getElementById(birthdayInputId);
+  const ageInput = document.getElementById(ageInputId);
+
+  if (!birthdayInput || !ageInput) {
+    console.warn('Birthday or age input element not found');
+    return;
+  }
+
+  const age = calculateAge(birthdayInput.value);
+  ageInput.value = age !== null ? age : '';
+}
+
+/**
+ * 要素の表示/非表示を切り替える汎用関数
+ * @param {string} elementId - 要素のID
+ * @param {boolean} show - trueで表示、falseで非表示
+ */
+function toggleElementVisibility(elementId, show) {
+  const element = document.getElementById(elementId);
+  if (element) {
+    element.style.display = show ? 'block' : 'none';
+  }
+}
+
+/**
+ * チェックボックスの状態に応じてフィールドの有効/無効を切り替える汎用関数
+ * @param {string} checkboxId - チェックボックスのID
+ * @param {string[]} fieldIds - 制御するフィールドのID配列
+ * @param {boolean} clearOnDisable - 無効化時にフィールドをクリアするか（デフォルト: true）
+ */
+function toggleFieldsByCheckbox(checkboxId, fieldIds, clearOnDisable = true) {
+  const checkbox = document.getElementById(checkboxId);
+  if (!checkbox) {
+    console.warn(`Checkbox with ID '${checkboxId}' not found`);
+    return;
+  }
+
+  const isEnabled = checkbox.checked;
+
+  fieldIds.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.readOnly = !isEnabled;
+      if (!isEnabled && clearOnDisable) {
+        field.value = '';
+      }
+    }
+  });
+}
+
+/**
+ * セレクトボックスの値に応じてフィールドの有効/無効を切り替える汎用関数
+ * @param {string} selectId - セレクトボックスのID
+ * @param {string} targetValue - フィールドを有効化する値
+ * @param {string[]} fieldIds - 制御するフィールドのID配列
+ * @param {boolean} clearOnDisable - 無効化時にフィールドをクリアするか（デフォルト: true）
+ */
+function toggleFieldsBySelect(selectId, targetValue, fieldIds, clearOnDisable = true) {
+  const select = document.getElementById(selectId);
+  if (!select) {
+    console.warn(`Select with ID '${selectId}' not found`);
+    return;
+  }
+
+  const isEnabled = select.value === targetValue;
+
+  fieldIds.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.readOnly = !isEnabled;
+      if (!isEnabled && clearOnDisable) {
+        field.value = '';
+      }
+    }
+  });
+}
+
+/**
+ * 保険者番号のバリデーションを行う汎用関数
+ * @param {string} insurerNumberInputId - 保険者番号入力フィールドのID
+ * @param {string} warningElementId - 警告メッセージを表示する要素のID
+ * @param {string} selectedInsurerSelectId - 選択された保険者のセレクトボックスのID（オプション）
+ * @returns {boolean} バリデーション結果
+ */
+function validateInsurerNumber(insurerNumberInputId, warningElementId, selectedInsurerSelectId = null) {
+  const insurerNumberInput = document.getElementById(insurerNumberInputId);
+  const warningElement = document.getElementById(warningElementId);
+
+  if (!insurerNumberInput || !warningElement) {
+    console.warn('Insurer number field or warning element not found');
+    return true;
+  }
+
+  // 保険者が選択されている場合は、新規登録フィールドのバリデーションは不要
+  if (selectedInsurerSelectId) {
+    const selectedInsurer = document.getElementById(selectedInsurerSelectId);
+    if (selectedInsurer && selectedInsurer.value !== '') {
+      warningElement.style.display = 'none';
+      return true;
+    }
+  }
+
+  const value = insurerNumberInput.value.trim();
+  const numbersOnly = value.replace(/[^\d]/g, '');
+
+  // 桁数チェック
+  if (numbersOnly.length === 0) {
+    warningElement.style.display = 'none';
+    return true;
+  } else if (numbersOnly.length === 6 || numbersOnly.length === 8) {
+    warningElement.style.display = 'none';
+    return true;
+  } else {
+    warningElement.style.display = 'block';
+    return false;
+  }
+}
+
+/**
+ * セレクトボックスで保険者を選択した際に詳細フィールドを更新する汎用関数
+ * @param {string} selectId - 保険者セレクトボックスのID
+ * @param {Object} fieldMapping - フィールドマッピング（フィールドID: data属性名）
+ */
+function updateInsurerFields(selectId, fieldMapping) {
+  const select = document.getElementById(selectId);
+  if (!select) {
+    console.warn(`Select with ID '${selectId}' not found`);
+    return;
+  }
+
+  const selectedOption = select.options[select.selectedIndex];
+  const isSelected = select.value !== '';
+
+  Object.entries(fieldMapping).forEach(([fieldId, dataAttr]) => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.readOnly = isSelected;
+      field.value = isSelected ? (selectedOption.getAttribute(`data-${dataAttr}`) || '') : '';
+    }
+  });
+}
+
+/**
+ * セレクトボックスと新規登録フィールドの相互排他制御を行う汎用関数
+ * @param {string} selectId - セレクトボックスのID
+ * @param {string[]} newFieldIds - 新規登録フィールドのID配列
+ */
+function toggleSelectAndNewFields(selectId, newFieldIds) {
+  const select = document.getElementById(selectId);
+  if (!select) {
+    console.warn(`Select with ID '${selectId}' not found`);
+    return;
+  }
+
+  const isSelected = select.value !== '';
+
+  newFieldIds.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.readOnly = isSelected;
+      if (isSelected) {
+        field.value = '';
+      }
+    }
+  });
+}
+
+/**
+ * 新規登録フィールドに入力があった際にセレクトボックスをクリアする汎用関数
+ * @param {string} newFieldId - 新規登録フィールドのID
+ * @param {string} selectId - セレクトボックスのID
+ */
+function clearSelectOnNewFieldInput(newFieldId, selectId) {
+  const newField = document.getElementById(newFieldId);
+  const select = document.getElementById(selectId);
+
+  if (!newField || !select) {
+    console.warn('New field or select element not found');
+    return;
+  }
+
+  if (newField.value.trim() !== '') {
+    select.value = '';
+  }
+}

@@ -18,7 +18,8 @@
       "Bash(rm:*)",
       "Bash(move clinic-users-info clinic-users)",
       "Bash(move:*)",
-      "Bash(git mv:*)"
+      "Bash(git mv:*)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []

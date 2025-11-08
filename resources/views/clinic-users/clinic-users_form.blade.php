@@ -22,7 +22,7 @@
   @endif
 
   <div class="mb-3">
-  <label class="fw-semibold" style="font-size: 0.9rem;" for="clinic_user_name">利用者氏名</label>
+  <label class="fw-semibold" for="clinic_user_name">利用者氏名</label>
   @error('clinic_user_name')
     <span class="text-danger ms-2">{{ $message }}</span>
   @enderror
@@ -31,7 +31,7 @@
   </div>
 
   <div class="mb-3">
-  <label class="fw-semibold" style="font-size: 0.9rem;" for="furigana">フリガナ</label>
+  <label class="fw-semibold" for="furigana">フリガナ</label>
   @error('furigana')
     <span class="text-danger ms-2">{{ $message }}</span>
   @enderror
@@ -40,12 +40,12 @@
   </div>
 
   <div class="mb-3">
-  <label class="fw-semibold" style="font-size: 0.9rem;" for="birthday">生年月日</label><br>
+  <label class="fw-semibold" for="birthday">生年月日</label><br>
   <input type="date" id="birthday" name="birthday" value="{{ old('birthday', session($sessionKey . '.birthday', isset($clinicUser) && !empty($clinicUser->birthday) ? ($clinicUser->birthday instanceof \Carbon\Carbon ? $clinicUser->birthday->format('Y-m-d') : $clinicUser->birthday) : '')) }}">
   </div>
 
   <div class="mb-3" style="position: relative;">
-  <label class="fw-semibold" style="font-size: 0.9rem;" for="age">年齢</label>
+  <label class="fw-semibold" for="age">年齢</label>
   @error('age')
     <span class="text-danger ms-2">{{ $message }}</span>
   @enderror
@@ -55,7 +55,7 @@
   </div>
 
   <div class="mb-3">
-  <label class="fw-semibold" style="font-size: 0.9rem;" for="gender_id">性別</label><br>
+  <label class="fw-semibold" for="gender_id">性別</label><br>
   @php $genderVal = old('gender_id', session($sessionKey . '.gender_id', isset($clinicUser) ? $clinicUser->gender_id ?? '' : '')); @endphp
   <select id="gender_id" name="gender_id">
     <option value="">----</option>
@@ -65,7 +65,7 @@
   </div>
 
   <div class="mb-3">
-  <label class="fw-semibold" style="font-size: 0.9rem;" for="postal_code">郵便番号</label>
+  <label class="fw-semibold" for="postal_code">郵便番号</label>
   @error('postal_code')
     <span class="text-danger ms-2">{{ $message }}</span>
   @enderror
@@ -75,7 +75,7 @@
   </div>
 
   <div class="mb-3">
-  <label class="fw-semibold" style="font-size: 0.9rem;" for="address_1">都道府県</label>
+  <label class="fw-semibold" for="address_1">都道府県</label>
   @error('address_1')
     <span class="text-danger ms-2">{{ $message }}</span>
   @enderror
@@ -84,7 +84,7 @@
   </div>
 
   <div class="mb-3">
-  <label class="fw-semibold" style="font-size: 0.9rem;" for="address_2">市区町村番地以下</label>
+  <label class="fw-semibold" for="address_2">市区町村番地以下</label>
   @error('address_2')
     <span class="text-danger ms-2">{{ $message }}</span>
   @enderror
@@ -93,7 +93,7 @@
   </div>
 
   <div class="mb-3">
-  <label class="fw-semibold" style="font-size: 0.9rem;" for="address_3">アパート・マンション名等</label>
+  <label class="fw-semibold" for="address_3">アパート・マンション名等</label>
   @error('address_3')
     <span class="text-danger ms-2">{{ $message }}</span>
   @enderror
@@ -102,50 +102,50 @@
   </div>
 
   <div class="mb-3">
-  <label class="fw-semibold" style="font-size: 0.9rem;" for="phone">電話番号</label><br>
+  <label class="fw-semibold" for="phone">電話番号</label><br>
   <input type="text" id="phone" name="phone" value="{{ $get('phone') }}">
   </div>
-  
+
   <div class="mb-3">
-  <label class="fw-semibold" style="font-size: 0.9rem;" for="cell_phone">携帯番号</label><br>
+  <label class="fw-semibold" for="cell_phone">携帯番号</label><br>
   <input type="text" id="cell_phone" name="cell_phone" value="{{ $get('cell_phone') }}">
   </div>
 
   <div class="mb-3">
-  <label class="fw-semibold" style="font-size: 0.9rem;" for="fax">FAX番号</label><br>
+  <label class="fw-semibold" for="fax">FAX番号</label><br>
   <input type="text" id="fax" name="fax" value="{{ $get('fax') }}">
   </div>
 
   <div class="mb-3">
-  <label class="fw-semibold" style="font-size: 0.9rem;" for="email">メールアドレス</label><br>
+  <label class="fw-semibold" for="email">メールアドレス</label><br>
   <input type="email" id="email" name="email" value="{{ $get('email') }}">
   </div>
 
   <div class="mb-3">
-  <label class="fw-semibold" style="font-size: 0.9rem;" for="housecall_distance">往診距離（合計）</label><br>
+  <label class="fw-semibold" for="housecall_distance">往診距離（合計）</label><br>
   <input type="number" id="housecall_distance" name="housecall_distance" value="{{ $get('housecall_distance') }}" min="0">
   </div>
 
   <div class="mb-3">
-  <label class="fw-semibold" style="font-size: 0.9rem;" for="housecall_additional_distance">往診加算距離（2㎞を超える場合の加算距離です。上記往診距離が2㎞以上の場合自動で入力されます）</label><br>
+  <label class="fw-semibold" for="housecall_additional_distance">往診加算距離（2㎞を超える場合の加算距離です。上記往診距離が2㎞以上の場合自動で入力されます）</label><br>
   <input type="number" id="housecall_additional_distance" name="housecall_additional_distance" value="{{ $get('housecall_additional_distance') }}" min="0">
   </div>
 
   <div class="mb-3">
   <div class="checkbox-group">
-    <label class="fw-semibold" style="font-size: 0.9rem;" for="is_redeemed">償還対象</label><br>
+    <label class="fw-semibold" for="is_redeemed">償還対象</label><br>
     @php $redeemed = old('is_redeemed', session($sessionKey . '.is_redeemed', isset($clinicUser) ? $clinicUser->is_redeemed ?? '' : '')); @endphp
     <input type="checkbox" id="is_redeemed" name="is_redeemed" value="1" {{ $redeemed ? 'checked' : '' }}>
   </div>
   </div>
 
   <div class="mb-3">
-  <label class="fw-semibold" style="font-size: 0.9rem;" for="application_count">申請書提出開始回数［大阪市のみ］</label><br>
+  <label class="fw-semibold" for="application_count">申請書提出開始回数［大阪市のみ］</label><br>
   <input type="number" id="application_count" name="application_count" value="{{ $get('application_count') }}" min="0">
   </div>
 
   <div class="mb-3">
-  <label class="fw-semibold" style="font-size: 0.9rem;" for="note">メモ</label><br>
+  <label class="fw-semibold" for="note">メモ</label><br>
   <textarea id="note" name="note" rows="4">{{ $get('note') }}</textarea>
   </div>
 

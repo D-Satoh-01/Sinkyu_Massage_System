@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\DoctorRequest;
 
 class DoctorsController extends Controller
 {
@@ -22,7 +23,7 @@ class DoctorsController extends Controller
       ->orderBy('doctors.id', 'desc')
       ->get();
 
-    return view('doctors.doctors-index', compact('doctors'));
+    return view('doctors.doctors_index', compact('doctors'));
   }
 
   // 医師情報新規登録画面表示
@@ -42,7 +43,7 @@ class DoctorsController extends Controller
       ->orderBy('medical_institution_name', 'asc')
       ->get();
 
-    return view('doctors.doctors-registration', [
+    return view('doctors.doctors_registration', [
       'mode' => 'create',
       'title' => '医師情報新規登録',
       'doctor' => null,
@@ -51,32 +52,9 @@ class DoctorsController extends Controller
   }
 
   // 医師情報新規登録：確認画面の表示
-  public function confirm(Request $request)
+  public function confirm(DoctorRequest $request)
   {
-    $rules = [
-      'doctor_name' => 'required|max:255',
-      'furigana' => 'nullable|max:255',
-      'medical_institutions_id' => 'nullable|exists:medical_institutions,id',
-      'new_medical_institution_name' => 'nullable|max:255',
-      'postal_code' => 'nullable|max:8',
-      'address_1' => 'nullable|max:255',
-      'address_2' => 'nullable|max:255',
-      'address_3' => 'nullable|max:255',
-      'phone' => 'nullable|max:255',
-      'cell_phone' => 'nullable|max:255',
-      'fax' => 'nullable|max:255',
-      'email' => 'nullable|email|max:255',
-      'note' => 'nullable|max:255',
-    ];
-
-    $messages = [
-      'doctor_name.required' => '医師名は必須です。',
-      'doctor_name.max' => '医師名は255文字以内で入力してください。',
-      'medical_institutions_id.exists' => '選択された医療機関が存在しません。',
-      'email.email' => '正しいメールアドレス形式で入力してください。',
-    ];
-
-    $validated = $request->validate($rules, $messages);
+    $validated = $request->validated();
 
     // セッションに保存
     $request->session()->put('doctors_registration_data', $validated);
@@ -163,7 +141,7 @@ class DoctorsController extends Controller
       ->orderBy('medical_institution_name', 'asc')
       ->get();
 
-    return view('doctors.di-registration', [
+    return view('doctors.doctors_registration', [
       'mode' => 'edit',
       'title' => '医師情報編集',
       'doctor' => $doctor,
@@ -172,32 +150,9 @@ class DoctorsController extends Controller
   }
 
   // 医師情報編集：確認画面の表示
-  public function editConfirm(Request $request, $id)
+  public function editConfirm(DoctorRequest $request, $id)
   {
-    $rules = [
-      'doctor_name' => 'required|max:255',
-      'furigana' => 'nullable|max:255',
-      'medical_institutions_id' => 'nullable|exists:medical_institutions,id',
-      'new_medical_institution_name' => 'nullable|max:255',
-      'postal_code' => 'nullable|max:8',
-      'address_1' => 'nullable|max:255',
-      'address_2' => 'nullable|max:255',
-      'address_3' => 'nullable|max:255',
-      'phone' => 'nullable|max:255',
-      'cell_phone' => 'nullable|max:255',
-      'fax' => 'nullable|max:255',
-      'email' => 'nullable|email|max:255',
-      'note' => 'nullable|max:255',
-    ];
-
-    $messages = [
-      'doctor_name.required' => '医師名は必須です。',
-      'doctor_name.max' => '医師名は255文字以内で入力してください。',
-      'medical_institutions_id.exists' => '選択された医療機関が存在しません。',
-      'email.email' => '正しいメールアドレス形式で入力してください。',
-    ];
-
-    $validated = $request->validate($rules, $messages);
+    $validated = $request->validated();
 
     // セッションに保存
     $request->session()->put('doctors_edit_data', $validated);
@@ -284,7 +239,7 @@ class DoctorsController extends Controller
       ->orderBy('medical_institution_name', 'asc')
       ->get();
 
-    return view('doctors.di-registration', [
+    return view('doctors.doctors_registration', [
       'mode' => 'duplicate',
       'title' => '医師情報複製',
       'doctor' => $doctor,
@@ -293,33 +248,9 @@ class DoctorsController extends Controller
   }
 
   // 医師情報複製：確認画面の表示
-  public function duplicateConfirm(Request $request)
+  public function duplicateConfirm(DoctorRequest $request)
   {
-    $rules = [
-      'source_doctor_id' => 'required|exists:doctors,id',
-      'doctor_name' => 'required|max:255',
-      'furigana' => 'nullable|max:255',
-      'medical_institutions_id' => 'nullable|exists:medical_institutions,id',
-      'new_medical_institution_name' => 'nullable|max:255',
-      'postal_code' => 'nullable|max:8',
-      'address_1' => 'nullable|max:255',
-      'address_2' => 'nullable|max:255',
-      'address_3' => 'nullable|max:255',
-      'phone' => 'nullable|max:255',
-      'cell_phone' => 'nullable|max:255',
-      'fax' => 'nullable|max:255',
-      'email' => 'nullable|email|max:255',
-      'note' => 'nullable|max:255',
-    ];
-
-    $messages = [
-      'doctor_name.required' => '医師名は必須です。',
-      'doctor_name.max' => '医師名は255文字以内で入力してください。',
-      'medical_institutions_id.exists' => '選択された医療機関が存在しません。',
-      'email.email' => '正しいメールアドレス形式で入力してください。',
-    ];
-
-    $validated = $request->validate($rules, $messages);
+    $validated = $request->validated();
 
     // セッションに保存
     $request->session()->put('doctors_duplicate_data', $validated);

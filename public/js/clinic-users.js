@@ -1,4 +1,4 @@
-//-- public/js/cui-registration.js --//
+//-- public/js/clinic-users.js --//
 
 
 // 郵便番号から住所を検索する関数
@@ -10,45 +10,6 @@ async function searchAddress() {
   });
 }
 
-// メッセージ表示関数
-function showMessage(message, type) {
-  const messageEl = document.getElementById('address-message');
-  messageEl.textContent = message;
-  messageEl.className = type;
-  messageEl.style.display = 'block';
-
-  // エラーメッセージは5秒後に消す
-  if (type === 'error') {
-  setTimeout(() => {
-    messageEl.style.display = 'none';
-  }, 5000);
-  }
-}
-
-// 生年月日から年齢を計算する関数
-function calculateAge() {
-  const birthdayInput = document.getElementById('birthday');
-  const ageInput = document.getElementById('age');
-
-  if (!birthdayInput.value) {
-    ageInput.value = '';
-    return;
-  }
-
-  const birthday = new Date(birthdayInput.value);
-  const today = new Date();
-
-  let age = today.getFullYear() - birthday.getFullYear();
-  const monthDiff = today.getMonth() - birthday.getMonth();
-
-  // 誕生日がまだ来ていない場合は年齢を1減らす
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthday.getDate())) {
-    age--;
-  }
-
-  ageInput.value = age >= 0 ? age : '';
-}
-
 // ページ読み込み時に実行
 document.addEventListener('DOMContentLoaded', function() {
   // 郵便番号入力時の処理
@@ -57,11 +18,11 @@ document.addEventListener('DOMContentLoaded', function() {
   // 生年月日入力時に年齢を自動計算
   const birthdayInput = document.getElementById('birthday');
   if (birthdayInput) {
-    birthdayInput.addEventListener('change', calculateAge);
+    birthdayInput.addEventListener('change', () => calculateAndFillAge('birthday', 'age'));
 
     // 既に生年月日が入力されていれば年齢を計算
     if (birthdayInput.value) {
-      calculateAge();
+      calculateAndFillAge('birthday', 'age');
     }
   }
 

@@ -30,7 +30,7 @@
       <input type="hidden" name="source_doctor_id" value="{{ old('source_doctor_id', $doctor->id) }}">
     @endif
 
-    @include('doctors.components.doctors-form', [
+    @include('doctors.components.doctors_form', [
       'doctor' => $doctor,
       'medicalInstitutions' => $medicalInstitutions,
       'submitLabel' => '登録確認へ',

@@ -6,8 +6,8 @@
 }
 
 /* 開発中のみ目の負担を減らすため背景色をグレーに設定 */
-.bg-gray {
-  background-color: #ccc;
+body {
+  background-color: #ddd;
 }
 
 /* リンクの下線を削除 */

@@ -33,7 +33,7 @@
   @endif
 
   <form action="{{ $formAction }}" method="POST">
-    @include('clinic-users.consents-massage.components.consents-massage-form', [
+    @include('clinic-users.consents-massage.components.consents-massage_form', [
       'history' => $history ?? null,
       'submitLabel' => '登録確認へ',
       'cancelRoute' => route('clinic-users.consents-massage.index', $id)
