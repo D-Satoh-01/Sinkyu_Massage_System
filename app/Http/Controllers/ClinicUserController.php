@@ -9,6 +9,14 @@ use App\Models\ClinicUserModel;
 use App\Models\Insurer;
 use App\Models\Insurance;
 use App\Models\ConsentingDoctorHistoryMassage;
+use App\Models\Doctor;
+use App\Models\Illness;
+use App\Models\BillCategory;
+use App\Models\Outcome;
+use App\Models\HouseVisitReason;
+use App\Models\TherapyContent;
+use App\Models\Condition;
+use App\Models\WorkScopeType;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\ClinicUserRequest;
 use App\Http\Requests\InsuranceRequest;
@@ -308,11 +316,30 @@ class ClinicUserController extends Controller
   public function consentsMassageCreate($id)
   {
   $user = ClinicUserModel::findOrFail($id);
+
+  // マスターデータを取得
+  $doctors = Doctor::orderBy('doctor_name')->get();
+  $diseaseNames = Illness::orderBy('illness_name')->get();
+  $billingCategories = BillCategory::orderBy('bill_category')->get();
+  $outcomes = Outcome::orderBy('outcome')->get();
+  $houseVisitReasons = HouseVisitReason::orderBy('id')->get();
+  $initialTreatments = TherapyContent::orderBy('therapy_content')->get();
+  $diseaseProgresses = Condition::orderBy('condition_name')->get();
+  $workRelatedCategories = WorkScopeType::orderBy('work_scope_type')->get();
+
   return view('clinic-users.consents-massage.consents-massage_registration', [
     'mode' => 'create',
     'title' => $user->clinic_user_name . ' 様の同意医師履歴新規登録',
     'id' => $id,
-    'history' => null
+    'history' => null,
+    'doctors' => $doctors,
+    'diseaseNames' => $diseaseNames,
+    'billingCategories' => $billingCategories,
+    'outcomes' => $outcomes,
+    'houseVisitReasons' => $houseVisitReasons,
+    'initialTreatments' => $initialTreatments,
+    'diseaseProgresses' => $diseaseProgresses,
+    'workRelatedCategories' => $workRelatedCategories
   ]);
   }
 
@@ -362,11 +389,29 @@ class ClinicUserController extends Controller
   $user = ClinicUserModel::findOrFail($id);
   $history = ConsentingDoctorHistoryMassage::findOrFail($history_id);
 
+  // マスターデータを取得
+  $doctors = Doctor::orderBy('doctor_name')->get();
+  $diseaseNames = Illness::orderBy('illness_name')->get();
+  $billingCategories = BillCategory::orderBy('bill_category')->get();
+  $outcomes = Outcome::orderBy('outcome')->get();
+  $houseVisitReasons = HouseVisitReason::orderBy('id')->get();
+  $initialTreatments = TherapyContent::orderBy('therapy_content')->get();
+  $diseaseProgresses = Condition::orderBy('condition_name')->get();
+  $workRelatedCategories = WorkScopeType::orderBy('work_scope_type')->get();
+
   return view('clinic-users.consents-massage.consents-massage_registration', [
     'mode' => 'edit',
     'title' => $user->clinic_user_name . ' 様の同意医師履歴編集',
     'id' => $id,
-    'history' => $history
+    'history' => $history,
+    'doctors' => $doctors,
+    'diseaseNames' => $diseaseNames,
+    'billingCategories' => $billingCategories,
+    'outcomes' => $outcomes,
+    'houseVisitReasons' => $houseVisitReasons,
+    'initialTreatments' => $initialTreatments,
+    'diseaseProgresses' => $diseaseProgresses,
+    'workRelatedCategories' => $workRelatedCategories
   ]);
   }
 
@@ -416,11 +461,29 @@ class ClinicUserController extends Controller
   $user = ClinicUserModel::findOrFail($id);
   $history = ConsentingDoctorHistoryMassage::findOrFail($history_id);
 
+  // マスターデータを取得
+  $doctors = Doctor::orderBy('doctor_name')->get();
+  $diseaseNames = Illness::orderBy('illness_name')->get();
+  $billingCategories = BillCategory::orderBy('bill_category')->get();
+  $outcomes = Outcome::orderBy('outcome')->get();
+  $houseVisitReasons = HouseVisitReason::orderBy('id')->get();
+  $initialTreatments = TherapyContent::orderBy('therapy_content')->get();
+  $diseaseProgresses = Condition::orderBy('condition_name')->get();
+  $workRelatedCategories = WorkScopeType::orderBy('work_scope_type')->get();
+
   return view('clinic-users.consents-massage.consents-massage_registration', [
     'mode' => 'duplicate',
     'title' => $user->clinic_user_name . ' 様の同意医師履歴複製',
     'id' => $id,
-    'history' => $history
+    'history' => $history,
+    'doctors' => $doctors,
+    'diseaseNames' => $diseaseNames,
+    'billingCategories' => $billingCategories,
+    'outcomes' => $outcomes,
+    'houseVisitReasons' => $houseVisitReasons,
+    'initialTreatments' => $initialTreatments,
+    'diseaseProgresses' => $diseaseProgresses,
+    'workRelatedCategories' => $workRelatedCategories
   ]);
   }
 

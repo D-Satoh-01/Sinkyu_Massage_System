@@ -4,16 +4,16 @@
   @csrf
 
   <div class="mb-3">
-    <label class="fw-semibold" for="consenting_doctor_id">同意医師名</label><br>
-    <select id="consenting_doctor_id" name="consenting_doctor_id">
+    <label class="fw-semibold" for="consenting_doctor_name">同意医師名</label><br>
+    <select id="consenting_doctor_name" name="consenting_doctor_name">
       <option value="">----</option>
       @foreach($doctors ?? [] as $doctor)
-        <option value="{{ $doctor->id }}" {{ old('consenting_doctor_id', $history?->consenting_doctor_id ?? '') == $doctor->id ? 'selected' : '' }}>
-          {{ $doctor->name }}
+        <option value="{{ $doctor->doctor_name }}" {{ old('consenting_doctor_name', $history?->consenting_doctor_name ?? '') == $doctor->doctor_name ? 'selected' : '' }}>
+          {{ $doctor->doctor_name }}
         </option>
       @endforeach
     </select>
-    @error('consenting_doctor_id')
+    @error('consenting_doctor_name')
       <div class="text-danger">{{ $message }}</div>
     @enderror
   </div>
@@ -67,12 +67,12 @@
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" for="disease_name_id">傷病名（あんま・マッサージ）</label><br>
-    <select id="disease_name_id" name="disease_name_id">
+    <label class="fw-semibold" for="injury_and_illness_name_id">傷病名（あんま・マッサージ）</label><br>
+    <select id="injury_and_illness_name_id" name="injury_and_illness_name_id">
       <option value="">----</option>
       @foreach($diseaseNames ?? [] as $disease)
-        <option value="{{ $disease->id }}" {{ old('disease_name_id', $history?->disease_name_id ?? '') == $disease->id ? 'selected' : '' }}>
-          {{ $disease->name }}
+        <option value="{{ $disease->id }}" {{ old('injury_and_illness_name_id', $history?->injury_and_illness_name_id ?? '') == $disease->id ? 'selected' : '' }}>
+          {{ $disease->illness_name }}
         </option>
       @endforeach
     </select>
@@ -80,7 +80,7 @@
       <small>上記欄に記入無い場合、下記に入力する文字でマスターとして登録。</small>
     </div>
     <input type="text" id="disease_name_custom" name="disease_name_custom" placeholder="入力されたデータをマスターとして新規登録。" value="{{ old('disease_name_custom', '') }}">
-    @error('disease_name_id')
+    @error('injury_and_illness_name_id')
       <div class="text-danger">{{ $message }}</div>
     @enderror
     @error('disease_name_custom')
@@ -97,16 +97,16 @@
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" for="billing_category_id">請求区分</label><br>
-    <select id="billing_category_id" name="billing_category_id">
+    <label class="fw-semibold" for="bill_category_id">請求区分</label><br>
+    <select id="bill_category_id" name="bill_category_id">
       <option value="">----</option>
       @foreach($billingCategories ?? [] as $category)
-        <option value="{{ $category->id }}" {{ old('billing_category_id', $history?->billing_category_id ?? '') == $category->id ? 'selected' : '' }}>
-          {{ $category->name }}
+        <option value="{{ $category->id }}" {{ old('bill_category_id', $history?->bill_category_id ?? '') == $category->id ? 'selected' : '' }}>
+          {{ $category->bill_category }}
         </option>
       @endforeach
     </select>
-    @error('billing_category_id')
+    @error('bill_category_id')
       <div class="text-danger">{{ $message }}</div>
     @enderror
   </div>
@@ -117,7 +117,7 @@
       <option value="">----</option>
       @foreach($outcomes ?? [] as $outcome)
         <option value="{{ $outcome->id }}" {{ old('outcome_id', $history?->outcome_id ?? '') == $outcome->id ? 'selected' : '' }}>
-          {{ $outcome->name }}
+          {{ $outcome->outcome }}
         </option>
       @endforeach
     </select>
@@ -134,7 +134,8 @@
 
       <input type="checkbox" id="symptom1_joint_contracture" name="symptom1[]" value="関節拘縮" {{ (is_array(old('symptom1', $history?->symptom1 ?? [])) && in_array('関節拘縮', old('symptom1', $history?->symptom1 ?? []))) ? 'checked' : '' }}>
       <label for="symptom1_joint_contracture">関節拘縮</label>
-
+    </div>
+    <div>
       <input type="checkbox" id="symptom1_left_upper" name="symptom1[]" value="左上肢" {{ (is_array(old('symptom1', $history?->symptom1 ?? [])) && in_array('左上肢', old('symptom1', $history?->symptom1 ?? []))) ? 'checked' : '' }}>
       <label for="symptom1_left_upper">左上肢</label>
 
@@ -227,10 +228,9 @@
     <div>
       <input type="checkbox" id="treatment_type1_massage" name="treatment_type1[]" value="マッサージ" {{ (is_array(old('treatment_type1', $history?->treatment_type1 ?? [])) && in_array('マッサージ', old('treatment_type1', $history?->treatment_type1 ?? []))) ? 'checked' : '' }}>
       <label for="treatment_type1_massage">マッサージ</label>
+    </div>
 
-      <input type="checkbox" id="treatment_type1_muscle_paralysis" name="treatment_type1[]" value="筋麻痺" {{ (is_array(old('treatment_type1', $history?->treatment_type1 ?? [])) && in_array('筋麻痺', old('treatment_type1', $history?->treatment_type1 ?? []))) ? 'checked' : '' }}>
-      <label for="treatment_type1_muscle_paralysis">筋麻痺</label>
-
+    <div>
       <input type="checkbox" id="treatment_type1_left_upper" name="treatment_type1[]" value="左上肢" {{ (is_array(old('treatment_type1', $history?->treatment_type1 ?? [])) && in_array('左上肢', old('treatment_type1', $history?->treatment_type1 ?? []))) ? 'checked' : '' }}>
       <label for="treatment_type1_left_upper">左上肢</label>
 
@@ -275,40 +275,43 @@
   <div class="mb-3">
     <label class="fw-semibold">往療の必要有無</label><br>
     <div>
-      <input type="radio" id="house_visit_necessary" name="house_visit_necessity" value="必要とする" {{ old('house_visit_necessity', $history?->house_visit_necessity ?? '') == '必要とする' ? 'checked' : '' }}>
-      <label for="house_visit_necessary">必要とする</label>
+      <input type="radio" id="is_housecall_required_yes" name="is_housecall_required" value="1" {{ old('is_housecall_required', $history?->is_housecall_required ?? '') == '1' ? 'checked' : '' }}>
+      <label for="is_housecall_required_yes">必要とする</label>
 
-      <input type="radio" id="house_visit_not_necessary" name="house_visit_necessity" value="必要としない" {{ old('house_visit_necessity', $history?->house_visit_necessity ?? '') == '必要としない' ? 'checked' : '' }}>
-      <label for="house_visit_not_necessary">必要としない</label>
+      <input type="radio" id="is_housecall_required_no" name="is_housecall_required" value="0" {{ old('is_housecall_required', $history?->is_housecall_required ?? '') == '0' ? 'checked' : '' }}>
+      <label for="is_housecall_required_no">必要としない</label>
     </div>
     <div class="mt-2">
-      <label class="fw-semibold" for="house_visit_reason_id">往療を必要とする理由</label><br>
-      <select id="house_visit_reason_id" name="house_visit_reason_id">
+      <label class="fw-semibold" for="housecall_reason_id">往療を必要とする理由</label><br>
+      <select id="housecall_reason_id" name="housecall_reason_id">
         <option value="">----</option>
         @foreach($houseVisitReasons ?? [] as $reason)
-          <option value="{{ $reason->id }}" {{ old('house_visit_reason_id', $history?->house_visit_reason_id ?? '') == $reason->id ? 'selected' : '' }}>
-            {{ $reason->name }}
+          <option value="{{ $reason->id }}" {{ old('housecall_reason_id', $history?->housecall_reason_id ?? '') == $reason->id ? 'selected' : '' }}>
+            {{ $reason->house_visit_reason }}
           </option>
         @endforeach
       </select>
       <div class="mt-1">
         <small>↑「その他」を選択した場合はご入力（</small>
-        <input type="text" id="house_visit_reason_custom" name="house_visit_reason_custom" value="{{ old('house_visit_reason_custom', $history?->house_visit_reason_custom ?? '') }}" style="width: 200px;">
+        <input type="text" id="housecall_reason_addendum" name="housecall_reason_addendum" value="{{ old('housecall_reason_addendum', $history?->housecall_reason_addendum ?? '') }}" style="width: 200px;">
         <small>）</small>
       </div>
     </div>
-    @error('house_visit_necessity')
+    @error('is_housecall_required')
       <div class="text-danger">{{ $message }}</div>
     @enderror
-    @error('house_visit_reason_id')
+    @error('housecall_reason_id')
+      <div class="text-danger">{{ $message }}</div>
+    @enderror
+    @error('housecall_reason_addendum')
       <div class="text-danger">{{ $message }}</div>
     @enderror
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" for="nursing_care_level">介護保険の要介護度</label><br>
-    <input type="text" id="nursing_care_level" name="nursing_care_level" value="{{ old('nursing_care_level', $history?->nursing_care_level ?? '') }}">
-    @error('nursing_care_level')
+    <label class="fw-semibold" for="care_level">介護保険の要介護度</label><br>
+    <input type="text" id="care_level" name="care_level" value="{{ old('care_level', $history?->care_level ?? '') }}">
+    @error('care_level')
       <div class="text-danger">{{ $message }}</div>
     @enderror
   </div>
@@ -325,35 +328,35 @@
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" for="addition_removal_period">要加除期間</label><br>
-    <input type="text" id="addition_removal_period" name="addition_removal_period" value="{{ old('addition_removal_period', $history?->addition_removal_period ?? '') }}">
-    @error('addition_removal_period')
+    <label class="fw-semibold" for="therapy_period">要加除期間</label><br>
+    <input type="text" id="therapy_period" name="therapy_period" value="{{ old('therapy_period', $history?->therapy_period ?? '') }}">
+    @error('therapy_period')
       <div class="text-danger">{{ $message }}</div>
     @enderror
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" for="initial_treatment_id">初回施術内容</label><br>
-    <select id="initial_treatment_id" name="initial_treatment_id">
+    <label class="fw-semibold" for="first_therapy_content_id">初回施術内容</label><br>
+    <select id="first_therapy_content_id" name="first_therapy_content_id">
       <option value="">----</option>
       @foreach($initialTreatments ?? [] as $treatment)
-        <option value="{{ $treatment->id }}" {{ old('initial_treatment_id', $history?->initial_treatment_id ?? '') == $treatment->id ? 'selected' : '' }}>
-          {{ $treatment->name }}
+        <option value="{{ $treatment->id }}" {{ old('first_therapy_content_id', $history?->first_therapy_content_id ?? '') == $treatment->id ? 'selected' : '' }}>
+          {{ $treatment->therapy_content }}
         </option>
       @endforeach
     </select>
-    @error('initial_treatment_id')
+    @error('first_therapy_content_id')
       <div class="text-danger">{{ $message }}</div>
     @enderror
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" for="disease_progress_id">発病負傷経過</label><br>
-    <select id="disease_progress_id" name="disease_progress_id">
+    <label class="fw-semibold" for="condition_id">発病負傷経過</label><br>
+    <select id="condition_id" name="condition_id">
       <option value="">----</option>
       @foreach($diseaseProgresses ?? [] as $progress)
-        <option value="{{ $progress->id }}" {{ old('disease_progress_id', $history?->disease_progress_id ?? '') == $progress->id ? 'selected' : '' }}>
-          {{ $progress->name }}
+        <option value="{{ $progress->id }}" {{ old('condition_id', $history?->condition_id ?? '') == $progress->id ? 'selected' : '' }}>
+          {{ $progress->condition_name }}
         </option>
       @endforeach
     </select>
@@ -361,7 +364,7 @@
       <small>上記欄に記入無い場合、下記に入力する文字でマスターとして登録。</small>
     </div>
     <input type="text" id="disease_progress_custom" name="disease_progress_custom" placeholder="入力されたデータをマスターとして新規登録。" value="{{ old('disease_progress_custom', '') }}">
-    @error('disease_progress_id')
+    @error('condition_id')
       <div class="text-danger">{{ $message }}</div>
     @enderror
     @error('disease_progress_custom')
@@ -370,16 +373,16 @@
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" for="work_related_id">業務上外等区分</label><br>
-    <select id="work_related_id" name="work_related_id">
+    <label class="fw-semibold" for="work_scope_type_id">業務上外等区分</label><br>
+    <select id="work_scope_type_id" name="work_scope_type_id">
       <option value="">----</option>
       @foreach($workRelatedCategories ?? [] as $category)
-        <option value="{{ $category->id }}" {{ old('work_related_id', $history?->work_related_id ?? '') == $category->id ? 'selected' : '' }}>
-          {{ $category->name }}
+        <option value="{{ $category->id }}" {{ old('work_scope_type_id', $history?->work_scope_type_id ?? '') == $category->id ? 'selected' : '' }}>
+          {{ $category->work_scope_type }}
         </option>
       @endforeach
     </select>
-    @error('work_related_id')
+    @error('work_scope_type_id')
       <div class="text-danger">{{ $message }}</div>
     @enderror
   </div>
