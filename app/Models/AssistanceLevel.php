@@ -1,19 +1,19 @@
 <?php
-// app/Models/HousecallReason.php
+// app/Models/AssistanceLevel.php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class HousecallReason extends Model
+class AssistanceLevel extends Model
 {
   use HasFactory;
 
   protected $connection = 'sinkyu_massage_system_db';
-  protected $table = 'housecall_reasons';
+  protected $table = 'assistance_levels';
 
   protected $fillable = [
-    'housecall_reason'
+    'assistance_level'
   ];
 }

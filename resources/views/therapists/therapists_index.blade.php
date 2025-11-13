@@ -1,0 +1,136 @@
+<!-- resources/views/therapists/therapists_index.blade.php -->
+
+
+<x-app-layout>
+  <h2>施術者情報</h2>
+
+  <br><br>
+
+  <a href="{{ route('therapists.create') }}">
+  <button>施術者新規登録</button>
+  </a>
+
+  <br><br>
+
+  <!-- 施術者情報一覧テーブル -->
+  <table id="therapistTable" class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>施術者名 [編集] / カナ</th>
+        <th>資格・免許番号・交付日</th>
+        <th>住所 / TEL</th>
+        <th>データ登録日</th>
+        <th>削除</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach($therapists as $therapist)
+      <tr>
+        <td>
+          <a href="{{ route('therapists.edit', $therapist->id) }}">{{ $therapist->therapist_name }} [編集]</a><br>
+          {{ $therapist->furigana }}
+        </td>
+        <td>
+          @if(!empty($therapist->license_hari_id) || !empty($therapist->license_hari_number) || !empty($therapist->license_hari_issued_date))
+            <strong>はり:</strong>
+            @if(!empty($therapist->license_hari_id))
+              {{ $therapist->license_hari_id }}-
+            @endif
+            {{ $therapist->license_hari_number }}
+            @if(!empty($therapist->license_hari_issued_date))
+              ({{ \Carbon\Carbon::parse($therapist->license_hari_issued_date)->format('Y/m/d') }})
+            @endif
+            <br>
+          @endif
+          @if(!empty($therapist->license_kyu_id) || !empty($therapist->license_kyu_number) || !empty($therapist->license_kyu_issued_date))
+            <strong>きゅう:</strong>
+            @if(!empty($therapist->license_kyu_id))
+              {{ $therapist->license_kyu_id }}-
+            @endif
+            {{ $therapist->license_kyu_number }}
+            @if(!empty($therapist->license_kyu_issued_date))
+              ({{ \Carbon\Carbon::parse($therapist->license_kyu_issued_date)->format('Y/m/d') }})
+            @endif
+            <br>
+          @endif
+          @if(!empty($therapist->license_massage_id) || !empty($therapist->license_massage_number) || !empty($therapist->license_massage_issued_date))
+            <strong>あん摩・マッサージ:</strong>
+            @if(!empty($therapist->license_massage_id))
+              {{ $therapist->license_massage_id }}-
+            @endif
+            {{ $therapist->license_massage_number }}
+            @if(!empty($therapist->license_massage_issued_date))
+              ({{ \Carbon\Carbon::parse($therapist->license_massage_issued_date)->format('Y/m/d') }})
+            @endif
+          @endif
+          @if(empty($therapist->license_hari_id) && empty($therapist->license_hari_number) && empty($therapist->license_kyu_id) && empty($therapist->license_kyu_number) && empty($therapist->license_massage_id) && empty($therapist->license_massage_number))
+            -
+          @endif
+        </td>
+        <td>
+          @if(!empty($therapist->postal_code))
+            〒{{ $therapist->postal_code }}<br>
+          @endif
+          {{ $therapist->address_1 }} {{ $therapist->address_2 }} {{ $therapist->address_3 }}
+          @if(!empty($therapist->phone))
+            <br>TEL: {{ $therapist->phone }}
+          @endif
+        </td>
+        <td data-order="{{ $therapist->created_at ? strtotime($therapist->created_at) : 0 }}">
+          {{ $therapist->created_at ? \Carbon\Carbon::parse($therapist->created_at)->format('Y/m/d') : '' }}<br>
+          {{ $therapist->created_at ? \Carbon\Carbon::parse($therapist->created_at)->format('H:i') : '' }}
+        </td>
+        <td>
+          <form action="{{ route('therapists.delete', ['id' => $therapist->id]) }}" method="POST" class="delete-form" style="display: inline;">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="delete-btn" style="background: none; border: none; color: #0d6efd; cursor: pointer;">削除</button>
+          </form>
+        </td>
+      </tr>
+      @endforeach
+    </tbody>
+  </table>
+
+  @if($therapists->isEmpty())
+  <p class="text-center">データがありません</p>
+  @endif
+
+  @push('scripts')
+  <script>
+    $(document).ready(function() {
+      // テーブルの存在確認
+      if ($('#therapistTable').length) {
+        // DataTablesが既に初期化されている場合は破棄
+        if ($.fn.DataTable.isDataTable('#therapistTable')) {
+          $('#therapistTable').DataTable().destroy();
+        }
+        
+        $('#therapistTable').DataTable({
+          language: {
+            url: '{{ asset('js/dataTables-ja.json') }}',
+            paginate: {
+              previous: '◂ 前へ',
+              next: '次へ ▸'
+            }
+          },
+          order: [[3, 'desc']],
+          pageLength: 10,
+          lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+          columnDefs: [
+            { orderable: false, targets: [4] }
+          ]
+        });
+      }
+
+      // 削除確認
+      $(document).on('submit', '.delete-form', function(e) {
+        e.preventDefault();
+        if (confirm('一度削除したデータは元に戻せません。\n削除してもよろしいですか？')) {
+          this.submit();
+        }
+      });
+    });
+  </script>
+  @endpush
+</x-app-layout>

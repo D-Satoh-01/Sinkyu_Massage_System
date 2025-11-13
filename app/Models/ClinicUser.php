@@ -1,5 +1,5 @@
 <?php
-// app/Models/ClinicUserModel.php
+// app/Models/ClinicUser.php
 
 
 namespace App\Models;
@@ -7,7 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ClinicUserModel extends Model
+class ClinicUser extends Model
 {
   use HasFactory;
 

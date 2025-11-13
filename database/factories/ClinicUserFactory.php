@@ -1,18 +1,18 @@
 <?php
-// database/factories/ClinicUserModelFactory.php
+// database/factories/ClinicUserFactory.php
 
 
 namespace Database\Factories;
 
-use App\Models\ClinicUserModel;
+use App\Models\ClinicUser;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ClinicUserModel>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ClinicUser>
  */
-class ClinicUserModelFactory extends Factory
+class ClinicUserFactory extends Factory
 {
-    protected $model = ClinicUserModel::class;
+    protected $model = ClinicUser::class;
 
     /**
      * Define the model's default state.

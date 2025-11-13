@@ -1,4 +1,4 @@
-<!-- resources/views/clinic-users-info/cui-consenting-doctor-history-acupuncture/ccdha-registration.blade.php -->
+<!-- resources/views/clinic-users/consents-acupuncture/consents-acupuncture_registration.blade.php -->
 
 
 <x-app-layout>
@@ -33,7 +33,7 @@
   @endif
 
   <form action="{{ $formAction }}" method="POST">
-    @include('clinic-users.consents-acupuncture.components.consents-acupuncture-form', [
+    @include('clinic-users.consents-acupuncture.components.consents-acupuncture_form', [
       'history' => $history ?? null,
       'submitLabel' => '登録確認へ',
       'cancelRoute' => route('clinic-users.consents-acupuncture.index', $id)

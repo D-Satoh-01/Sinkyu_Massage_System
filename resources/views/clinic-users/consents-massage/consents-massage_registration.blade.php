@@ -19,9 +19,9 @@
     if ($mode === 'create') {
       $formAction = route('clinic-users.consents-massage.confirm', $id);
     } elseif ($mode === 'edit') {
-      $formAction = route('clinic-users.consents-massage.edit.confirm', [$id, $history->id]);
+      $formAction = route('clinic-users.consents-massage.edit.confirm', [$id, $history_id]);
     } else { // duplicate
-      $formAction = route('clinic-users.consents-massage.duplicate.confirm', [$id, $history->id]);
+      $formAction = route('clinic-users.consents-massage.duplicate.confirm', [$id, $history_id]);
     }
   @endphp
 

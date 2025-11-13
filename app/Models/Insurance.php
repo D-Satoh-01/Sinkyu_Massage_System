@@ -143,7 +143,7 @@ class Insurance extends Model
 
   public function clinicUser()
   {
-  return $this->belongsTo(ClinicUserModel::class, 'clinic_user_id');
+  return $this->belongsTo(ClinicUser::class, 'clinic_user_id');
   }
 
   public function insurer()

@@ -12,18 +12,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::connection('sinkyu_massage_system_db')->create('house_visit_reasons', function (Blueprint $table) {
+        Schema::connection('sinkyu_massage_system_db')->create('housecall_reasons', function (Blueprint $table) {
             $table->id();
-            $table->string('house_visit_reason');
+            $table->string('housecall_reason');
             $table->timestamps();
         });
 
         // 初期データ投入
-        DB::connection('sinkyu_massage_system_db')->table('house_visit_reasons')->insert([
-            ['house_visit_reason' => '－－－', 'created_at' => now(), 'updated_at' => now()],
-            ['house_visit_reason' => '独歩による公共交通機関を使っての外出が困難', 'created_at' => now(), 'updated_at' => now()],
-            ['house_visit_reason' => '認知症や視覚･内部･精神障害などにより単独での外出が困難', 'created_at' => now(), 'updated_at' => now()],
-            ['house_visit_reason' => 'その他', 'created_at' => now(), 'updated_at' => now()],
+        DB::connection('sinkyu_massage_system_db')->table('housecall_reasons')->insert([
+            ['housecall_reason' => '独歩による公共交通機関を使っての外出が困難', 'created_at' => now(), 'updated_at' => now()],
+            ['housecall_reason' => '認知症や視覚･内部･精神障害などにより単独での外出が困難', 'created_at' => now(), 'updated_at' => now()],
+            ['housecall_reason' => 'その他', 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 
@@ -32,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::connection('sinkyu_massage_system_db')->dropIfExists('house_visit_reasons');
+        Schema::connection('sinkyu_massage_system_db')->dropIfExists('housecall_reasons');
     }
 };

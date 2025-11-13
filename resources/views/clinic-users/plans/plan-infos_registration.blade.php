@@ -1,0 +1,43 @@
+<!-- resources/views/clinic-users/plans/plans_registration.blade.php -->
+
+<x-app-layout>
+  <h2>{{ $title }}</h2><br><br>
+
+  @if($errors->any())
+  <div class="alert alert-danger">
+    <ul>
+    @foreach($errors->all() as $error)
+      <li>{{ $error }}</li>
+    @endforeach
+    </ul>
+  </div>
+  @endif
+
+  @php
+    // モードに応じたフォームの送信先を設定
+    if ($mode === 'create') {
+      $formAction = route('clinic-users.plans.confirm', $id);
+    } elseif ($mode === 'edit') {
+      $formAction = route('clinic-users.plans.edit.confirm', [$id, $plan_id]);
+    } else { // duplicate
+      $formAction = route('clinic-users.plans.duplicate.confirm', [$id, $plan_id]);
+    }
+  @endphp
+
+  @if($mode === 'duplicate')
+  <div class="alert alert-warning">
+    <strong>複製元の計画情報:</strong>
+    評価日: {{ $planInfo->assessment_date?->format('Y年m月d日') ?? '未設定' }}
+    評価者: {{ $planInfo->assessor ?? '未設定' }}
+  </div>
+  @endif
+
+  <form action="{{ $formAction }}" method="POST">
+    @include('clinic-users.plans.components.plans_form', [
+      'planInfo' => $planInfo ?? null,
+      'assistanceLevels' => $assistanceLevels,
+      'submitLabel' => '登録確認へ',
+      'cancelRoute' => route('clinic-users.plans.index', $id)
+    ])
+  </form>
+</x-app-layout>

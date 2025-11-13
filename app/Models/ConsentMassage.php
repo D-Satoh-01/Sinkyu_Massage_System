@@ -1,12 +1,12 @@
 <?php
-// app/Models/ConsentingDoctorHistoryMassage.php
+// app/Models/ConsentMassage.php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ConsentingDoctorHistoryMassage extends Model
+class ConsentMassage extends Model
 {
   use HasFactory;
 
@@ -64,6 +64,47 @@ class ConsentingDoctorHistoryMassage extends Model
 
   public function clinicUser()
   {
-    return $this->belongsTo(ClinicUserModel::class, 'clinic_user_id');
+    return $this->belongsTo(ClinicUser::class, 'clinic_user_id');
+  }
+
+  // bodypartsとのリレーション
+  public function symptom1Bodyparts()
+  {
+    return $this->belongsToMany(
+      Bodypart::class,
+      'consents_massage-bodyparts',
+      'consenting_doctor_history_massage_id',
+      'symtom_1_bodyparts_id'
+    );
+  }
+
+  public function symptom2Bodyparts()
+  {
+    return $this->belongsToMany(
+      Bodypart::class,
+      'consents_massage-bodyparts',
+      'consenting_doctor_history_massage_id',
+      'symtom_2_bodyparts_id'
+    );
+  }
+
+  public function treatmentType1Bodyparts()
+  {
+    return $this->belongsToMany(
+      Bodypart::class,
+      'consents_massage-bodyparts',
+      'consenting_doctor_history_massage_id',
+      'therapy_type_1_bodyparts_id'
+    );
+  }
+
+  public function treatmentType2Bodyparts()
+  {
+    return $this->belongsToMany(
+      Bodypart::class,
+      'consents_massage-bodyparts',
+      'consenting_doctor_history_massage_id',
+      'therapy_type_2_bodyparts_id'
+    );
   }
 }

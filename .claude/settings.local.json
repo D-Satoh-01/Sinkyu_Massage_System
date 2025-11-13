@@ -19,7 +19,8 @@
       "Bash(move clinic-users-info clinic-users)",
       "Bash(move:*)",
       "Bash(git mv:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []

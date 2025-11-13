@@ -20,7 +20,7 @@
 
   <div class="mb-3">
     <label class="fw-semibold" for="consenting_date">同意日</label><br>
-    <input type="date" id="consenting_date" name="consenting_date" value="{{ old('consenting_date', $history?->consenting_date?->format('Y-m-d') ?? '') }}">
+    <input type="date" id="consenting_date" name="consenting_date" value="{{ old('consenting_date', is_string($history?->consenting_date ?? null) ? $history->consenting_date : ($history?->consenting_date?->format('Y-m-d') ?? '')) }}">
     @error('consenting_date')
       <div class="text-danger">{{ $message }}</div>
     @enderror
@@ -28,7 +28,7 @@
 
   <div class="mb-3">
     <label class="fw-semibold" for="consenting_start_date">同意開始年月日</label><br>
-    <input type="date" id="consenting_start_date" name="consenting_start_date" value="{{ old('consenting_start_date', $history?->consenting_start_date?->format('Y-m-d') ?? '') }}">
+    <input type="date" id="consenting_start_date" name="consenting_start_date" value="{{ old('consenting_start_date', is_string($history?->consenting_start_date ?? null) ? $history->consenting_start_date : ($history?->consenting_start_date?->format('Y-m-d') ?? '')) }}">
     @error('consenting_start_date')
       <div class="text-danger">{{ $message }}</div>
     @enderror
@@ -36,7 +36,7 @@
 
   <div class="mb-3">
     <label class="fw-semibold" for="consenting_end_date">同意終了年月日</label><br>
-    <input type="date" id="consenting_end_date" name="consenting_end_date" value="{{ old('consenting_end_date', $history?->consenting_end_date?->format('Y-m-d') ?? '') }}">
+    <input type="date" id="consenting_end_date" name="consenting_end_date" value="{{ old('consenting_end_date', is_string($history?->consenting_end_date ?? null) ? $history->consenting_end_date : ($history?->consenting_end_date?->format('Y-m-d') ?? '')) }}">
     @error('consenting_end_date')
       <div class="text-danger">{{ $message }}</div>
     @enderror
@@ -44,7 +44,7 @@
 
   <div class="mb-3">
     <label class="fw-semibold" for="benefit_period_start_date">支給期間 開始</label><br>
-    <input type="date" id="benefit_period_start_date" name="benefit_period_start_date" value="{{ old('benefit_period_start_date', $history?->benefit_period_start_date?->format('Y-m-d') ?? '') }}">
+    <input type="date" id="benefit_period_start_date" name="benefit_period_start_date" value="{{ old('benefit_period_start_date', is_string($history?->benefit_period_start_date ?? null) ? $history->benefit_period_start_date : ($history?->benefit_period_start_date?->format('Y-m-d') ?? '')) }}">
     @error('benefit_period_start_date')
       <div class="text-danger">{{ $message }}</div>
     @enderror
@@ -52,7 +52,7 @@
 
   <div class="mb-3">
     <label class="fw-semibold" for="benefit_period_end_date">支給期間 終了</label><br>
-    <input type="date" id="benefit_period_end_date" name="benefit_period_end_date" value="{{ old('benefit_period_end_date', $history?->benefit_period_end_date?->format('Y-m-d') ?? '') }}">
+    <input type="date" id="benefit_period_end_date" name="benefit_period_end_date" value="{{ old('benefit_period_end_date', is_string($history?->benefit_period_end_date ?? null) ? $history->benefit_period_end_date : ($history?->benefit_period_end_date?->format('Y-m-d') ?? '')) }}">
     @error('benefit_period_end_date')
       <div class="text-danger">{{ $message }}</div>
     @enderror
@@ -60,7 +60,7 @@
 
   <div class="mb-3">
     <label class="fw-semibold" for="first_care_date">初療年月日</label><br>
-    <input type="date" id="first_care_date" name="first_care_date" value="{{ old('first_care_date', $history?->first_care_date?->format('Y-m-d') ?? '') }}">
+    <input type="date" id="first_care_date" name="first_care_date" value="{{ old('first_care_date', is_string($history?->first_care_date ?? null) ? $history->first_care_date : ($history?->first_care_date?->format('Y-m-d') ?? '')) }}">
     @error('first_care_date')
       <div class="text-danger">{{ $message }}</div>
     @enderror
@@ -90,7 +90,7 @@
 
   <div class="mb-3">
     <label class="fw-semibold" for="reconsenting_expiry">再同意有効期限</label><br>
-    <input type="date" id="reconsenting_expiry" name="reconsenting_expiry" value="{{ old('reconsenting_expiry', $history?->reconsenting_expiry?->format('Y-m-d') ?? '') }}">
+    <input type="date" id="reconsenting_expiry" name="reconsenting_expiry" value="{{ old('reconsenting_expiry', is_string($history?->reconsenting_expiry ?? null) ? $history->reconsenting_expiry : ($history?->reconsenting_expiry?->format('Y-m-d') ?? '')) }}">
     @error('reconsenting_expiry')
       <div class="text-danger">{{ $message }}</div>
     @enderror
@@ -131,9 +131,6 @@
     <div>
       <input type="checkbox" id="symptom1_muscle_paralysis" name="symptom1[]" value="筋麻痺" {{ (is_array(old('symptom1', $history?->symptom1 ?? [])) && in_array('筋麻痺', old('symptom1', $history?->symptom1 ?? []))) ? 'checked' : '' }}>
       <label for="symptom1_muscle_paralysis">筋麻痺・筋萎縮</label>
-
-      <input type="checkbox" id="symptom1_joint_contracture" name="symptom1[]" value="関節拘縮" {{ (is_array(old('symptom1', $history?->symptom1 ?? [])) && in_array('関節拘縮', old('symptom1', $history?->symptom1 ?? []))) ? 'checked' : '' }}>
-      <label for="symptom1_joint_contracture">関節拘縮</label>
     </div>
     <div>
       <input type="checkbox" id="symptom1_left_upper" name="symptom1[]" value="左上肢" {{ (is_array(old('symptom1', $history?->symptom1 ?? [])) && in_array('左上肢', old('symptom1', $history?->symptom1 ?? []))) ? 'checked' : '' }}>
@@ -284,10 +281,10 @@
     <div class="mt-2">
       <label class="fw-semibold" for="housecall_reason_id">往療を必要とする理由</label><br>
       <select id="housecall_reason_id" name="housecall_reason_id">
-        <option value="">----</option>
-        @foreach($houseVisitReasons ?? [] as $reason)
+        <option value="">－－－</option>
+        @foreach($housecallReasons ?? [] as $reason)
           <option value="{{ $reason->id }}" {{ old('housecall_reason_id', $history?->housecall_reason_id ?? '') == $reason->id ? 'selected' : '' }}>
-            {{ $reason->house_visit_reason }}
+            {{ $reason->housecall_reason }}
           </option>
         @endforeach
       </select>
@@ -389,7 +386,7 @@
 
   <div class="mb-3">
     <label class="fw-semibold" for="onset_and_injury_date">発病 負傷年月日</label><br>
-    <input type="date" id="onset_and_injury_date" name="onset_and_injury_date" value="{{ old('onset_and_injury_date', $history?->onset_and_injury_date?->format('Y-m-d') ?? '') }}">
+    <input type="date" id="onset_and_injury_date" name="onset_and_injury_date" value="{{ old('onset_and_injury_date', is_string($history?->onset_and_injury_date ?? null) ? $history->onset_and_injury_date : ($history?->onset_and_injury_date?->format('Y-m-d') ?? '')) }}">
     @error('onset_and_injury_date')
       <div class="text-danger">{{ $message }}</div>
     @enderror

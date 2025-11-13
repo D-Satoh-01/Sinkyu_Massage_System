@@ -1,0 +1,102 @@
+<!-- resources/views/caremanagers/caremanagers_index.blade.php -->
+
+
+<x-app-layout>
+  <h2>ケアマネ情報</h2>
+
+  <br><br>
+
+  <a href="{{ route('caremanagers.create') }}">
+  <button>ケアマネ新規登録</button>
+  </a>
+
+  <br><br>
+
+  <!-- ケアマネ情報一覧テーブル -->
+  <table id="careManagerTable" class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>名前 [編集] / カナ</th>
+        <th>サービス事業者名</th>
+        <th>住所 / TEL</th>
+        <th>データ登録日</th>
+        <th>削除</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach($careManagers as $careManager)
+      <tr>
+        <td>
+          <a href="{{ route('caremanagers.edit', $careManager->id) }}">{{ $careManager->care_manager_name }} [編集]</a><br>
+          {{ $careManager->furigana }}
+        </td>
+        <td>
+          {{ $careManager->service_provider_name ?? '-' }}
+        </td>
+        <td>
+          @if(!empty($careManager->postal_code))
+            〒{{ $careManager->postal_code }}<br>
+          @endif
+          {{ $careManager->address_1 }} {{ $careManager->address_2 }} {{ $careManager->address_3 }}
+          @if(!empty($careManager->phone))
+            <br>TEL: {{ $careManager->phone }}
+          @endif
+        </td>
+        <td data-order="{{ $careManager->created_at ? strtotime($careManager->created_at) : 0 }}">
+          {{ $careManager->created_at ? \Carbon\Carbon::parse($careManager->created_at)->format('Y/m/d') : '' }}<br>
+          {{ $careManager->created_at ? \Carbon\Carbon::parse($careManager->created_at)->format('H:i') : '' }}
+        </td>
+        <td>
+          <form action="{{ route('caremanagers.delete', ['id' => $careManager->id]) }}" method="POST" class="delete-form" style="display: inline;">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="delete-btn" style="background: none; border: none; color: #0d6efd; cursor: pointer;">削除</button>
+          </form>
+        </td>
+      </tr>
+      @endforeach
+    </tbody>
+  </table>
+
+  @if($careManagers->isEmpty())
+  <p class="text-center">データがありません</p>
+  @endif
+
+  @push('scripts')
+  <script>
+    $(document).ready(function() {
+      // テーブルの存在確認
+      if ($('#careManagerTable').length) {
+        // DataTablesが既に初期化されている場合は破棄
+        if ($.fn.DataTable.isDataTable('#careManagerTable')) {
+          $('#careManagerTable').DataTable().destroy();
+        }
+        
+        $('#careManagerTable').DataTable({
+          language: {
+            url: '{{ asset('js/dataTables-ja.json') }}',
+            paginate: {
+              previous: '◂ 前へ',
+              next: '次へ ▸'
+            }
+          },
+          order: [[3, 'desc']],
+          pageLength: 10,
+          lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+          columnDefs: [
+            { orderable: false, targets: [4] }
+          ]
+        });
+      }
+
+      // 削除確認
+      $(document).on('submit', '.delete-form', function(e) {
+        e.preventDefault();
+        if (confirm('一度削除したデータは元に戻せません。\n削除してもよろしいですか？')) {
+          this.submit();
+        }
+      });
+    });
+  </script>
+  @endpush
+</x-app-layout>

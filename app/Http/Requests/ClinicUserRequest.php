@@ -22,6 +22,7 @@ class ClinicUserRequest extends FormRequest
   public function rules(): array
   {
     return [
+      'id' => 'nullable|integer|exists:clinic_users,id',
       'clinic_user_name' => 'required|string|max:255',
       'furigana' => 'required|string|max:255',
       'birthday' => 'nullable|date',

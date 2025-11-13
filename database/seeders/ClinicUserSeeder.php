@@ -5,7 +5,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\ClinicUserModel;
+use App\Models\ClinicUser;
 
 class ClinicUserSeeder extends Seeder
 {
@@ -14,6 +14,6 @@ class ClinicUserSeeder extends Seeder
      */
     public function run(): void
     {
-        ClinicUserModel::factory()->count(150)->create();
+        ClinicUser::factory()->count(150)->create();
     }
 }
