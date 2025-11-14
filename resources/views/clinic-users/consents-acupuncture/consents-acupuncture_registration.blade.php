@@ -1,6 +1,5 @@
 <!-- resources/views/clinic-users/consents-acupuncture/consents-acupuncture_registration.blade.php -->
 
-
 <x-app-layout>
   <h2>{{ $title }}</h2><br><br>
 

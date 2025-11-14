@@ -1,6 +1,5 @@
 <!-- resources/views/therapists/therapists_registration.blade.php -->
 
-
 <x-app-layout>
   <h2>{{ $title }}</h2><br><br>
 

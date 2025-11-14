@@ -1,4 +1,4 @@
-// public/js/plans.js
+//-- public/js/plans.js --//
 
 $(document).ready(function() {
   // デバッグ: テーブル構造をチェック

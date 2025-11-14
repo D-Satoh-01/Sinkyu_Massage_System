@@ -11,7 +11,7 @@ class Illness extends Model
   use HasFactory;
 
   protected $connection = 'sinkyu_massage_system_db';
-  protected $table = 'illnesses';
+  protected $table = 'illnesses_massage';
 
   protected $fillable = [
     'illness_name'

@@ -22,9 +22,10 @@ class CareManagerRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'care_manager_name' => 'required|max:255',
+      'caremanager_name' => 'required|max:255',
       'furigana' => 'nullable|max:255',
-      'service_provider_name' => 'nullable|max:255',
+      'service_providers_id' => 'nullable|integer|exists:service_providers,id',
+      'service_provider_name_custom' => 'nullable|max:255',
       'postal_code' => 'nullable|max:8',
       'address_1' => 'nullable|max:255',
       'address_2' => 'nullable|max:255',
@@ -43,8 +44,8 @@ class CareManagerRequest extends FormRequest
   public function messages(): array
   {
     return [
-      'care_manager_name.required' => 'ケアマネ氏名は必須です。',
-      'care_manager_name.max' => 'ケアマネ氏名は255文字以内で入力してください。',
+      'caremanager_name.required' => 'ケアマネ氏名は必須です。',
+      'caremanager_name.max' => 'ケアマネ氏名は255文字以内で入力してください。',
       'email.email' => '正しいメールアドレス形式で入力してください。',
     ];
   }

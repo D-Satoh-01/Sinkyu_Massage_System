@@ -14,8 +14,14 @@ class CareManagersController extends Controller
   public function index()
   {
     // DataTablesを使用するため、全件取得
+    // service_providersテーブルとJOINしてサービス事業者名を取得
     $careManagers = DB::table('caremanagers')
-      ->orderBy('id', 'desc')
+      ->leftJoin('service_providers', 'caremanagers.service_providers_id', '=', 'service_providers.id')
+      ->select(
+        'caremanagers.*',
+        'service_providers.service_provider_name'
+      )
+      ->orderBy('caremanagers.id', 'desc')
       ->get();
 
     return view('caremanagers.caremanagers_index', compact('careManagers'));
@@ -33,10 +39,16 @@ class CareManagersController extends Controller
       session()->put('caremanagers_registration_data', $sessionData);
     }
 
+    // サービス事業者一覧を取得
+    $serviceProviders = DB::table('service_providers')
+      ->orderBy('service_provider_name', 'asc')
+      ->get();
+
     return view('caremanagers.caremanagers_registration', [
       'mode' => 'create',
       'title' => 'ケアマネ情報新規登録',
-      'careManager' => null
+      'careManager' => null,
+      'serviceProviders' => $serviceProviders
     ]);
   }
 
@@ -44,6 +56,11 @@ class CareManagersController extends Controller
   public function confirm(CareManagerRequest $request)
   {
     $validated = $request->validated();
+
+    // service_provider_name_customが入力されている場合、確認画面用に表示データを設定
+    if (!empty($validated['service_provider_name_custom'])) {
+      $validated['service_provider_name_display'] = $validated['service_provider_name_custom'] . ' (新規登録)';
+    }
 
     // セッションに保存
     $request->session()->put('caremanagers_registration_data', $validated);
@@ -71,11 +88,21 @@ class CareManagersController extends Controller
       return redirect()->route('caremanagers.create')->with('error', 'セッションが切れました。もう一度入力してください。');
     }
 
+    // service_provider_name_customが入力されている場合、service_providersテーブルに新規登録
+    $serviceProviderId = $data['service_providers_id'] ?? null;
+    if (!empty($data['service_provider_name_custom'])) {
+      $serviceProviderId = DB::table('service_providers')->insertGetId([
+        'service_provider_name' => $data['service_provider_name_custom'],
+        'created_at' => now(),
+        'updated_at' => now(),
+      ]);
+    }
+
     // データ挿入
     DB::table('caremanagers')->insert([
-      'care_manager_name' => $data['care_manager_name'],
+      'caremanager_name' => $data['caremanager_name'],
       'furigana' => $data['furigana'] ?? null,
-      'service_provider_name' => $data['service_provider_name'] ?? null,
+      'service_providers_id' => $serviceProviderId,
       'postal_code' => $data['postal_code'] ?? null,
       'address_1' => $data['address_1'] ?? null,
       'address_2' => $data['address_2'] ?? null,
@@ -115,10 +142,16 @@ class CareManagersController extends Controller
       return redirect()->route('caremanagers.index')->with('error', 'ケアマネ情報が見つかりません。');
     }
 
+    // サービス事業者一覧を取得
+    $serviceProviders = DB::table('service_providers')
+      ->orderBy('service_provider_name', 'asc')
+      ->get();
+
     return view('caremanagers.caremanagers_registration', [
       'mode' => 'edit',
       'title' => 'ケアマネ情報編集',
-      'careManager' => $careManager
+      'careManager' => $careManager,
+      'serviceProviders' => $serviceProviders
     ]);
   }
 
@@ -126,6 +159,11 @@ class CareManagersController extends Controller
   public function editConfirm(CareManagerRequest $request, $id)
   {
     $validated = $request->validated();
+
+    // service_provider_name_customが入力されている場合、確認画面用に表示データを設定
+    if (!empty($validated['service_provider_name_custom'])) {
+      $validated['service_provider_name_display'] = $validated['service_provider_name_custom'] . ' (新規登録)';
+    }
 
     // セッションに保存
     $request->session()->put('caremanagers_edit_data', $validated);
@@ -155,11 +193,21 @@ class CareManagersController extends Controller
       return redirect()->route('caremanagers.edit', $id)->with('error', 'セッションが切れました。もう一度入力してください。');
     }
 
+    // service_provider_name_customが入力されている場合、service_providersテーブルに新規登録
+    $serviceProviderId = $data['service_providers_id'] ?? null;
+    if (!empty($data['service_provider_name_custom'])) {
+      $serviceProviderId = DB::table('service_providers')->insertGetId([
+        'service_provider_name' => $data['service_provider_name_custom'],
+        'created_at' => now(),
+        'updated_at' => now(),
+      ]);
+    }
+
     // データ更新
     DB::table('caremanagers')->where('id', $id)->update([
-      'care_manager_name' => $data['care_manager_name'],
+      'caremanager_name' => $data['caremanager_name'],
       'furigana' => $data['furigana'] ?? null,
-      'service_provider_name' => $data['service_provider_name'] ?? null,
+      'service_providers_id' => $serviceProviderId,
       'postal_code' => $data['postal_code'] ?? null,
       'address_1' => $data['address_1'] ?? null,
       'address_2' => $data['address_2'] ?? null,
@@ -183,9 +231,10 @@ class CareManagersController extends Controller
   private function getCareManagerLabels()
   {
     return [
-      'care_manager_name' => 'ケアマネ氏名',
+      'caremanager_name' => 'ケアマネ氏名',
       'furigana' => 'フリガナ',
-      'service_provider_name' => 'サービス事業者名',
+      'service_providers_id' => 'サービス事業者名',
+      'service_provider_name_display' => 'サービス事業者名',
       'postal_code' => '郵便番号',
       'address_1' => '都道府県',
       'address_2' => '市区町村番地以下',

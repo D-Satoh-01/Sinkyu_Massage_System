@@ -1,4 +1,4 @@
-// public/js/ccdha-index.js
+//-- public/js/consents-acupuncture.js --//
 
 $(document).ready(function() {
   // デバッグ: テーブル構造をチェック

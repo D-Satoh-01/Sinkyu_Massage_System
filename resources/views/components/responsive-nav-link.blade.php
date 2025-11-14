@@ -1,6 +1,5 @@
 <!-- resources/views/components/responsive-nav-link.blade.php -->
 
-
 @props(['active'])
 
 @php

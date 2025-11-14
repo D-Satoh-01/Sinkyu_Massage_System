@@ -1,4 +1,5 @@
 <?php
+//-- app/View/Components/AppLayout.php --//
 
 namespace App\View\Components;
 

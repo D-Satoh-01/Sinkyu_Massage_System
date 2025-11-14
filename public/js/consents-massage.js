@@ -1,4 +1,4 @@
-// public/js/ccdhm-index.js
+//-- public/js/consents-massage.js --//
 
 $(document).ready(function() {
   // デバッグ: テーブル構造をチェック

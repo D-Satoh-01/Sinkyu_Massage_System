@@ -29,7 +29,7 @@ class ConsentMassageRequest extends FormRequest
       'benefit_period_start_date' => 'nullable|date',
       'benefit_period_end_date' => 'nullable|date',
       'first_care_date' => 'nullable|date',
-      'injury_and_illness_name_id' => 'nullable|integer|exists:illnesses,id',
+      'injury_and_illness_name_id' => 'nullable|integer|exists:illnesses_massage,id',
       'disease_name_custom' => 'nullable|string|max:255',
       'reconsenting_expiry' => 'nullable|date',
       'bill_category_id' => 'nullable|integer|exists:bill_categories,id',

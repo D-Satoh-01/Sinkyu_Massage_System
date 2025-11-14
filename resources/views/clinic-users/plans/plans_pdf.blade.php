@@ -1,3 +1,5 @@
+<!-- resources/views/clinic-users/plans/plans_pdf.blade.php -->
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>

@@ -1,5 +1,4 @@
-<!-- resources/views/clinic-users-info/cui-consenting-doctor-history-massage/ccdhm-registration.blade.php -->
-
+<!-- resources/views/clinic-users/consents-massage/consents-massage_registration.blade.php -->
 
 <x-app-layout>
   <h2>{{ $title }}</h2><br><br>

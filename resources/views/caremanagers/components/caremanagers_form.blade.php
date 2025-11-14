@@ -4,23 +4,27 @@
   @csrf
 
   <div class="mb-3">
-    <label class="fw-semibold" for="care_manager_name">ケアマネ氏名 <span class="text-danger">*</span></label>
-    @error('care_manager_name')
+    <label class="fw-semibold" for="caremanager_name">ケアマネ氏名 <span class="text-danger">*</span></label>
+    @error('caremanager_name')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
     <br>
-    <input type="text" id="care_manager_name" name="care_manager_name" value="{{ old('care_manager_name', $careManager->care_manager_name ?? '') }}">
+    <input type="text" id="caremanager_name" name="caremanager_name" value="{{ old('caremanager_name', $careManager->caremanager_name ?? '') }}">
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" for="service_provider_name">サービス事業者名</label>
-    @error('service_provider_name')
+    <label class="fw-semibold" for="service_providers_id">サービス事業者名</label>
+    @error('service_providers_id')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
     <br>
-    <select id="service_provider_name" name="service_provider_name">
+    <select id="service_providers_id" name="service_providers_id">
       <option value="">----</option>
-      <!-- サービス事業者のオプションはここに追加 -->
+      @foreach($serviceProviders as $provider)
+        <option value="{{ $provider->id }}" {{ old('service_providers_id', $careManager->service_providers_id ?? '') == $provider->id ? 'selected' : '' }}>
+          {{ $provider->service_provider_name }}
+        </option>
+      @endforeach
     </select>
     <br>
     <span style="font-size: 0.9em;">上記選択にない場合、下記に入力する事でマスターとして登録します。</span><br>

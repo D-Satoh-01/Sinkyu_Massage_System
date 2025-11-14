@@ -1,5 +1,4 @@
-<!-- resources/views/clinic-users-info/cui-registration.blade.php -->
-
+<!-- resources/views/clinic-users/clinic-users_registration.blade.php -->
 
 <x-app-layout>
   <h2>{{ $title }}</h2><br><br>

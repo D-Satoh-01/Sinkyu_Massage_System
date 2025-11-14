@@ -1,5 +1,4 @@
-<!-- resources/views/doctors-info/di-registration.blade.php -->
-
+<!-- resources/views/doctors/doctors_registration.blade.php -->
 
 <x-app-layout>
   <h2>{{ $title }}</h2><br><br>

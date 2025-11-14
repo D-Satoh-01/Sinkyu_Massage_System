@@ -1,0 +1,218 @@
+<?php
+//-- app/Http/Controllers/SubMasterController.php --//
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class SubMasterController extends Controller
+{
+  /**
+   * サブマスター編集のインデックスページを表示
+   */
+  public function index()
+  {
+    // 各テーブルのレコード数を取得
+    $counts = [
+      'medical_institutions' => DB::table('medical_institutions')->count(),
+      'service_providers' => DB::table('service_providers')->count(),
+      'conditions' => DB::table('conditions')->count(),
+      'illnesses_massage' => DB::table('illnesses_massage')->count(),
+    ];
+
+    return view('submaster.submaster-index', compact('counts'));
+  }
+
+  /**
+   * 医療機関一覧ページを表示
+   */
+  public function medicalInstitutions()
+  {
+    $items = DB::table('medical_institutions')->orderBy('id')->get();
+    return view('submaster.medical-institutions', compact('items'));
+  }
+
+  /**
+   * 医療機関を更新
+   */
+  public function updateMedicalInstitution(Request $request, $id)
+  {
+    $request->validate([
+      'medical_institution_name' => 'required|string|max:255',
+    ]);
+
+    DB::table('medical_institutions')
+      ->where('id', $id)
+      ->update(['medical_institution_name' => $request->medical_institution_name]);
+
+    return redirect()->route('submaster.medical-institutions')->with('success', '更新完了');
+  }
+
+  /**
+   * 医療機関を新規登録
+   */
+  public function storeMedicalInstitution(Request $request)
+  {
+    $request->validate([
+      'medical_institution_name' => 'required|string|max:255',
+    ]);
+
+    DB::table('medical_institutions')->insert(['medical_institution_name' => $request->medical_institution_name]);
+
+    return redirect()->route('submaster.medical-institutions')->with('success', '登録完了');
+  }
+
+  /**
+   * 医療機関を削除
+   */
+  public function destroyMedicalInstitution($id)
+  {
+    DB::table('medical_institutions')->where('id', $id)->delete();
+    return redirect()->route('submaster.medical-institutions')->with('success', '削除完了');
+  }
+
+  /**
+   * サービス提供者一覧ページを表示
+   */
+  public function serviceProviders()
+  {
+    $items = DB::table('service_providers')->orderBy('id')->get();
+    return view('submaster.service-providers', compact('items'));
+  }
+
+  /**
+   * サービス提供者を更新
+   */
+  public function updateServiceProvider(Request $request, $id)
+  {
+    $request->validate([
+      'service_provider_name' => 'required|string|max:255',
+    ]);
+
+    DB::table('service_providers')
+      ->where('id', $id)
+      ->update(['service_provider_name' => $request->service_provider_name]);
+
+    return redirect()->route('submaster.service-providers')->with('success', '更新完了');
+  }
+
+  /**
+   * サービス提供者を新規登録
+   */
+  public function storeServiceProvider(Request $request)
+  {
+    $request->validate([
+      'service_provider_name' => 'required|string|max:255',
+    ]);
+
+    DB::table('service_providers')->insert(['service_provider_name' => $request->service_provider_name]);
+
+    return redirect()->route('submaster.service-providers')->with('success', '登録完了');
+  }
+
+  /**
+   * サービス提供者を削除
+   */
+  public function destroyServiceProvider($id)
+  {
+    DB::table('service_providers')->where('id', $id)->delete();
+    return redirect()->route('submaster.service-providers')->with('success', '削除完了');
+  }
+
+  /**
+   * 状態一覧ページを表示
+   */
+  public function conditions()
+  {
+    $items = DB::table('conditions')->orderBy('id')->get();
+    return view('submaster.conditions', compact('items'));
+  }
+
+  /**
+   * 状態を更新
+   */
+  public function updateCondition(Request $request, $id)
+  {
+    $request->validate([
+      'condition_name' => 'required|string|max:255',
+    ]);
+
+    DB::table('conditions')
+      ->where('id', $id)
+      ->update(['condition_name' => $request->condition_name]);
+
+    return redirect()->route('submaster.conditions')->with('success', '更新完了');
+  }
+
+  /**
+   * 状態を新規登録
+   */
+  public function storeCondition(Request $request)
+  {
+    $request->validate([
+      'condition_name' => 'required|string|max:255',
+    ]);
+
+    DB::table('conditions')->insert(['condition_name' => $request->condition_name]);
+
+    return redirect()->route('submaster.conditions')->with('success', '登録完了');
+  }
+
+  /**
+   * 状態を削除
+   */
+  public function destroyCondition($id)
+  {
+    DB::table('conditions')->where('id', $id)->delete();
+    return redirect()->route('submaster.conditions')->with('success', '削除完了');
+  }
+
+  /**
+   * 疾病一覧ページを表示
+   */
+  public function illnessesMassage()
+  {
+    $items = DB::table('illnesses_massage')->orderBy('id')->get();
+    return view('submaster.illnesses-massage', compact('items'));
+  }
+
+  /**
+   * 疾病を更新
+   */
+  public function updateIllnessMassage(Request $request, $id)
+  {
+    $request->validate([
+      'illness_name' => 'required|string|max:255',
+    ]);
+
+    DB::table('illnesses_massage')
+      ->where('id', $id)
+      ->update(['illness_name' => $request->illness_name]);
+
+    return redirect()->route('submaster.illnesses-massage')->with('success', '更新完了');
+  }
+
+  /**
+   * 疾病を新規登録
+   */
+  public function storeIllnessMassage(Request $request)
+  {
+    $request->validate([
+      'illness_name' => 'required|string|max:255',
+    ]);
+
+    DB::table('illnesses_massage')->insert(['illness_name' => $request->illness_name]);
+
+    return redirect()->route('submaster.illnesses-massage')->with('success', '登録完了');
+  }
+
+  /**
+   * 疾病を削除
+   */
+  public function destroyIllnessMassage($id)
+  {
+    DB::table('illnesses_massage')->where('id', $id)->delete();
+    return redirect()->route('submaster.illnesses-massage')->with('success', '削除完了');
+  }
+}

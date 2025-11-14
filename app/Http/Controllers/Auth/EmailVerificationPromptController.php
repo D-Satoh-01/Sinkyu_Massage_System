@@ -1,4 +1,5 @@
 <?php
+//-- app/Http/Controllers/Auth/EmailVerificationPromptController.php --//
 
 namespace App\Http\Controllers\Auth;
 
