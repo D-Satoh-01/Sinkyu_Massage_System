@@ -14,6 +14,10 @@ use App\Http\Controllers\TherapistsController;
 use App\Http\Controllers\CareManagersController;
 use App\Http\Controllers\CompanyInfoController;
 use App\Http\Controllers\SubMasterController;
+use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\TreatmentFeeController;
+use App\Http\Controllers\SelfFeeController;
+use App\Http\Controllers\DocumentAssociationController;
 
 Route::get('/', fn() => redirect()->route('login'));
 
@@ -97,6 +101,30 @@ Route::middleware('auth')->group(function () {
   Route::post('/master/submaster/illnesses-massage', [SubMasterController::class, 'storeIllnessMassage'])->name('submaster.illnesses-massage.store');
   Route::post('/master/submaster/illnesses-massage/{id}', [SubMasterController::class, 'updateIllnessMassage'])->name('submaster.illnesses-massage.update');
   Route::delete('/master/submaster/illnesses-massage/{id}', [SubMasterController::class, 'destroyIllnessMassage'])->name('submaster.illnesses-massage.destroy');
+
+  // 文面編集
+  Route::get('/master/documents', [DocumentController::class, 'index'])->name('master.documents.index');
+  Route::post('/master/documents', [DocumentController::class, 'store'])->name('master.documents.store');
+  Route::post('/master/documents/{id}', [DocumentController::class, 'update'])->name('master.documents.update');
+  Route::delete('/master/documents/{id}', [DocumentController::class, 'destroy'])->name('master.documents.destroy');
+
+  // 施術料金編集
+  Route::get('/master/treatment-fees', [TreatmentFeeController::class, 'index'])->name('master.treatment-fees.index');
+  Route::get('/master/treatment-fees/create', [TreatmentFeeController::class, 'create'])->name('master.treatment-fees.create');
+  Route::post('/master/treatment-fees', [TreatmentFeeController::class, 'store'])->name('master.treatment-fees.store');
+  Route::get('/master/treatment-fees/{id}/edit', [TreatmentFeeController::class, 'edit'])->name('master.treatment-fees.edit');
+  Route::put('/master/treatment-fees/{id}', [TreatmentFeeController::class, 'update'])->name('master.treatment-fees.update');
+  Route::delete('/master/treatment-fees/{id}', [TreatmentFeeController::class, 'destroy'])->name('master.treatment-fees.destroy');
+
+  // 自費施術料金編集
+  Route::get('/master/self-fees', [SelfFeeController::class, 'index'])->name('master.self-fees.index');
+  Route::post('/master/self-fees', [SelfFeeController::class, 'store'])->name('master.self-fees.store');
+  Route::post('/master/self-fees/{id}', [SelfFeeController::class, 'update'])->name('master.self-fees.update');
+  Route::delete('/master/self-fees/{id}', [SelfFeeController::class, 'destroy'])->name('master.self-fees.destroy');
+
+  // 標準文書の確認および関連付け
+  Route::get('/master/document-association', [DocumentAssociationController::class, 'index'])->name('master.document-association.index');
+  Route::post('/master/document-association/{id}/associate', [DocumentAssociationController::class, 'associate'])->name('master.document-association.associate');
 
   // 利用者情報
   Route::get('/master/clinic-users/index', [ClinicUserController::class, 'index'])->name('clinic-users.index');
