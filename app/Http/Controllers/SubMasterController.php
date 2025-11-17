@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 class SubMasterController extends Controller
 {
   /**
-   * サブマスター編集のインデックスページを表示
+   * サブマスター登録のインデックスページを表示
    */
   public function index()
   {
@@ -21,7 +21,7 @@ class SubMasterController extends Controller
       'illnesses_massage' => DB::table('illnesses_massage')->count(),
     ];
 
-    return view('submaster.submaster-index', compact('counts'));
+    return view('submaster.submaster_index', compact('counts'));
   }
 
   /**

@@ -36,7 +36,7 @@ class CompanyInfoController extends Controller
     // 帳票フォーマットを取得
     $documentFormats = DB::table('document_formats')->get();
 
-    return view('company-info.company-info_index', [
+    return view('clinic-info.clinic-info_index', [
       'companyInfo' => $companyInfo,
       'prefectures' => $prefectures,
       'bankAccountTypes' => $bankAccountTypes,
@@ -62,8 +62,8 @@ class CompanyInfoController extends Controller
     return view('registration-review', [
       'data' => $validated,
       'labels' => $labels,
-      'back_route' => 'company-info.index',
-      'store_route' => 'company-info.store',
+      'back_route' => 'clinic-info.index',
+      'store_route' => 'clinic-info.store',
       'page_title' => '自社情報登録内容確認',
       'registration_message' => $exists ? '自社情報の更新を行います。' : '自社情報の登録を行います。',
     ]);
@@ -76,7 +76,7 @@ class CompanyInfoController extends Controller
     $data = $request->session()->get('company_info_data');
 
     if (!$data) {
-      return redirect()->route('company-info.index')->with('error', 'セッションが切れました。もう一度入力してください。');
+      return redirect()->route('clinic-info.index')->with('error', 'セッションが切れました。もう一度入力してください。');
     }
 
     // 自社情報が既に存在するか確認
@@ -186,7 +186,7 @@ class CompanyInfoController extends Controller
     // セッションから登録データを削除
     $request->session()->forget('company_info_data');
 
-    return redirect()->route('company-info.index')->with('success', $message);
+    return redirect()->route('clinic-info.index')->with('success', $message);
   }
 
   // 都道府県リストを取得
@@ -230,7 +230,7 @@ class CompanyInfoController extends Controller
       'closed_day_friday' => '定休日（金曜日）',
       'closed_day_saturday' => '定休日（土曜日）',
       'closed_day_sunday' => '定休日（日曜日）',
-      'bank_account_type_id' => '口座種別',
+      'bank_account_type_id' => '預金種類',
       'bank_name' => '銀行名',
       'bank_branch_name' => '支店名',
       'bank_account_name' => '口座名義',
@@ -238,7 +238,7 @@ class CompanyInfoController extends Controller
       'bank_code' => '銀行コード',
       'bank_branch_code' => '支店コード',
       'bank_account_number' => '口座番号',
-      'health_center_registerd_location_id' => '保健所登録場所',
+      'health_center_registerd_location_id' => '保健所登録分',
       'license_hari_number' => 'はり師免許番号',
       'license_hari_issued_date' => 'はり師免許交付年月日',
       'license_kyu_number' => 'きゅう師免許番号',
@@ -246,10 +246,10 @@ class CompanyInfoController extends Controller
       'license_massage_number' => 'あん摩・マッサージ師免許番号',
       'license_massage_issued_date' => 'あん摩・マッサージ師免許交付年月日',
       'billing_prefecture' => '請求先都道府県',
-      'therapist_number' => '施術者番号',
-      'medical_institution_number' => '医療機関番号',
-      'should_round_amount' => '端数切り捨て',
-      'document_format_id' => '帳票フォーマット',
+      'therapist_number' => '施術者付与 (登録) 番号',
+      'medical_institution_number' => '施術機関番号',
+      'should_round_amount' => '領収書発行時の領収金額の四捨五入',
+      'document_format_id' => '申請書等の書式選択',
     ];
   }
 }

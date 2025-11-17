@@ -1,8 +1,8 @@
 <!-- resources/views/submaster/illnesses-massage.blade.php -->
 
 <x-app-layout>
-  <h2>傷病名（あんま・マッサージ）の編集</h2>
-  <a href="{{ route('submaster.index') }}">←サブマスター編集に戻る</a>
+  <h2>傷病名（あんま・マッサージ）</h2>
+  <a href="{{ route('submaster.index') }}">←サブマスター登録に戻る</a>
   <br><br>
 
   @if(session('success'))

@@ -1,4 +1,4 @@
-<!-- resources/views/company-info/company-info_index.blade.php -->
+<!-- resources/views/clinic-info/clinic-info_index.blade.php -->
 
 <x-app-layout>
   <h2>自社情報</h2><br><br>
@@ -19,8 +19,8 @@
     </div>
   @endif
 
-  <form action="{{ route('company-info.confirm') }}" method="POST">
-    @include('company-info.components.company-info_form', [
+  <form action="{{ route('clinic-info.confirm') }}" method="POST">
+    @include('clinic-info.components.clinic-info_form', [
       'companyInfo' => $companyInfo,
       'prefectures' => $prefectures,
       'bankAccountTypes' => $bankAccountTypes,

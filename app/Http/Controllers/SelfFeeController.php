@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 class SelfFeeController extends Controller
 {
   /**
-   * 自費施術料金編集のインデックスページを表示
+   * 自費施術料金のインデックスページを表示
    */
   public function index()
   {

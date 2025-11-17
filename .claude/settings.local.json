@@ -20,7 +20,10 @@
       "Bash(move:*)",
       "Bash(git mv:*)",
       "Bash(dir:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(ren:*)",
+      "Bash(cmd /c dir /b databasemigrations*document*.php)",
+      "Bash(cmd /c dir /s /b resourcesviewssubmaster)"
     ],
     "deny": [],
     "ask": []

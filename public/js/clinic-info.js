@@ -1,4 +1,4 @@
-//-- public/js/company-info.js --//
+//-- public/js/clinic-info.js --//
 
 // 郵便番号から住所を検索する関数
 async function searchAddress() {

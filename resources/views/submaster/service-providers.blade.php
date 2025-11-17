@@ -1,8 +1,8 @@
 <!-- resources/views/submaster/service-providers.blade.php -->
 
 <x-app-layout>
-  <h2>サービス事業者名の編集</h2>
-  <a href="{{ route('submaster.index') }}">←サブマスター編集に戻る</a>
+  <h2>サービス事業者名</h2>
+  <a href="{{ route('submaster.index') }}">←サブマスター登録に戻る</a>
   <br><br>
 
   @if(session('success'))

@@ -1,7 +1,7 @@
 <!-- resources/views/master/treatment-fees/treatment-fees_index.blade.php -->
 
 <x-app-layout>
-  <h2>施術料金編集</h2>
+  <h2>施術料金</h2>
   <a href="{{ route('master.index') }}">←マスター登録に戻る</a>
   <br><br>
 

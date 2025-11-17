@@ -71,9 +71,9 @@ Route::middleware('auth')->group(function () {
   Route::delete('/master/caremanagers/{id}', [CareManagersController::class, 'destroy'])->name('caremanagers.delete');
 
   // 自社情報
-  Route::get('/master/company-info/index', [CompanyInfoController::class, 'index'])->name('company-info.index');
-  Route::post('/master/company-info/confirm', [CompanyInfoController::class, 'confirm'])->name('company-info.confirm');
-  Route::post('/master/company-info/store', [CompanyInfoController::class, 'store'])->name('company-info.store');
+  Route::get('/master/clinic-info/index', [CompanyInfoController::class, 'index'])->name('clinic-info.index');
+  Route::post('/master/clinic-info/confirm', [CompanyInfoController::class, 'confirm'])->name('clinic-info.confirm');
+  Route::post('/master/clinic-info/store', [CompanyInfoController::class, 'store'])->name('clinic-info.store');
 
   // サブマスター編集
   Route::get('/master/submaster/index', [SubMasterController::class, 'index'])->name('submaster.index');
@@ -102,14 +102,16 @@ Route::middleware('auth')->group(function () {
   Route::post('/master/submaster/illnesses-massage/{id}', [SubMasterController::class, 'updateIllnessMassage'])->name('submaster.illnesses-massage.update');
   Route::delete('/master/submaster/illnesses-massage/{id}', [SubMasterController::class, 'destroyIllnessMassage'])->name('submaster.illnesses-massage.destroy');
 
-  // 文面編集
-  Route::get('/master/documents', [DocumentController::class, 'index'])->name('master.documents.index');
+  // 文書編集
+  Route::get('/master/documents/index', [DocumentController::class, 'index'])->name('master.documents.index');
+  Route::get('/master/documents/create', [DocumentController::class, 'create'])->name('master.documents.create');
   Route::post('/master/documents', [DocumentController::class, 'store'])->name('master.documents.store');
   Route::post('/master/documents/{id}', [DocumentController::class, 'update'])->name('master.documents.update');
   Route::delete('/master/documents/{id}', [DocumentController::class, 'destroy'])->name('master.documents.destroy');
+  Route::get('/master/documents/{id}/preview', [DocumentController::class, 'preview'])->name('master.documents.preview');
 
   // 施術料金編集
-  Route::get('/master/treatment-fees', [TreatmentFeeController::class, 'index'])->name('master.treatment-fees.index');
+  Route::get('/master/treatment-fees/index', [TreatmentFeeController::class, 'index'])->name('master.treatment-fees.index');
   Route::get('/master/treatment-fees/create', [TreatmentFeeController::class, 'create'])->name('master.treatment-fees.create');
   Route::post('/master/treatment-fees', [TreatmentFeeController::class, 'store'])->name('master.treatment-fees.store');
   Route::get('/master/treatment-fees/{id}/edit', [TreatmentFeeController::class, 'edit'])->name('master.treatment-fees.edit');
@@ -117,13 +119,13 @@ Route::middleware('auth')->group(function () {
   Route::delete('/master/treatment-fees/{id}', [TreatmentFeeController::class, 'destroy'])->name('master.treatment-fees.destroy');
 
   // 自費施術料金編集
-  Route::get('/master/self-fees', [SelfFeeController::class, 'index'])->name('master.self-fees.index');
+  Route::get('/master/self-fees/index', [SelfFeeController::class, 'index'])->name('master.self-fees.index');
   Route::post('/master/self-fees', [SelfFeeController::class, 'store'])->name('master.self-fees.store');
   Route::post('/master/self-fees/{id}', [SelfFeeController::class, 'update'])->name('master.self-fees.update');
   Route::delete('/master/self-fees/{id}', [SelfFeeController::class, 'destroy'])->name('master.self-fees.destroy');
 
   // 標準文書の確認および関連付け
-  Route::get('/master/document-association', [DocumentAssociationController::class, 'index'])->name('master.document-association.index');
+  Route::get('/master/document-association/index', [DocumentAssociationController::class, 'index'])->name('master.document-association.index');
   Route::post('/master/document-association/{id}/associate', [DocumentAssociationController::class, 'associate'])->name('master.document-association.associate');
 
   // 利用者情報

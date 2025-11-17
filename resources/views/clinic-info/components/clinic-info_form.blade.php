@@ -1,6 +1,6 @@
-{{-- resources/views/company-info/components/company-info_form.blade.php --}}
+{{-- resources/views/clinic-info/components/clinic-info_form.blade.php --}}
 
-<div class="company-info-form">
+<div class="clinic-info-form">
   @csrf
 
   <div class="mb-3">
@@ -42,7 +42,7 @@
     <br>
     <label for="postal_code">(郵便番号)</label><br>
     <input type="text" id="postal_code" name="postal_code" value="{{ old('postal_code', $companyInfo->postal_code ?? '') }}" placeholder="000-0000" maxlength="8">
-    <div id="company-info-address-message" class="loading" style="display: none; margin-top: 5px;"></div>
+    <div id="clinic-info-address-message" class="loading" style="display: none; margin-top: 5px;"></div>
   </div>
 
   <div class="mb-3">
@@ -167,7 +167,7 @@
 
   <div class="mb-3">
     <label class="fw-semibold" for="bank_account_type_id">振込先銀行</label><br>
-    <label for="bank_account_type_id">口座種別</label>
+    <label for="bank_account_type_id">預金種類</label>
     @error('bank_account_type_id')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
@@ -176,7 +176,7 @@
       <option value="">----</option>
       @foreach($bankAccountTypes as $type)
         <option value="{{ $type->id }}" {{ old('bank_account_type_id', $companyInfo->bank_account_type_id ?? '') == $type->id ? 'selected' : '' }}>
-          {{ $type->account_type_name }}
+          {{ $type->bank_account_type }}
         </option>
       @endforeach
     </select>
@@ -248,7 +248,7 @@
   <br>
 
   <div class="mb-3">
-    <label class="fw-semibold" for="health_center_registerd_location_id">保健所登録場所</label>
+    <label class="fw-semibold" for="health_center_registerd_location_id">保健所登録分</label>
     @error('health_center_registerd_location_id')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
@@ -257,7 +257,7 @@
       <option value="">----</option>
       @foreach($healthCenterLocations as $location)
         <option value="{{ $location->id }}" {{ old('health_center_registerd_location_id', $companyInfo->health_center_registerd_location_id ?? '') == $location->id ? 'selected' : '' }}>
-          {{ $location->location_name }}
+          {{ $location->health_center_registerd_location }}
         </option>
       @endforeach
     </select>
@@ -345,7 +345,7 @@
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" for="therapist_number">施術者番号</label>
+    <label class="fw-semibold" for="therapist_number">施術者付与 (登録) 番号</label>
     @error('therapist_number')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
@@ -354,7 +354,7 @@
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" for="medical_institution_number">医療機関番号</label>
+    <label class="fw-semibold" for="medical_institution_number">施術機関番号</label>
     @error('medical_institution_number')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
@@ -363,29 +363,41 @@
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" for="should_round_amount">端数切り捨て</label>
+    <label class="fw-semibold">領収書発行時の領収金額の四捨五入</label>
     @error('should_round_amount')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
     <br>
-    <input type="checkbox" id="should_round_amount" name="should_round_amount" value="1" {{ old('should_round_amount', $companyInfo->should_round_amount ?? 0) ? 'checked' : '' }}>
-    <label for="should_round_amount">端数切り捨てを行う</label>
+    <input type="radio" id="should_round_amount_0" name="should_round_amount" value="0" {{ old('should_round_amount', $companyInfo->should_round_amount ?? 0) == 0 ? 'checked' : '' }}>
+    <label for="should_round_amount_0">四捨五入しない</label>
+
+    <input type="radio" id="should_round_amount_1" name="should_round_amount" value="1" {{ old('should_round_amount', $companyInfo->should_round_amount ?? 0) == 1 ? 'checked' : '' }}>
+    <label for="should_round_amount_1">1桁目を四捨五入する</label>
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" for="document_format_id">帳票フォーマット</label>
+    <label class="fw-semibold">申請書等の書式選択</label>
     @error('document_format_id')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
     <br>
-    <select id="document_format_id" name="document_format_id">
-      <option value="">----</option>
-      @foreach($documentFormats as $format)
-        <option value="{{ $format->id }}" {{ old('document_format_id', $companyInfo->document_format_id ?? '') == $format->id ? 'selected' : '' }}>
-          {{ $format->format_name }}
-        </option>
-      @endforeach
-    </select>
+    <input type="radio" id="document_format_standard2013" name="document_format_id" value="1" {{ old('document_format_id', $companyInfo->document_format_id ?? '') == 1 ? 'checked' : '' }}>
+    <label for="document_format_standard2013">標準2013</label>
+
+    <input type="radio" id="document_format_kanagawa2013" name="document_format_id" value="2" {{ old('document_format_id', $companyInfo->document_format_id ?? '') == 2 ? 'checked' : '' }}>
+    <label for="document_format_kanagawa2013">神奈川2013</label>
+
+    <input type="radio" id="document_format_osaka" name="document_format_id" value="3" {{ old('document_format_id', $companyInfo->document_format_id ?? '') == 3 ? 'checked' : '' }}>
+    <label for="document_format_osaka">大阪</label>
+
+    <input type="radio" id="document_format_fukuoka" name="document_format_id" value="4" {{ old('document_format_id', $companyInfo->document_format_id ?? '') == 4 ? 'checked' : '' }}>
+    <label for="document_format_fukuoka">福岡</label>
+
+    <input type="radio" id="document_format_aichi" name="document_format_id" value="5" {{ old('document_format_id', $companyInfo->document_format_id ?? '') == 5 ? 'checked' : '' }}>
+    <label for="document_format_aichi">愛知</label>
+
+    <input type="radio" id="document_format_ibaraki" name="document_format_id" value="6" {{ old('document_format_id', $companyInfo->document_format_id ?? '') == 6 ? 'checked' : '' }}>
+    <label for="document_format_ibaraki">茨城</label>
   </div>
 
   <button type="submit">{{ $submitLabel }}</button>
@@ -396,5 +408,5 @@
 
 @push('scripts')
   <script src="{{ asset('js/utility.js') }}"></script>
-  <script src="{{ asset('js/company-info.js') }}"></script>
+  <script src="{{ asset('js/clinic-info.js') }}"></script>
 @endpush
