@@ -166,17 +166,17 @@
   <br>
 
   <div class="mb-3">
-    <label class="fw-semibold" for="bank_account_type_id">振込先銀行</label><br>
-    <label for="bank_account_type_id">預金種類</label>
-    @error('bank_account_type_id')
+    <label class="fw-semibold" for="bank_account_type">振込先銀行</label><br>
+    <label for="bank_account_type">預金種類</label>
+    @error('bank_account_type')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
     <br>
-    <select id="bank_account_type_id" name="bank_account_type_id">
-      <option value="">----</option>
+    <select id="bank_account_type" name="bank_account_type">
+      <option value="">╌╌╌</option>
       @foreach($bankAccountTypes as $type)
-        <option value="{{ $type->id }}" {{ old('bank_account_type_id', $companyInfo->bank_account_type_id ?? '') == $type->id ? 'selected' : '' }}>
-          {{ $type->bank_account_type }}
+        <option value="{{ $type }}" {{ old('bank_account_type', $companyInfo->bank_account_type ?? '') == $type ? 'selected' : '' }}>
+          {{ $type }}
         </option>
       @endforeach
     </select>
@@ -248,16 +248,16 @@
   <br>
 
   <div class="mb-3">
-    <label class="fw-semibold" for="health_center_registerd_location_id">保健所登録分</label>
-    @error('health_center_registerd_location_id')
+    <label class="fw-semibold" for="health_center_registerd_location">保健所登録分</label>
+    @error('health_center_registerd_location')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
     <br>
-    <select id="health_center_registerd_location_id" name="health_center_registerd_location_id">
-      <option value="">----</option>
+    <select id="health_center_registerd_location" name="health_center_registerd_location">
+      <option value="">╌╌╌</option>
       @foreach($healthCenterLocations as $location)
-        <option value="{{ $location->id }}" {{ old('health_center_registerd_location_id', $companyInfo->health_center_registerd_location_id ?? '') == $location->id ? 'selected' : '' }}>
-          {{ $location->health_center_registerd_location }}
+        <option value="{{ $location }}" {{ old('health_center_registerd_location', $companyInfo->health_center_registerd_location ?? '') == $location ? 'selected' : '' }}>
+          {{ $location }}
         </option>
       @endforeach
     </select>
@@ -335,7 +335,7 @@
     @enderror
     <br>
     <select id="billing_prefecture" name="billing_prefecture">
-      <option value="">----</option>
+      <option value="">╌╌╌</option>
       @foreach($prefectures as $prefecture)
         <option value="{{ $prefecture }}" {{ old('billing_prefecture', $companyInfo->billing_prefecture ?? '') == $prefecture ? 'selected' : '' }}>
           {{ $prefecture }}
@@ -377,27 +377,14 @@
 
   <div class="mb-3">
     <label class="fw-semibold">申請書等の書式選択</label>
-    @error('document_format_id')
+    @error('document_formats')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
     <br>
-    <input type="radio" id="document_format_standard2013" name="document_format_id" value="1" {{ old('document_format_id', $companyInfo->document_format_id ?? '') == 1 ? 'checked' : '' }}>
-    <label for="document_format_standard2013">標準2013</label>
-
-    <input type="radio" id="document_format_kanagawa2013" name="document_format_id" value="2" {{ old('document_format_id', $companyInfo->document_format_id ?? '') == 2 ? 'checked' : '' }}>
-    <label for="document_format_kanagawa2013">神奈川2013</label>
-
-    <input type="radio" id="document_format_osaka" name="document_format_id" value="3" {{ old('document_format_id', $companyInfo->document_format_id ?? '') == 3 ? 'checked' : '' }}>
-    <label for="document_format_osaka">大阪</label>
-
-    <input type="radio" id="document_format_fukuoka" name="document_format_id" value="4" {{ old('document_format_id', $companyInfo->document_format_id ?? '') == 4 ? 'checked' : '' }}>
-    <label for="document_format_fukuoka">福岡</label>
-
-    <input type="radio" id="document_format_aichi" name="document_format_id" value="5" {{ old('document_format_id', $companyInfo->document_format_id ?? '') == 5 ? 'checked' : '' }}>
-    <label for="document_format_aichi">愛知</label>
-
-    <input type="radio" id="document_format_ibaraki" name="document_format_id" value="6" {{ old('document_format_id', $companyInfo->document_format_id ?? '') == 6 ? 'checked' : '' }}>
-    <label for="document_format_ibaraki">茨城</label>
+    @foreach($documentFormats as $format)
+      <input type="radio" id="document_format_{{ str_replace(['2013', ' '], ['', '_'], strtolower($format)) }}" name="document_formats" value="{{ $format }}" {{ old('document_formats', $companyInfo->document_formats ?? '') == $format ? 'checked' : '' }}>
+      <label for="document_format_{{ str_replace(['2013', ' '], ['', '_'], strtolower($format)) }}">{{ $format }}</label>
+    @endforeach
   </div>
 
   <button type="submit">{{ $submitLabel }}</button>

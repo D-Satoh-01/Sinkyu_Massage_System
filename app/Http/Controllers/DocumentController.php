@@ -30,14 +30,39 @@ class DocumentController extends Controller
       ->orderBy('category')
       ->pluck('category');
 
-    // document_templatesテーブルからテンプレート一覧を取得
-    $templates = DB::table('document_templates')
-      ->select('id', 'category', 'name')
-      ->orderBy('category')
-      ->orderBy('name')
-      ->get();
+    return view('master.documents.documents_registration', [
+      'mode' => 'create',
+      'title' => '文書新規登録',
+      'categories' => $categories
+    ]);
+  }
 
-    return view('master.documents.documents_registration', compact('categories', 'templates'));
+
+  /**
+   * 編集フォームを表示
+   */
+  public function edit($id)
+  {
+    $document = DB::table('documents')->where('id', $id)->first();
+
+    if (!$document) {
+      return redirect()->route('master.documents.index')->with('error', '文書が見つからない。');
+    }
+
+    // カテゴリ一覧を取得
+    $categories = DB::table('document_templates')
+      ->select('category')
+      ->distinct()
+      ->whereNotNull('category')
+      ->orderBy('category')
+      ->pluck('category');
+
+    return view('master.documents.documents_registration', [
+      'mode' => 'edit',
+      'title' => '文書編集',
+      'document' => $document,
+      'categories' => $categories
+    ]);
   }
 
   /**
@@ -46,9 +71,9 @@ class DocumentController extends Controller
   public function update(Request $request, $id)
   {
     $request->validate([
-      'document_category_id' => 'required|integer',
-      'document_template_id' => 'nullable|integer',
-      'document_content' => 'required|string|max:255',
+      'category' => 'required|string|max:255',
+      'name' => 'required|string|max:255',
+      'content' => 'required|string|max:2000',
       'font_size' => 'nullable|integer',
       'line_height' => 'nullable|integer',
     ]);
@@ -56,14 +81,15 @@ class DocumentController extends Controller
     DB::table('documents')
       ->where('id', $id)
       ->update([
-        'document_category_id' => $request->document_category_id,
-        'document_template_id' => $request->document_template_id,
-        'document_content' => $request->document_content,
-        'font_size' => $request->font_size,
-        'line_height' => $request->line_height,
+        'category' => $request->category,
+        'name' => $request->name,
+        'content' => $request->content,
+        'font_size' => $request->font_size ?? 12,
+        'line_height' => $request->line_height ?? 7,
+        'updated_at' => now(),
       ]);
 
-    return redirect()->route('master.documents.index')->with('success', '更新完了');
+    return redirect()->route('master.documents.index')->with('success', '文書情報を更新完了。');
   }
 
   /**
@@ -73,19 +99,15 @@ class DocumentController extends Controller
   {
     $request->validate([
       'category' => 'required|string|max:255',
-      'name' => 'nullable|string|max:255',
-      'new_name' => 'nullable|string|max:255',
-      'content' => 'required|string|max:255',
+      'name' => 'required|string|max:255',
+      'content' => 'required|string|max:2000',
       'font_size' => 'nullable|integer',
       'line_height' => 'nullable|integer',
     ]);
 
-    // 新規文書名称が入力されていればそれを使用、なければ既存の文書名称を使用
-    $documentName = !empty($request->new_name) ? $request->new_name : $request->name;
-
     DB::table('documents')->insert([
       'category' => $request->category,
-      'name' => $documentName,
+      'name' => $request->name,
       'content' => $request->content,
       'font_size' => $request->font_size ?? 12,
       'line_height' => $request->line_height ?? 7,
@@ -104,6 +126,59 @@ class DocumentController extends Controller
   }
 
   /**
+   * 文書複製画面表示
+   */
+  public function duplicate($id)
+  {
+    $document = DB::table('documents')->where('id', $id)->first();
+
+    if (!$document) {
+      return redirect()->route('master.documents.index')->with('error', '文書が見つからない。');
+    }
+
+    // カテゴリ一覧を取得
+    $categories = DB::table('document_templates')
+      ->select('category')
+      ->distinct()
+      ->whereNotNull('category')
+      ->orderBy('category')
+      ->pluck('category');
+
+    return view('master.documents.documents_registration', [
+      'mode' => 'duplicate',
+      'title' => '文書複製',
+      'document' => $document,
+      'categories' => $categories
+    ]);
+  }
+
+  /**
+   * 文書複製登録処理
+   */
+  public function duplicateStore(Request $request)
+  {
+    $request->validate([
+      'category' => 'required|string|max:255',
+      'name' => 'required|string|max:255',
+      'content' => 'required|string|max:2000',
+      'font_size' => 'nullable|integer',
+      'line_height' => 'nullable|integer',
+    ]);
+
+    DB::table('documents')->insert([
+      'category' => $request->category,
+      'name' => $request->name,
+      'content' => $request->content,
+      'font_size' => $request->font_size ?? 12,
+      'line_height' => $request->line_height ?? 7,
+      'created_at' => now(),
+      'updated_at' => now(),
+    ]);
+
+    return redirect()->route('master.documents.index')->with('success', '文書を複製登録完了。');
+  }
+
+  /**
    * 文書のプレビューを表示
    */
   public function preview($id)
@@ -117,16 +192,51 @@ class DocumentController extends Controller
     // clinic_infoテーブルから事業所情報を取得
     $clinicInfo = DB::table('clinic_info')->first();
 
-    // documentsテーブルのnameカラムからdocument_templatesテーブルのIDを取得
-    $template = DB::table('document_templates')
-      ->where('id', $document->name)
-      ->first();
+    // カテゴリに応じてテンプレートビューを決定
+    $viewName = 'master.documents.templates.request_doc'; // デフォルト
 
-    if (!$template || !$template->view_name) {
-      abort(404, 'テンプレートが見つかりません');
+    // カテゴリごとのテンプレートマッピング（今後拡張可能）
+    $categoryTemplateMap = [
+      '依頼状' => 'master.documents.templates.request_doc',
+      '報告書' => 'master.documents.templates.request_doc', // 今は同じテンプレート
+      '計画書' => 'master.documents.templates.request_doc', // 今は同じテンプレート
+    ];
+
+    if (isset($categoryTemplateMap[$document->category])) {
+      $viewName = $categoryTemplateMap[$document->category];
     }
 
-    // テンプレートのビュー名を使用してビューを返す
-    return view($template->view_name, compact('document', 'clinicInfo'));
+    // TCPDFを使用してPDFを生成
+    $pdf = new \TCPDF('P', 'mm', 'A4', true, 'UTF-8');
+
+    // PDFメタデータ設定
+    $pdf->SetCreator('Sinkyu Massage System');
+    $pdf->SetAuthor('System');
+    $pdf->SetTitle($document->name ?? 'Document');
+
+    // ヘッダー・フッターを削除
+    $pdf->setPrintHeader(false);
+    $pdf->setPrintFooter(false);
+
+    // 日本語フォント設定
+    $pdf->SetFont('kozgopromedium', '', 12);
+
+    // マージン設定（テンプレート内で margin を設定しているため、ここでは 0 に設定）
+    $pdf->SetMargins(0, 0, 0);
+    $pdf->SetAutoPageBreak(TRUE, 0);
+
+    // ページ追加
+    $pdf->AddPage();
+
+    // HTMLコンテンツを生成
+    $html = view($viewName, compact('document', 'clinicInfo'))->render();
+
+    // HTMLをPDFに出力
+    $pdf->writeHTML($html, true, false, true, false, '');
+
+    // PDFを新規ウィンドウで表示
+    $filename = ($document->name ?? 'document') . '.pdf';
+    return response($pdf->Output($filename, 'I'))
+      ->header('Content-Type', 'application/pdf');
   }
 }

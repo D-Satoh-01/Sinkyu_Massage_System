@@ -106,7 +106,10 @@ Route::middleware('auth')->group(function () {
   Route::get('/master/documents/index', [DocumentController::class, 'index'])->name('master.documents.index');
   Route::get('/master/documents/create', [DocumentController::class, 'create'])->name('master.documents.create');
   Route::post('/master/documents', [DocumentController::class, 'store'])->name('master.documents.store');
+  Route::get('/master/documents/{id}/edit', [DocumentController::class, 'edit'])->name('master.documents.edit');
   Route::post('/master/documents/{id}', [DocumentController::class, 'update'])->name('master.documents.update');
+  Route::get('/master/documents/{id}/duplicate', [DocumentController::class, 'duplicate'])->name('master.documents.duplicate');
+  Route::post('/master/documents/duplicate/store', [DocumentController::class, 'duplicateStore'])->name('master.documents.duplicate.store');
   Route::delete('/master/documents/{id}', [DocumentController::class, 'destroy'])->name('master.documents.destroy');
   Route::get('/master/documents/{id}/preview', [DocumentController::class, 'preview'])->name('master.documents.preview');
 

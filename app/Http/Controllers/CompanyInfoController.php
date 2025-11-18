@@ -27,14 +27,14 @@ class CompanyInfoController extends Controller
     // 都道府県リストを作成
     $prefectures = $this->getPrefectures();
 
-    // 銀行口座種別を取得
-    $bankAccountTypes = DB::table('bank_account_types')->get();
+    // 銀行口座種別の選択肢
+    $bankAccountTypes = ['普通', '当座'];
 
-    // 保健所登録場所を取得
-    $healthCenterLocations = DB::table('health_center_registerd_locations')->get();
+    // 保健所登録場所の選択肢
+    $healthCenterLocations = ['施術所所在地', '出張専門施術者所在地'];
 
-    // 帳票フォーマットを取得
-    $documentFormats = DB::table('document_formats')->get();
+    // 帳票フォーマットの選択肢
+    $documentFormats = ['標準2013', '神奈川2013', '大阪', '福岡', '愛知', '茨城'];
 
     return view('clinic-info.clinic-info_index', [
       'companyInfo' => $companyInfo,
@@ -107,7 +107,7 @@ class CompanyInfoController extends Controller
         'closed_day_friday' => isset($data['closed_day_friday']) ? 1 : 0,
         'closed_day_saturday' => isset($data['closed_day_saturday']) ? 1 : 0,
         'closed_day_sunday' => isset($data['closed_day_sunday']) ? 1 : 0,
-        'bank_account_type_id' => $data['bank_account_type_id'] ?? null,
+        'bank_account_type' => $data['bank_account_type'] ?? null,
         'bank_name' => $data['bank_name'] ?? null,
         'bank_branch_name' => $data['bank_branch_name'] ?? null,
         'bank_account_name' => $data['bank_account_name'] ?? null,
@@ -115,7 +115,7 @@ class CompanyInfoController extends Controller
         'bank_code' => $data['bank_code'] ?? null,
         'bank_branch_code' => $data['bank_branch_code'] ?? null,
         'bank_account_number' => $data['bank_account_number'] ?? null,
-        'health_center_registerd_location_id' => $data['health_center_registerd_location_id'] ?? null,
+        'health_center_registerd_location' => $data['health_center_registerd_location'] ?? null,
         'license_hari_number' => $data['license_hari_number'] ?? null,
         'license_hari_issued_date' => $data['license_hari_issued_date'] ?? null,
         'license_kyu_number' => $data['license_kyu_number'] ?? null,
@@ -126,7 +126,7 @@ class CompanyInfoController extends Controller
         'therapist_number' => $data['therapist_number'] ?? null,
         'medical_institution_number' => $data['medical_institution_number'] ?? null,
         'should_round_amount' => isset($data['should_round_amount']) ? 1 : 0,
-        'document_format_id' => $data['document_format_id'] ?? null,
+        'document_formats' => $data['document_formats'] ?? null,
         'updated_at' => now(),
       ]);
 
@@ -156,7 +156,7 @@ class CompanyInfoController extends Controller
         'closed_day_friday' => isset($data['closed_day_friday']) ? 1 : 0,
         'closed_day_saturday' => isset($data['closed_day_saturday']) ? 1 : 0,
         'closed_day_sunday' => isset($data['closed_day_sunday']) ? 1 : 0,
-        'bank_account_type_id' => $data['bank_account_type_id'] ?? null,
+        'bank_account_type' => $data['bank_account_type'] ?? null,
         'bank_name' => $data['bank_name'] ?? null,
         'bank_branch_name' => $data['bank_branch_name'] ?? null,
         'bank_account_name' => $data['bank_account_name'] ?? null,
@@ -164,7 +164,7 @@ class CompanyInfoController extends Controller
         'bank_code' => $data['bank_code'] ?? null,
         'bank_branch_code' => $data['bank_branch_code'] ?? null,
         'bank_account_number' => $data['bank_account_number'] ?? null,
-        'health_center_registerd_location_id' => $data['health_center_registerd_location_id'] ?? null,
+        'health_center_registerd_location' => $data['health_center_registerd_location'] ?? null,
         'license_hari_number' => $data['license_hari_number'] ?? null,
         'license_hari_issued_date' => $data['license_hari_issued_date'] ?? null,
         'license_kyu_number' => $data['license_kyu_number'] ?? null,
@@ -175,7 +175,7 @@ class CompanyInfoController extends Controller
         'therapist_number' => $data['therapist_number'] ?? null,
         'medical_institution_number' => $data['medical_institution_number'] ?? null,
         'should_round_amount' => isset($data['should_round_amount']) ? 1 : 0,
-        'document_format_id' => $data['document_format_id'] ?? null,
+        'document_formats' => $data['document_formats'] ?? null,
         'created_at' => now(),
         'updated_at' => now(),
       ]);
@@ -230,7 +230,7 @@ class CompanyInfoController extends Controller
       'closed_day_friday' => '定休日（金曜日）',
       'closed_day_saturday' => '定休日（土曜日）',
       'closed_day_sunday' => '定休日（日曜日）',
-      'bank_account_type_id' => '預金種類',
+      'bank_account_type' => '預金種類',
       'bank_name' => '銀行名',
       'bank_branch_name' => '支店名',
       'bank_account_name' => '口座名義',
@@ -238,7 +238,7 @@ class CompanyInfoController extends Controller
       'bank_code' => '銀行コード',
       'bank_branch_code' => '支店コード',
       'bank_account_number' => '口座番号',
-      'health_center_registerd_location_id' => '保健所登録分',
+      'health_center_registerd_location' => '保健所登録分',
       'license_hari_number' => 'はり師免許番号',
       'license_hari_issued_date' => 'はり師免許交付年月日',
       'license_kyu_number' => 'きゅう師免許番号',
@@ -249,7 +249,7 @@ class CompanyInfoController extends Controller
       'therapist_number' => '施術者付与 (登録) 番号',
       'medical_institution_number' => '施術機関番号',
       'should_round_amount' => '領収書発行時の領収金額の四捨五入',
-      'document_format_id' => '申請書等の書式選択',
+      'document_formats' => '申請書等の書式選択',
     ];
   }
 }

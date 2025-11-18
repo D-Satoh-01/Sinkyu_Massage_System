@@ -19,25 +19,29 @@
   <table id="documentsTable" class="table table-bordered table-striped">
     <thead>
       <tr>
-        <th style="width: 15%;">文書カテゴリ</th>
-        <th style="width: 40%;">文書名称</th>
-        <th style="width: 15%;">登録日時</th>
+        <th style="width: 12%;">文書カテゴリ</th>
+        <th style="width: 35%;">文書名称</th>
+        <th style="width: 13%;">登録日時</th>
         <th style="width: 10%;">プレビュー</th>
         <th style="width: 10%;">編集</th>
+        <th style="width: 10%;">複製</th>
         <th style="width: 10%;">削除</th>
       </tr>
     </thead>
     <tbody>
       @foreach($items as $item)
       <tr>
-        <td>{{ $item->document_category_id }}</td>
-        <td>{{ $item->document_content }}</td>
-        <td>{{ $item->created_at ? $item->created_at->format('Y-m-d H:i') : '' }}</td>
+        <td>{{ $item->category }}</td>
+        <td>{{ $item->name }}</td>
+        <td>{{ $item->created_at ? \Carbon\Carbon::parse($item->created_at)->format('Y-m-d H:i') : '' }}</td>
         <td style="text-align: center;">
           <button type="button" class="preview-btn" data-id="{{ $item->id }}">プレビュー</button>
         </td>
         <td style="text-align: center;">
           <button type="button" class="edit-btn" data-id="{{ $item->id }}">編集</button>
+        </td>
+        <td style="text-align: center;">
+          <button type="button" class="duplicate-btn" data-id="{{ $item->id }}">複製</button>
         </td>
         <td style="text-align: center;">
           <button type="button" class="delete-btn" data-id="{{ $item->id }}">削除</button>
@@ -62,7 +66,7 @@
         pageLength: 10,
         lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
         columnDefs: [
-          { orderable: false, targets: [3, 4, 5] }
+          { orderable: false, targets: [3, 4, 5, 6] }
         ]
       });
 
@@ -74,20 +78,45 @@
       // 編集ボタン
       $('.edit-btn').on('click', function() {
         var id = $(this).data('id');
-        alert('編集機能は後で実装予定: ID=' + id);
+        window.location.href = '/master/documents/' + id + '/edit';
+      });
+
+      // 複製ボタン
+      $('.duplicate-btn').on('click', function() {
+        var id = $(this).data('id');
+        window.location.href = '/master/documents/' + id + '/duplicate';
       });
 
       // プレビューボタン
       $('.preview-btn').on('click', function() {
         var id = $(this).data('id');
-        window.open('{{ route('master.documents.preview', '') }}/' + id, '_blank');
+        const url = '/master/documents/' + id + '/preview';
+        const windowName = 'DocumentPreviewPDF_' + new Date().getTime();
+        const windowFeatures = 'popup=yes,width=1200,height=800,left=100,top=100,menubar=yes,toolbar=yes,location=yes,status=yes,scrollbars=yes,resizable=yes';
+        window.open(url, windowName, windowFeatures);
       });
 
       // 削除ボタン
       $('.delete-btn').on('click', function() {
         var id = $(this).data('id');
-        if(confirm('本当に削除する？')) {
-          alert('削除機能は後で実装予定: ID=' + id);
+        if(confirm('一度削除したデータは元に戻せない。\n削除してもよい？')) {
+          var form = $('<form>', {
+            'method': 'POST',
+            'action': '/master/documents/' + id
+          });
+          var csrfToken = $('<input>', {
+            'type': 'hidden',
+            'name': '_token',
+            'value': '{{ csrf_token() }}'
+          });
+          var methodField = $('<input>', {
+            'type': 'hidden',
+            'name': '_method',
+            'value': 'DELETE'
+          });
+          form.append(csrfToken).append(methodField);
+          $('body').append(form);
+          form.submit();
         }
       });
     });

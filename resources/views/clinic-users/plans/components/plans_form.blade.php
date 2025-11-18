@@ -30,7 +30,7 @@
   <div class="mb-3">
     <label class="fw-semibold" for="eating_assistance_level_id">食事介助</label><br>
     <select id="eating_assistance_level_id" name="eating_assistance_level_id">
-      <option value="">----</option>
+      <option value="">╌╌╌</option>
       @foreach($assistanceLevels as $level)
         @if(in_array($level->id, $adlLevelMapping['eating']))
           <option value="{{ $level->id }}" {{ old('eating_assistance_level_id', $planInfo?->eating_assistance_level_id ?? '') == $level->id ? 'selected' : '' }}>
@@ -51,7 +51,7 @@
   <div class="mb-3">
     <label class="fw-semibold" for="moving_assistance_level_id">起居移動</label><br>
     <select id="moving_assistance_level_id" name="moving_assistance_level_id">
-      <option value="">----</option>
+      <option value="">╌╌╌</option>
       @foreach($assistanceLevels as $level)
         @if(in_array($level->id, $adlLevelMapping['moving']))
           <option value="{{ $level->id }}" {{ old('moving_assistance_level_id', $planInfo?->moving_assistance_level_id ?? '') == $level->id ? 'selected' : '' }}>
@@ -72,7 +72,7 @@
   <div class="mb-3">
     <label class="fw-semibold" for="personal_grooming_assistance_level_id">整容</label><br>
     <select id="personal_grooming_assistance_level_id" name="personal_grooming_assistance_level_id">
-      <option value="">----</option>
+      <option value="">╌╌╌</option>
       @foreach($assistanceLevels as $level)
         @if(in_array($level->id, $adlLevelMapping['personal_grooming']))
           <option value="{{ $level->id }}" {{ old('personal_grooming_assistance_level_id', $planInfo?->personal_grooming_assistance_level_id ?? '') == $level->id ? 'selected' : '' }}>
@@ -93,7 +93,7 @@
   <div class="mb-3">
     <label class="fw-semibold" for="using_toilet_assistance_level_id">トイレ</label><br>
     <select id="using_toilet_assistance_level_id" name="using_toilet_assistance_level_id">
-      <option value="">----</option>
+      <option value="">╌╌╌</option>
       @foreach($assistanceLevels as $level)
         @if(in_array($level->id, $adlLevelMapping['using_toilet']))
           <option value="{{ $level->id }}" {{ old('using_toilet_assistance_level_id', $planInfo?->using_toilet_assistance_level_id ?? '') == $level->id ? 'selected' : '' }}>
@@ -114,7 +114,7 @@
   <div class="mb-3">
     <label class="fw-semibold" for="bathing_assistance_level_id">入浴</label><br>
     <select id="bathing_assistance_level_id" name="bathing_assistance_level_id">
-      <option value="">----</option>
+      <option value="">╌╌╌</option>
       @foreach($assistanceLevels as $level)
         @if(in_array($level->id, $adlLevelMapping['bathing']))
           <option value="{{ $level->id }}" {{ old('bathing_assistance_level_id', $planInfo?->bathing_assistance_level_id ?? '') == $level->id ? 'selected' : '' }}>
@@ -135,7 +135,7 @@
   <div class="mb-3">
     <label class="fw-semibold" for="walking_assistance_level_id">平地歩行</label><br>
     <select id="walking_assistance_level_id" name="walking_assistance_level_id">
-      <option value="">----</option>
+      <option value="">╌╌╌</option>
       @foreach($assistanceLevels as $level)
         @if(in_array($level->id, $adlLevelMapping['walking']))
           <option value="{{ $level->id }}" {{ old('walking_assistance_level_id', $planInfo?->walking_assistance_level_id ?? '') == $level->id ? 'selected' : '' }}>
@@ -156,7 +156,7 @@
   <div class="mb-3">
     <label class="fw-semibold" for="using_stairs_assistance_level_id">階段昇降</label><br>
     <select id="using_stairs_assistance_level_id" name="using_stairs_assistance_level_id">
-      <option value="">----</option>
+      <option value="">╌╌╌</option>
       @foreach($assistanceLevels as $level)
         @if(in_array($level->id, $adlLevelMapping['using_stairs']))
           <option value="{{ $level->id }}" {{ old('using_stairs_assistance_level_id', $planInfo?->using_stairs_assistance_level_id ?? '') == $level->id ? 'selected' : '' }}>
@@ -177,7 +177,7 @@
   <div class="mb-3">
     <label class="fw-semibold" for="changing_clothes_assistance_level_id">更衣</label><br>
     <select id="changing_clothes_assistance_level_id" name="changing_clothes_assistance_level_id">
-      <option value="">----</option>
+      <option value="">╌╌╌</option>
       @foreach($assistanceLevels as $level)
         @if(in_array($level->id, $adlLevelMapping['changing_clothes']))
           <option value="{{ $level->id }}" {{ old('changing_clothes_assistance_level_id', $planInfo?->changing_clothes_assistance_level_id ?? '') == $level->id ? 'selected' : '' }}>
@@ -198,7 +198,7 @@
   <div class="mb-3">
     <label class="fw-semibold" for="defecation_assistance_level_id">排便</label><br>
     <select id="defecation_assistance_level_id" name="defecation_assistance_level_id">
-      <option value="">----</option>
+      <option value="">╌╌╌</option>
       @foreach($assistanceLevels as $level)
         @if(in_array($level->id, $adlLevelMapping['defecation']))
           <option value="{{ $level->id }}" {{ old('defecation_assistance_level_id', $planInfo?->defecation_assistance_level_id ?? '') == $level->id ? 'selected' : '' }}>
@@ -219,7 +219,7 @@
   <div class="mb-3">
     <label class="fw-semibold" for="urination_assistance_level_id">排尿</label><br>
     <select id="urination_assistance_level_id" name="urination_assistance_level_id">
-      <option value="">----</option>
+      <option value="">╌╌╌</option>
       @foreach($assistanceLevels as $level)
         @if(in_array($level->id, $adlLevelMapping['urination']))
           <option value="{{ $level->id }}" {{ old('urination_assistance_level_id', $planInfo?->urination_assistance_level_id ?? '') == $level->id ? 'selected' : '' }}>

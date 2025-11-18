@@ -6,7 +6,7 @@
   <div class="mb-3">
     <label class="fw-semibold" for="consenting_doctor_name">同意医師名</label><br>
     <select id="consenting_doctor_name" name="consenting_doctor_name">
-      <option value="">----</option>
+      <option value="">╌╌╌</option>
       @foreach($doctors ?? [] as $doctor)
         <option value="{{ $doctor->doctor_name }}" {{ old('consenting_doctor_name', $history?->consenting_doctor_name ?? '') == $doctor->doctor_name ? 'selected' : '' }}>
           {{ $doctor->doctor_name }}
@@ -77,7 +77,7 @@
   <div class="mb-3">
     <label class="fw-semibold" for="injury_and_illness_name_id">病名（はり・きゅう）</label><br>
     <select id="injury_and_illness_name_id" name="injury_and_illness_name_id">
-      <option value="">----</option>
+      <option value="">╌╌╌</option>
       @foreach($diseaseNames ?? [] as $disease)
         <option value="{{ $disease->id }}" {{ old('injury_and_illness_name_id', $history?->injury_and_illness_name_id ?? '') == $disease->id ? 'selected' : '' }}>
           {{ $disease->illness_name }}
@@ -99,7 +99,7 @@
   <div class="mb-3">
     <label class="fw-semibold" for="bill_category_id">請求区分</label><br>
     <select id="bill_category_id" name="bill_category_id">
-      <option value="">----</option>
+      <option value="">╌╌╌</option>
       @foreach($billingCategories ?? [] as $category)
         <option value="{{ $category->id }}" {{ old('bill_category_id', $history?->bill_category_id ?? '') == $category->id ? 'selected' : '' }}>
           {{ $category->bill_category }}
@@ -114,7 +114,7 @@
   <div class="mb-3">
     <label class="fw-semibold" for="outcome_id">転帰</label><br>
     <select id="outcome_id" name="outcome_id">
-      <option value="">----</option>
+      <option value="">╌╌╌</option>
       @foreach($outcomes ?? [] as $outcome)
         <option value="{{ $outcome->id }}" {{ old('outcome_id', $history?->outcome_id ?? '') == $outcome->id ? 'selected' : '' }}>
           {{ $outcome->outcome }}
@@ -138,7 +138,7 @@
     <div class="mt-2">
       <label class="fw-semibold" for="housecall_reason_id">往療を必要とする理由</label><br>
       <select id="housecall_reason_id" name="housecall_reason_id">
-        <option value="">－－－</option>
+        <option value="">╌╌╌</option>
         @foreach($housecallReasons ?? [] as $reason)
           <option value="{{ $reason->id }}" {{ old('housecall_reason_id', $history?->housecall_reason_id ?? '') == $reason->id ? 'selected' : '' }}>
             {{ $reason->housecall_reason }}
@@ -172,7 +172,7 @@
   <div class="mb-3">
     <label class="fw-semibold" for="first_therapy_content_id">初回施術内容</label><br>
     <select id="first_therapy_content_id" name="first_therapy_content_id">
-      <option value="">----</option>
+      <option value="">╌╌╌</option>
       @foreach($initialTreatments ?? [] as $treatment)
         <option value="{{ $treatment->id }}" {{ old('first_therapy_content_id', $history?->first_therapy_content_id ?? '') == $treatment->id ? 'selected' : '' }}>
           {{ $treatment->therapy_content }}
@@ -187,7 +187,7 @@
   <div class="mb-3">
     <label class="fw-semibold" for="condition_id">発病負傷経過</label><br>
     <select id="condition_id" name="condition_id">
-      <option value="">----</option>
+      <option value="">╌╌╌</option>
       @foreach($diseaseProgresses ?? [] as $progress)
         <option value="{{ $progress->id }}" {{ old('condition_id', $history?->condition_id ?? '') == $progress->id ? 'selected' : '' }}>
           {{ $progress->condition_name }}
@@ -209,7 +209,7 @@
   <div class="mb-3">
     <label class="fw-semibold" for="work_scope_type_id">業務上外等区分</label><br>
     <select id="work_scope_type_id" name="work_scope_type_id">
-      <option value="">----</option>
+      <option value="">╌╌╌</option>
       @foreach($workRelatedCategories ?? [] as $category)
         <option value="{{ $category->id }}" {{ old('work_scope_type_id', $history?->work_scope_type_id ?? '') == $category->id ? 'selected' : '' }}>
           {{ $category->work_scope_type }}

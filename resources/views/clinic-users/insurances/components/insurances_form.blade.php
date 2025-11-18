@@ -129,7 +129,7 @@
   <div class="mb-3">
   <label class="fw-semibold" for="expenses_borne_ratio">一部負担金の割合</label><br>
   <select id="expenses_borne_ratio" name="expenses_borne_ratio">
-    <option value="">----</option>
+    <option value="">╌╌╌</option>
     @php
     $copaymentMap = [1 => '1割', 2 => '2割', 3 => '3割'];
     $currentCopayment = old('expenses_borne_ratio', (isset($insurance) && $insurance && $insurance->expenses_borne_ratio_id) ? $copaymentMap[$insurance->expenses_borne_ratio_id] : '');
@@ -160,7 +160,7 @@
   <div class="mb-3">
   <label class="fw-semibold" for="relationship_with_clinic_user">利用者との続柄</label><br>
   <select id="relationship_with_clinic_user" name="relationship_with_clinic_user">
-    <option value="">----</option>
+    <option value="">╌╌╌</option>
     @php
     $relationshipMap = [1 => '本人', 2 => '家族'];
     $currentRelationship = old('relationship_with_clinic_user', (isset($insurance) && $insurance && $insurance->relationship_with_clinic_user_id) ? $relationshipMap[$insurance->relationship_with_clinic_user_id] : '');

@@ -28,7 +28,7 @@
     @enderror
     <br>
     <select id="medical_institutions_id" name="medical_institutions_id" onchange="updateMedicalInstitutionFields()">
-      <option value="">－－－</option>
+      <option value="">╌╌╌</option>
       @foreach($medicalInstitutions as $institution)
         <option value="{{ $institution->id }}"
           {{ old('medical_institutions_id', (isset($doctor) && $doctor->medical_institutions_id == $institution->id) ? $institution->id : '') == $institution->id ? 'selected' : '' }}>

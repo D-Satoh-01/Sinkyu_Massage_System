@@ -18,17 +18,22 @@
     if (($mode ?? 'create') === 'create') {
       $formAction = route('master.documents.store');
       $submitLabel = '登録';
+      $item = (object)[];
+    } elseif ($mode === 'duplicate') {
+      $formAction = route('master.documents.duplicate.store');
+      $submitLabel = '複製登録';
+      $item = $document;
     } else { // edit
-      $formAction = route('master.documents.update', $item->id);
+      $formAction = route('master.documents.update', $document->id);
       $submitLabel = '更新';
+      $item = $document;
     }
   @endphp
 
   <form action="{{ $formAction }}" method="POST">
     @include('master.documents.components.documents_form', [
-      'item' => $item ?? (object)[],
+      'item' => $item,
       'categories' => $categories,
-      'documentNames' => $documentNames,
       'submitLabel' => $submitLabel,
       'cancelRoute' => route('master.documents.index')
     ])

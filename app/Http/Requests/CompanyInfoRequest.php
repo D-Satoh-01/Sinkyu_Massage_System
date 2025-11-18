@@ -43,7 +43,7 @@ class CompanyInfoRequest extends FormRequest
       'closed_day_friday' => 'nullable|boolean',
       'closed_day_saturday' => 'nullable|boolean',
       'closed_day_sunday' => 'nullable|boolean',
-      'bank_account_type_id' => 'nullable|integer',
+      'bank_account_type' => 'nullable|max:255',
       'bank_name' => 'nullable|max:255',
       'bank_branch_name' => 'nullable|max:255',
       'bank_account_name' => 'nullable|max:255',
@@ -51,7 +51,7 @@ class CompanyInfoRequest extends FormRequest
       'bank_code' => 'nullable|integer',
       'bank_branch_code' => 'nullable|integer',
       'bank_account_number' => 'nullable|integer',
-      'health_center_registerd_location_id' => 'nullable|integer',
+      'health_center_registerd_location' => 'nullable|max:255',
       'license_hari_number' => 'nullable|integer',
       'license_hari_issued_date' => 'nullable|date',
       'license_kyu_number' => 'nullable|integer',
@@ -62,7 +62,7 @@ class CompanyInfoRequest extends FormRequest
       'therapist_number' => 'nullable|integer',
       'medical_institution_number' => 'nullable|integer',
       'should_round_amount' => 'nullable|boolean',
-      'document_format_id' => 'nullable|integer',
+      'document_formats' => 'nullable|max:255',
     ];
   }
 

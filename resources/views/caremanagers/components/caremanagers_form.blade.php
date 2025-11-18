@@ -19,7 +19,7 @@
     @enderror
     <br>
     <select id="service_providers_id" name="service_providers_id">
-      <option value="">----</option>
+      <option value="">╌╌╌</option>
       @foreach($serviceProviders as $provider)
         <option value="{{ $provider->id }}" {{ old('service_providers_id', $careManager->service_providers_id ?? '') == $provider->id ? 'selected' : '' }}>
           {{ $provider->service_provider_name }}

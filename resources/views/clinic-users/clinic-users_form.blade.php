@@ -58,7 +58,7 @@
   <label class="fw-semibold" for="gender_id">性別</label><br>
   @php $genderVal = old('gender_id', session($sessionKey . '.gender_id', isset($clinicUser) ? $clinicUser->gender_id ?? '' : '')); @endphp
   <select id="gender_id" name="gender_id">
-    <option value="">----</option>
+    <option value="">╌╌╌</option>
     <option value="1" {{ $genderVal == '1' ? 'selected' : '' }}>男性</option>
     <option value="2" {{ $genderVal == '2' ? 'selected' : '' }}>女性</option>
   </select>
