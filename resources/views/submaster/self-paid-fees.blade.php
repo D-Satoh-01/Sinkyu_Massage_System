@@ -1,22 +1,22 @@
-<!-- resources/views/master/self-pay-fees/index.blade.php -->
+<!-- resources/views/submaster/self-paid-fees.blade.php -->
 
 <x-app-layout>
   <h2>自費施術料金</h2>
-  <a href="{{ route('master.index') }}">←マスター登録に戻る</a>
+  <a href="{{ route('submaster.index') }}">←サブマスター登録に戻る</a>
   <br><br>
 
   @if(session('success'))
     <div style="color: green;">{{ session('success') }}</div>
   @endif
 
-  <table id="selfPayFeesTable" class="table table-bordered table-striped">
+  <table id="selfPaidFeesTable" class="table table-bordered table-striped">
     <thead>
       <tr>
         <th style="width: 10%;">ID</th>
-        <th style="width: 50%;">名称</th>
-        <th style="width: 15%;">金額（円）</th>
-        <th style="width: 12.5%;">更新</th>
-        <th style="width: 12.5%;">削除</th>
+        <th style="width: 35%;">名称</th>
+        <th style="width: 25%;">金額</th>
+        <th style="width: 15%;">更新</th>
+        <th style="width: 15%;">削除</th>
       </tr>
     </thead>
     <tbody>
@@ -24,13 +24,13 @@
       <tr class="new-entry-row">
         <td>新規登録</td>
         <td>
-          <input type="text" name="self_fee_name" value="" required style="width: 95%;" form="form-new">
+          <input type="text" name="name" value="" required style="width: 95%;" form="form-new">
         </td>
         <td>
-          <input type="number" name="amount" value="" min="0" step="1" required style="width: 95%;" form="form-new">
+          <input type="number" name="amount" value="" required min="0" style="width: 95%;" form="form-new">
         </td>
         <td colspan="2" style="text-align: center;">
-          <form action="{{ route('master.self-fees.store') }}" method="POST" id="form-new" style="display: inline;">
+          <form action="{{ route('submaster.self-paid-fees.store') }}" method="POST" id="form-new" style="display: inline;">
             @csrf
             <button type="submit">新規登録</button>
           </form>
@@ -42,19 +42,19 @@
       <tr>
         <td>{{ $item->id }}</td>
         <td>
-          <form action="{{ route('master.self-fees.update', $item->id) }}" method="POST" id="form-{{ $item->id }}">
+          <form action="{{ route('submaster.self-paid-fees.update', $item->id) }}" method="POST" id="form-{{ $item->id }}">
             @csrf
-            <input type="text" name="self_fee_name" value="{{ $item->self_fee_name }}" required style="width: 95%;">
+            <input type="text" name="name" value="{{ $item->name }}" required style="width: 95%;">
         </td>
         <td>
-            <input type="number" name="amount" value="{{ $item->amount }}" min="0" step="1" required style="width: 95%;">
+            <input type="number" name="amount" value="{{ $item->amount }}" required min="0" style="width: 95%;">
           </form>
         </td>
         <td style="text-align: center;">
           <button type="submit" form="form-{{ $item->id }}">更新</button>
         </td>
         <td style="text-align: center;">
-          <form action="{{ route('master.self-fees.destroy', $item->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('本当に削除する？');">
+          <form action="{{ route('submaster.self-paid-fees.destroy', $item->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('本当に削除する？');">
             @csrf
             @method('DELETE')
             <button type="submit">削除</button>
@@ -69,8 +69,8 @@
   <script>
     $(document).ready(function() {
       var newEntryRow = $('.new-entry-row').detach();
-      
-      var table = $('#selfPayFeesTable').DataTable({
+
+      var table = $('#selfPaidFeesTable').DataTable({
         language: {
           url: '{{ asset('js/dataTables-ja.json') }}',
           paginate: {
@@ -88,7 +88,7 @@
           $(this.api().table().body()).prepend(newEntryRow);
         }
       });
-      
+
       $(table.table().body()).prepend(newEntryRow);
     });
   </script>

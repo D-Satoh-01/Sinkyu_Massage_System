@@ -24,11 +24,11 @@ class DocumentController extends Controller
   {
     // document_templatesテーブルからカテゴリ一覧を取得
     $categories = DB::table('document_templates')
-      ->select('category')
+      ->select('document_category')
       ->distinct()
-      ->whereNotNull('category')
-      ->orderBy('category')
-      ->pluck('category');
+      ->whereNotNull('document_category')
+      ->orderBy('document_category')
+      ->pluck('document_category');
 
     return view('master.documents.documents_registration', [
       'mode' => 'create',
@@ -51,11 +51,11 @@ class DocumentController extends Controller
 
     // カテゴリ一覧を取得
     $categories = DB::table('document_templates')
-      ->select('category')
+      ->select('document_category')
       ->distinct()
-      ->whereNotNull('category')
-      ->orderBy('category')
-      ->pluck('category');
+      ->whereNotNull('document_category')
+      ->orderBy('document_category')
+      ->pluck('document_category');
 
     return view('master.documents.documents_registration', [
       'mode' => 'edit',
@@ -71,8 +71,21 @@ class DocumentController extends Controller
   public function update(Request $request, $id)
   {
     $request->validate([
-      'category' => 'required|string|max:255',
-      'name' => 'required|string|max:255',
+      'document_category' => 'required|string|max:255',
+      'document_name' => [
+        'required',
+        'string',
+        'max:255',
+        function ($attribute, $value, $fail) use ($id) {
+          $exists = DB::table('documents')
+            ->where('document_name', $value)
+            ->where('id', '!=', $id)
+            ->exists();
+          if ($exists) {
+            $fail('既存の文書名称と重複。文書名称を変更が必要。');
+          }
+        }
+      ],
       'content' => 'required|string|max:2000',
       'font_size' => 'nullable|integer',
       'line_height' => 'nullable|integer',
@@ -81,8 +94,8 @@ class DocumentController extends Controller
     DB::table('documents')
       ->where('id', $id)
       ->update([
-        'category' => $request->category,
-        'name' => $request->name,
+        'document_category' => $request->document_category,
+        'document_name' => $request->document_name,
         'content' => $request->content,
         'font_size' => $request->font_size ?? 12,
         'line_height' => $request->line_height ?? 7,
@@ -98,8 +111,20 @@ class DocumentController extends Controller
   public function store(Request $request)
   {
     $request->validate([
-      'category' => 'required|string|max:255',
-      'name' => 'required|string|max:255',
+      'document_category' => 'required|string|max:255',
+      'document_name' => [
+        'required',
+        'string',
+        'max:255',
+        function ($attribute, $value, $fail) {
+          $exists = DB::table('documents')
+            ->where('document_name', $value)
+            ->exists();
+          if ($exists) {
+            $fail('既存の文書名称と重複。文書名称を変更が必要。');
+          }
+        }
+      ],
       'content' => 'required|string|max:2000',
       'font_size' => 'nullable|integer',
       'line_height' => 'nullable|integer',
@@ -138,11 +163,11 @@ class DocumentController extends Controller
 
     // カテゴリ一覧を取得
     $categories = DB::table('document_templates')
-      ->select('category')
+      ->select('document_category')
       ->distinct()
-      ->whereNotNull('category')
-      ->orderBy('category')
-      ->pluck('category');
+      ->whereNotNull('document_category')
+      ->orderBy('document_category')
+      ->pluck('document_category');
 
     return view('master.documents.documents_registration', [
       'mode' => 'duplicate',
@@ -158,8 +183,20 @@ class DocumentController extends Controller
   public function duplicateStore(Request $request)
   {
     $request->validate([
-      'category' => 'required|string|max:255',
-      'name' => 'required|string|max:255',
+      'document_category' => 'required|string|max:255',
+      'document_name' => [
+        'required',
+        'string',
+        'max:255',
+        function ($attribute, $value, $fail) {
+          $exists = DB::table('documents')
+            ->where('document_name', $value)
+            ->exists();
+          if ($exists) {
+            $fail('既存の文書名称と重複。文書名称を変更が必要。');
+          }
+        }
+      ],
       'content' => 'required|string|max:2000',
       'font_size' => 'nullable|integer',
       'line_height' => 'nullable|integer',
@@ -202,8 +239,8 @@ class DocumentController extends Controller
       '計画書' => 'master.documents.templates.request_doc', // 今は同じテンプレート
     ];
 
-    if (isset($categoryTemplateMap[$document->category])) {
-      $viewName = $categoryTemplateMap[$document->category];
+    if (isset($categoryTemplateMap[$document->document_category])) {
+      $viewName = $categoryTemplateMap[$document->document_category];
     }
 
     // TCPDFを使用してPDFを生成
@@ -212,7 +249,7 @@ class DocumentController extends Controller
     // PDFメタデータ設定
     $pdf->SetCreator('Sinkyu Massage System');
     $pdf->SetAuthor('System');
-    $pdf->SetTitle($document->name ?? 'Document');
+    $pdf->SetTitle($document->document_name ?? 'Document');
 
     // ヘッダー・フッターを削除
     $pdf->setPrintHeader(false);
@@ -235,8 +272,28 @@ class DocumentController extends Controller
     $pdf->writeHTML($html, true, false, true, false, '');
 
     // PDFを新規ウィンドウで表示
-    $filename = ($document->name ?? 'document') . '.pdf';
+    $filename = ($document->document_name ?? 'document') . '.pdf';
     return response($pdf->Output($filename, 'I'))
       ->header('Content-Type', 'application/pdf');
+  }
+
+  /**
+   * 文書名称の重複チェック（Ajax用）
+   */
+  public function checkDuplicateName(Request $request)
+  {
+    $name = $request->input('document_name');
+    $excludeId = $request->input('exclude_id'); // 編集時は自分自身を除外
+
+    $query = DB::table('documents')->where('document_name', $name);
+
+    // 編集時は自分自身のIDを除外
+    if ($excludeId) {
+      $query->where('id', '!=', $excludeId);
+    }
+
+    $exists = $query->exists();
+
+    return response()->json(['exists' => $exists]);
   }
 }

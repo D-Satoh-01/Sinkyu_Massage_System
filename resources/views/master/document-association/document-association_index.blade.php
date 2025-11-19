@@ -1,7 +1,7 @@
-<!-- resources/views/master/standard-documents/index.blade.php -->
+<!-- resources/views/master/document-association/document-association_index.blade.php -->
 
 <x-app-layout>
-  <h2>現在の登録済み標準文書の確認および関連付け</h2>
+  <h2>登録済み標準文書の確認･関連付け</h2>
   <a href="{{ route('master.index') }}">←マスター登録に戻る</a>
   <br><br>
 
@@ -9,57 +9,61 @@
     <div style="color: green;">{{ session('success') }}</div>
   @endif
 
-  <table id="standardDocumentsTable" class="table table-bordered table-striped">
+  @if(session('error'))
+    <div style="color: red;">{{ session('error') }}</div>
+  @endif
+
+  <table id="documentAssociationTable" class="table table-bordered table-striped">
     <thead>
       <tr>
-        <th style="width: 10%;">ID</th>
-        <th style="width: 25%;">文書名</th>
-        <th style="width: 20%;">関連付けタイプ</th>
-        <th style="width: 15%;">関連付けID</th>
-        <th style="width: 30%;">関連付け</th>
+        <th style="width: 30%;">文書カテゴリ</th>
+        <th style="width: 70%;">文書</th>
       </tr>
     </thead>
     <tbody>
-      @foreach($documents as $document)
-      <tr>
-        <td>{{ $document->id }}</td>
-        <td>{{ $document->document_name ?? '未設定' }}</td>
-        <td>
-          <form action="{{ route('master.standard-documents.associate', $document->id) }}" method="POST" id="form-{{ $document->id }}">
-            @csrf
-            <input type="text" name="associated_type" value="{{ $document->associated_type ?? '' }}" placeholder="タイプ" style="width: 95%;">
-        </td>
-        <td>
-            <input type="number" name="associated_id" value="{{ $document->associated_id ?? '' }}" placeholder="ID" min="0" style="width: 95%;">
-          </form>
-        </td>
-        <td style="text-align: center;">
-          <button type="submit" form="form-{{ $document->id }}">関連付け</button>
-        </td>
-      </tr>
+      @foreach($categories as $category)
+        @php
+          // このカテゴリに属する文書を取得
+          $categoryDocuments = $documents->where('document_category', $category->document_category);
+          $docCount = $categoryDocuments->count();
+        @endphp
+        @if($docCount > 0)
+          @foreach($categoryDocuments as $index => $document)
+            <tr>
+              @if($index === 0)
+                <td rowspan="{{ $docCount }}">{{ $category->document_category }}</td>
+              @endif
+              <td>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div style="flex: 1;">
+                    {{ $document->document_name }}
+                  </div>
+                  <div style="flex: 1;">
+                    <form action="{{ route('master.document-association.associate', $document->id) }}" method="POST" style="margin: 0;">
+                      @csrf
+                      <select name="document_name_id_2" style="width: 100%;" onchange="this.form.submit()">
+                        <option value="">-- 選択 --</option>
+                        @foreach($documents as $doc)
+                          <option value="{{ $doc->id }}"
+                            {{ isset($associations[$document->id]) && $associations[$document->id]->document_name_id_2 == $doc->id ? 'selected' : '' }}>
+                            {{ $doc->document_name }}
+                          </option>
+                        @endforeach
+                      </select>
+                    </form>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          @endforeach
+        @else
+          <tr>
+            <td>{{ $category->document_category }}</td>
+            <td style="color: #999;">（文書未登録）</td>
+          </tr>
+        @endif
       @endforeach
     </tbody>
   </table>
 
-  @push('scripts')
-  <script>
-    $(document).ready(function() {
-      $('#standardDocumentsTable').DataTable({
-        language: {
-          url: '{{ asset('js/dataTables-ja.json') }}',
-          paginate: {
-            previous: '◂ 前へ',
-            next: '次へ ▸'
-          }
-        },
-        order: [[0, 'desc']],
-        pageLength: 10,
-        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-        columnDefs: [
-          { orderable: false, targets: [4] }
-        ]
-      });
-    });
-  </script>
-  @endpush
 </x-app-layout>

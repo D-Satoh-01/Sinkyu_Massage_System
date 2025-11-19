@@ -31,8 +31,8 @@
     <tbody>
       @foreach($items as $item)
       <tr>
-        <td>{{ $item->category }}</td>
-        <td>{{ $item->name }}</td>
+        <td>{{ $item->document_category }}</td>
+        <td>{{ $item->document_name }}</td>
         <td>{{ $item->created_at ? \Carbon\Carbon::parse($item->created_at)->format('Y-m-d H:i') : '' }}</td>
         <td style="text-align: center;">
           <button type="button" class="preview-btn" data-id="{{ $item->id }}">プレビュー</button>

@@ -13,7 +13,7 @@ class SelfFeeController extends Controller
    */
   public function index()
   {
-    $items = DB::table('self_pay_fees')->orderBy('id')->get();
+    $items = DB::table('self_fees')->orderBy('id')->get();
     return view('master.self-fees.self-fees_index', compact('items'));
   }
 
@@ -23,15 +23,15 @@ class SelfFeeController extends Controller
   public function update(Request $request, $id)
   {
     $request->validate([
-      'treatment_name' => 'required|string|max:255',
-      'fee_amount' => 'required|numeric|min:0',
+      'self_fee_name' => 'required|string|max:255',
+      'amount' => 'required|integer|min:0',
     ]);
 
-    DB::table('self_pay_fees')
+    DB::table('self_fees')
       ->where('id', $id)
       ->update([
-        'treatment_name' => $request->treatment_name,
-        'fee_amount' => $request->fee_amount,
+        'self_fee_name' => $request->self_fee_name,
+        'amount' => $request->amount,
       ]);
 
     return redirect()->route('master.self-fees.index')->with('success', '更新完了');
@@ -43,13 +43,13 @@ class SelfFeeController extends Controller
   public function store(Request $request)
   {
     $request->validate([
-      'treatment_name' => 'required|string|max:255',
-      'fee_amount' => 'required|numeric|min:0',
+      'self_fee_name' => 'required|string|max:255',
+      'amount' => 'required|integer|min:0',
     ]);
 
-    DB::table('self_pay_fees')->insert([
-      'treatment_name' => $request->treatment_name,
-      'fee_amount' => $request->fee_amount,
+    DB::table('self_fees')->insert([
+      'self_fee_name' => $request->self_fee_name,
+      'amount' => $request->amount,
     ]);
 
     return redirect()->route('master.self-fees.index')->with('success', '登録完了');
@@ -60,7 +60,7 @@ class SelfFeeController extends Controller
    */
   public function destroy($id)
   {
-    DB::table('self_pay_fees')->where('id', $id)->delete();
+    DB::table('self_fees')->where('id', $id)->delete();
     return redirect()->route('master.self-fees.index')->with('success', '削除完了');
   }
 }

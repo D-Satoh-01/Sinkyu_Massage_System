@@ -105,6 +105,7 @@ Route::middleware('auth')->group(function () {
   // 文書編集
   Route::get('/master/documents/index', [DocumentController::class, 'index'])->name('master.documents.index');
   Route::get('/master/documents/create', [DocumentController::class, 'create'])->name('master.documents.create');
+  Route::post('/master/documents/check-duplicate-name', [DocumentController::class, 'checkDuplicateName'])->name('master.documents.check-duplicate-name');
   Route::post('/master/documents', [DocumentController::class, 'store'])->name('master.documents.store');
   Route::get('/master/documents/{id}/edit', [DocumentController::class, 'edit'])->name('master.documents.edit');
   Route::post('/master/documents/{id}', [DocumentController::class, 'update'])->name('master.documents.update');
