@@ -24,7 +24,11 @@
       "Bash(ren:*)",
       "Bash(cmd /c dir /b databasemigrations*document*.php)",
       "Bash(cmd /c dir /s /b resourcesviewssubmaster)",
-      "Bash(netstat:*)"
+      "Bash(netstat:*)",
+      "Bash(cmd /c dir /b databasemigrations*submaster*.php)",
+      "Bash(cmd /c dir /s /b resourcesviews)",
+      "Bash(cmd /c dir /b databasemigrations)",
+      "Bash(cmd /c \"dir /b database\\migrations\\*document*.php\")"
     ],
     "deny": [],
     "ask": []

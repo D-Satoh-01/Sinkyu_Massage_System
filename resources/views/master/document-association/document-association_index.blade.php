@@ -41,11 +41,11 @@
                   <div style="flex: 1;">
                     <form action="{{ route('master.document-association.associate', $document->id) }}" method="POST" style="margin: 0;">
                       @csrf
-                      <select name="document_name_id_2" style="width: 100%;" onchange="this.form.submit()">
+                      <select name="document_id_2" style="width: 100%;" onchange="this.form.submit()">
                         <option value="">-- 選択 --</option>
                         @foreach($documents as $doc)
                           <option value="{{ $doc->id }}"
-                            {{ isset($associations[$document->id]) && $associations[$document->id]->document_name_id_2 == $doc->id ? 'selected' : '' }}>
+                            {{ isset($associations[$document->id]) && $associations[$document->id]->document_id_2 == $doc->id ? 'selected' : '' }}>
                             {{ $doc->document_name }}
                           </option>
                         @endforeach
