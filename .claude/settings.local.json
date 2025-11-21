@@ -28,7 +28,10 @@
       "Bash(cmd /c dir /b databasemigrations*submaster*.php)",
       "Bash(cmd /c dir /s /b resourcesviews)",
       "Bash(cmd /c dir /b databasemigrations)",
-      "Bash(cmd /c \"dir /b database\\migrations\\*document*.php\")"
+      "Bash(cmd /c \"dir /b database\\migrations\\*document*.php\")",
+      "Bash(cmd /c \"dir /s /b i:\\XAMPP\\htdocs\\Sinkyu_Massage_System\\public\\css\")",
+      "Bash(cmd /c \"dir /b public\\css\")",
+      "Bash(cmd /c \"if not exist resources\\views\\records mkdir resources\\views\\records\")"
     ],
     "deny": [],
     "ask": []

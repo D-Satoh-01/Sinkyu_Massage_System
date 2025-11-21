@@ -18,6 +18,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\TreatmentFeeController;
 use App\Http\Controllers\SelfFeeController;
 use App\Http\Controllers\DocumentAssociationController;
+use App\Http\Controllers\RecordsController;
 
 Route::get('/', fn() => redirect()->route('login'));
 
@@ -211,6 +212,12 @@ Route::middleware('auth')->group(function () {
 
   Route::delete('/master/clinic-users/{id}/plans/{plan_id}', [PlanController::class, 'destroy'])->name('clinic-users.plans.delete');
   Route::get('/master/clinic-users/{id}/plans/print-history', [PlanController::class, 'print'])->name('clinic-users.plans.print-history');
+
+  // 実績データ
+  Route::get('/records', [RecordsController::class, 'index'])->name('records.index');
+
+  // 利用者検索（共通）
+  Route::view('/user-search', 'user-search')->name('user.search');
 });
 
 require __DIR__.'/auth.php';

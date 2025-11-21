@@ -43,6 +43,11 @@ class AuthenticatedSessionController extends Controller
       throw $e;
     }
 
+    // 前回ログイン日時を更新
+    $user = Auth::user();
+    $user->last_login_at = now();
+    $user->save();
+
     $request->session()->regenerate();
 
     // セッションに「ログイン状態を保持」フラグを保存
