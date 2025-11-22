@@ -23,8 +23,10 @@ class ClinicUserRequest extends FormRequest
   {
     return [
       'id' => 'nullable|integer|exists:clinic_users,id',
-      'clinic_user_name' => 'required|string|max:255',
-      'furigana' => 'required|string|max:255',
+      'last_name' => 'required|string|max:255',
+      'first_name' => 'required|string|max:255',
+      'last_kana' => 'required|string|max:255',
+      'first_kana' => 'required|string|max:255',
       'birthday' => 'nullable|date',
       'age' => 'nullable|integer|min:0|max:150',
       'gender_id' => 'nullable|integer|in:1,2',

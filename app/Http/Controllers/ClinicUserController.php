@@ -207,8 +207,10 @@ class ClinicUserController extends Controller
     private function getLabels()
     {
         return [
-            'clinic_user_name' => '利用者氏名',
-            'furigana' => 'フリガナ',
+            'last_name' => '姓',
+            'first_name' => '名',
+            'last_kana' => 'セイ',
+            'first_kana' => 'メイ',
             'birthday' => '生年月日',
             'age' => '年齢',
             'gender_id' => '性別',

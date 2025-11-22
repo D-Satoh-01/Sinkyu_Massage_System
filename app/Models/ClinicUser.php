@@ -15,25 +15,43 @@ class ClinicUser extends Model
   protected $table = 'clinic_users';
   
   protected $fillable = [
-  'clinic_user_name',
-  'furigana',
-  'birthday',
-  'age',
-  'gender_id',
-  'postal_code',
-  'address_1',
-  'address_2',
-  'address_3',
-  'phone',
-  'cell_phone',
-  'fax',
-  'email',
-  'housecall_distance',
-  'housecall_additional_distance',
-  'is_redeemed',
-  'application_count',
-  'note'
+    'last_name',
+    'first_name',
+    'last_kana',
+    'first_kana',
+    'birthday',
+    'age',
+    'gender_id',
+    'postal_code',
+    'address_1',
+    'address_2',
+    'address_3',
+    'phone',
+    'cell_phone',
+    'fax',
+    'email',
+    'housecall_distance',
+    'housecall_additional_distance',
+    'is_redeemed',
+    'application_count',
+    'note'
   ];
+
+  /**
+   * フルネームを取得
+   */
+  public function getFullNameAttribute(): string
+  {
+    return $this->last_name . ' ' . $this->first_name;
+  }
+
+  /**
+   * フルネーム（カナ）を取得
+   */
+  public function getFullKanaAttribute(): string
+  {
+    return $this->last_kana . ' ' . $this->first_kana;
+  }
 
   protected $casts = [
   'birthday' => 'date',

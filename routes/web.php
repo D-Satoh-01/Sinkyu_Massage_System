@@ -19,6 +19,7 @@ use App\Http\Controllers\TreatmentFeeController;
 use App\Http\Controllers\SelfFeeController;
 use App\Http\Controllers\DocumentAssociationController;
 use App\Http\Controllers\RecordsController;
+use App\Http\Controllers\UserSearchController;
 
 Route::get('/', fn() => redirect()->route('login'));
 
@@ -217,7 +218,7 @@ Route::middleware('auth')->group(function () {
   Route::get('/records', [RecordsController::class, 'index'])->name('records.index');
 
   // 利用者検索（共通）
-  Route::view('/user-search', 'user-search')->name('user.search');
+  Route::get('/user-search', [UserSearchController::class, 'index'])->name('user.search');
 });
 
 require __DIR__.'/auth.php';

@@ -22,21 +22,45 @@
   @endif
 
   <div class="mb-3">
-  <label class="fw-semibold" for="clinic_user_name">利用者氏名</label>
-  @error('clinic_user_name')
-    <span class="text-danger ms-2">{{ $message }}</span>
-  @enderror
+  <label class="fw-semibold">氏名</label>
   <br>
-  <input type="text" id="clinic_user_name" name="clinic_user_name" value="{{ $get('clinic_user_name') }}" @if(!empty($isEdit)) required @endif>
+  <div class="d-flex gap-2 align-items-center">
+    <div>
+    <label for="last_name" class="form-label small mb-1">姓</label>
+    @error('last_name')
+      <span class="text-danger ms-2">{{ $message }}</span>
+    @enderror
+    <input type="text" id="last_name" name="last_name" value="{{ $get('last_name') }}" @if(!empty($isEdit)) required @endif>
+    </div>
+    <div>
+    <label for="first_name" class="form-label small mb-1">名</label>
+    @error('first_name')
+      <span class="text-danger ms-2">{{ $message }}</span>
+    @enderror
+    <input type="text" id="first_name" name="first_name" value="{{ $get('first_name') }}" @if(!empty($isEdit)) required @endif>
+    </div>
+  </div>
   </div>
 
   <div class="mb-3">
-  <label class="fw-semibold" for="furigana">フリガナ</label>
-  @error('furigana')
-    <span class="text-danger ms-2">{{ $message }}</span>
-  @enderror
+  <label class="fw-semibold">フリガナ</label>
   <br>
-  <input type="text" id="furigana" name="furigana" value="{{ $get('furigana') }}">
+  <div class="d-flex gap-2 align-items-center">
+    <div>
+    <label for="last_kana" class="form-label small mb-1">セイ</label>
+    @error('last_kana')
+      <span class="text-danger ms-2">{{ $message }}</span>
+    @enderror
+    <input type="text" id="last_kana" name="last_kana" value="{{ $get('last_kana') }}">
+    </div>
+    <div>
+    <label for="first_kana" class="form-label small mb-1">メイ</label>
+    @error('first_kana')
+      <span class="text-danger ms-2">{{ $message }}</span>
+    @enderror
+    <input type="text" id="first_kana" name="first_kana" value="{{ $get('first_kana') }}">
+    </div>
+  </div>
   </div>
 
   <div class="mb-3">

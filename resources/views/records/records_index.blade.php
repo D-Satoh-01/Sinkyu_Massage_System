@@ -13,7 +13,7 @@
         <option value="">╌╌╌</option>
         @foreach($clinicUsers as $user)
           <option value="{{ $user->id }}" {{ $selectedUserId == $user->id ? 'selected' : '' }}>
-            {{ $user->clinic_user_name }} ({{ $user->furigana }})
+            {{ $user->last_name }} {{ $user->first_name }} ({{ $user->last_kana }} {{ $user->first_kana }})
           </option>
         @endforeach
       </select>

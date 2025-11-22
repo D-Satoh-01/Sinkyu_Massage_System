@@ -26,12 +26,12 @@
     </tr>
   </thead>
   <tbody>
-    @forelse($clinicUsers as $user)
+    @foreach($clinicUsers as $user)
     <tr>
       <td>{{ $user->id }}</td>
       <td>
-      <a href="{{ route('clinic-users.edit', ['id' => $user->id]) }}">{{ $user->clinic_user_name }} [編集]</a><br>
-      {{ $user->furigana }}
+      <a href="{{ route('clinic-users.edit', ['id' => $user->id]) }}">{{ $user->full_name }} [編集]</a><br>
+      {{ $user->full_kana }}
       </td>
       <td>
       @if(!empty($user->birthday))
@@ -63,11 +63,7 @@
       </form>
       </td>
     </tr>
-    @empty
-    <tr>
-      <td colspan="7" class="text-center">データがありません</td>
-    </tr>
-    @endforelse
+    @endforeach
   </tbody>
   </table>
 

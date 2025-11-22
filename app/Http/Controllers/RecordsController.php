@@ -25,8 +25,9 @@ class RecordsController extends Controller
   {
     // 利用者一覧を取得（プルダウンメニュー用）
     $clinicUsers = DB::table('clinic_users')
-      ->select('id', 'clinic_user_name', 'furigana')
-      ->orderBy('furigana', 'asc')
+      ->select('id', 'last_name', 'first_name', 'last_kana', 'first_kana')
+      ->orderBy('last_kana', 'asc')
+      ->orderBy('first_kana', 'asc')
       ->get();
 
     // 選択された利用者ID
@@ -37,8 +38,10 @@ class RecordsController extends Controller
       ->leftJoin('clinic_users', 'records.clinic_user_id', '=', 'clinic_users.id')
       ->select(
         'records.*',
-        'clinic_users.clinic_user_name',
-        'clinic_users.furigana'
+        'clinic_users.last_name',
+        'clinic_users.first_name',
+        'clinic_users.last_kana',
+        'clinic_users.first_kana'
       )
       ->orderBy('records.date', 'desc')
       ->orderBy('records.start_time', 'desc');
