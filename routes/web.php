@@ -215,7 +215,7 @@ Route::middleware('auth')->group(function () {
   Route::get('/master/clinic-users/{id}/plans/print-history', [PlanController::class, 'print'])->name('clinic-users.plans.print-history');
 
   // 実績データ
-  Route::get('/records', [RecordsController::class, 'index'])->name('records.index');
+  Route::get('/records/index', [RecordsController::class, 'index'])->name('records.index');
 
   // 利用者検索（共通）
   Route::get('/user-search', [UserSearchController::class, 'index'])->name('user.search');

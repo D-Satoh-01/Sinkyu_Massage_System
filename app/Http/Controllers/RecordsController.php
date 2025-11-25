@@ -23,36 +23,28 @@ class RecordsController extends Controller
    */
   public function index(Request $request)
   {
-    // 利用者一覧を取得（プルダウンメニュー用）
+    // clinic_infoテーブルから定休日情報を取得
+    $clinicInfo = DB::table('clinic_info')->first();
+    $closedDays = [
+      'monday' => $clinicInfo->closed_day_monday ?? 0,
+      'tuesday' => $clinicInfo->closed_day_tuesday ?? 0,
+      'wednesday' => $clinicInfo->closed_day_wednesday ?? 0,
+      'thursday' => $clinicInfo->closed_day_thursday ?? 0,
+      'friday' => $clinicInfo->closed_day_friday ?? 0,
+      'saturday' => $clinicInfo->closed_day_saturday ?? 0,
+      'sunday' => $clinicInfo->closed_day_sunday ?? 0,
+    ];
+
+    // 利用者リストを取得
     $clinicUsers = DB::table('clinic_users')
       ->select('id', 'last_name', 'first_name', 'last_kana', 'first_kana')
-      ->orderBy('last_kana', 'asc')
-      ->orderBy('first_kana', 'asc')
+      ->orderBy('last_kana')
+      ->orderBy('first_kana')
       ->get();
 
     // 選択された利用者ID
     $selectedUserId = $request->input('clinic_user_id');
 
-    // 実績データを取得
-    $query = DB::table('records')
-      ->leftJoin('clinic_users', 'records.clinic_user_id', '=', 'clinic_users.id')
-      ->select(
-        'records.*',
-        'clinic_users.last_name',
-        'clinic_users.first_name',
-        'clinic_users.last_kana',
-        'clinic_users.first_kana'
-      )
-      ->orderBy('records.date', 'desc')
-      ->orderBy('records.start_time', 'desc');
-
-    // 利用者IDで絞り込み
-    if ($selectedUserId) {
-      $query->where('records.clinic_user_id', $selectedUserId);
-    }
-
-    $records = $query->get();
-
-    return view('records.records_index', compact('clinicUsers', 'records', 'selectedUserId'));
+    return view('records.records_index', compact('closedDays', 'clinicUsers', 'selectedUserId'));
   }
 }

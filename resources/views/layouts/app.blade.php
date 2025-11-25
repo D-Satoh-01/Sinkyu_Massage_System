@@ -42,14 +42,17 @@
 			})();
 		</script>
 
-		<!-- Sidebar -->
-		@include('layouts.sidebar')
+		<!-- Content Wrapper (Sidebar + Main Content) -->
+		<div class="content-wrapper">
+			<!-- Sidebar -->
+			@include('layouts.sidebar')
 
-		<!-- Page Content -->
-		<div class="main-content">
-			<main>
-				{{ $slot }}
-			</main>
+			<!-- Page Content -->
+			<div class="main-content">
+				<main>
+					{{ $slot }}
+				</main>
+			</div>
 		</div>
 
 		<!-- Bootstrap JS -->
