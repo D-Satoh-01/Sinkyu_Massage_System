@@ -34,7 +34,8 @@
       "Bash(cmd /c \"if not exist resources\\views\\records mkdir resources\\views\\records\")",
       "Bash(cmd /c \"dir /b database\\migrations\\*clinic_info*.php\")",
       "Bash(cmd /c dir:*)",
-      "Bash(cmd /c \"dir /b i:\\XAMPP\\htdocs\\Sinkyu_Massage_System\\public\\css\")"
+      "Bash(cmd /c \"dir /b i:\\XAMPP\\htdocs\\Sinkyu_Massage_System\\public\\css\")",
+      "Bash(cmd /c \"if exist public\\css\\sidebar.css (echo EXISTS) else (echo NOT_FOUND)\")"
     ],
     "deny": [],
     "ask": []

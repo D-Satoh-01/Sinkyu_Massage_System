@@ -13,6 +13,7 @@
   overflow-y: auto;
 }
 
+/* メインアプリケーションレイアウト */
 body.app-layout {
   display: flex;
   flex-direction: column;
@@ -34,13 +35,6 @@ body.app-layout {
   outline: none;
 }
 
-/* サイドバー ＋ メインコンテンツ */
-.content-wrapper {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-
 /* 区切り線 */
 .divider-horizontal { /* 水平線 */
   border-top: 1px solid #00000060;
@@ -52,15 +46,12 @@ body.app-layout {
   margin: 0 1rem;
   height: 100%;
 }
-.divider-horizontal-bold { /* 水平太線 */
-  border-top: 2px solid #00000060;
-  margin: 1rem 0;
-  width: 100%;
-}
-.divider-vertical-bold { /* 垂直太線 */
-  border-left: 2px solid #00000060;
-  margin: 0 1rem;
-  height: 100%;
+
+/* サイドバー ＋ メインコンテンツ */
+.content-wrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
 }
 /*---------------------------------------------------------*/
 

@@ -6,86 +6,9 @@
   <meta charset="UTF-8">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <title>計画情報履歴一覧表</title>
-  <style>
-    body {
-      font-family: 'mplus1medium', sans-serif;
-      font-size: 9px;
-      margin: 0;
-      padding: 0;
-    }
-    h1 {
-      text-align: center;
-      font-size: 16px;
-      margin-bottom: 15px;
-    }
-    .user-info {
-      margin-bottom: 15px;
-      font-size: 10px;
-    }
-    .plan-record {
-      margin-bottom: 20px;
-      page-break-inside: avoid;
-    }
-    .plan-header {
-      background-color: #f0f0f0;
-      padding: 5px;
-      margin-bottom: 10px;
-      font-weight: bold;
-      font-size: 11px;
-      border: 1px solid #000;
-    }
-    .status-latest {
-      color: #ff0000;
-    }
-    .status-updated {
-      color: #666666;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 8px;
-      margin-bottom: 10px;
-    }
-    th, td {
-      border: 1px solid #000;
-      padding: 3px;
-      text-align: left;
-      vertical-align: middle;
-    }
-    th {
-      background-color: #e8e8e8;
-      text-align: center;
-      font-weight: bold;
-    }
-    .section-title {
-      background-color: #d0d0d0;
-      font-weight: bold;
-      text-align: center;
-    }
-    .label-cell {
-      width: 25%;
-      background-color: #f5f5f5;
-      font-weight: bold;
-    }
-    .value-cell {
-      width: 75%;
-    }
-    .adl-table th {
-      width: 15%;
-    }
-    .adl-table td.level {
-      width: 20%;
-    }
-    .adl-table td.note {
-      width: 65%;
-    }
-    .textarea-cell {
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-  </style>
+  <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
-<body>
+<body class="pdf-plans">
   <h1>計画情報履歴一覧表</h1>
   <div class="user-info">
     <strong>利用者名:</strong> {{ $user->clinic_user_name }}

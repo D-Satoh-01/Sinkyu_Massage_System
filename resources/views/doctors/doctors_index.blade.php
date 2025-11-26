@@ -2,9 +2,10 @@
 
 
 <x-app-layout>
-  <h2>医師情報</h2>
-
-  <br><br>
+  <x-page-header
+    title="医師情報"
+    :breadcrumbs="App\Support\Breadcrumbs::generate('doctors.index')"
+  />
 
   <a href="{{ route('doctors.create') }}">
   <button>医師新規登録</button>

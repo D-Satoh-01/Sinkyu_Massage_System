@@ -1,7 +1,26 @@
 <!-- resources/views/doctors/doctors_registration.blade.php -->
 
 <x-app-layout>
-  <h2>{{ $title }}</h2><br><br>
+  @php
+    // モードに応じたパンくずリスト定義名を決定
+    if ($mode === 'create') {
+      $breadcrumbName = 'doctors.create';
+      $formAction = route('doctors.confirm');
+    } elseif ($mode === 'edit') {
+      $breadcrumbName = 'doctors.edit';
+      $formAction = route('doctors.edit.confirm', $doctor->id);
+    } else { // duplicate
+      $breadcrumbName = 'doctors.duplicate';
+      $formAction = route('doctors.duplicate.confirm');
+    }
+  @endphp
+
+  <x-page-header
+    title="医師情報"
+    :breadcrumbs="App\Support\Breadcrumbs::generate($breadcrumbName)"
+  />
+
+  <br>
 
   @if($errors->any())
     <div class="alert alert-danger">
@@ -12,17 +31,6 @@
       </ul>
     </div>
   @endif
-
-  @php
-    // モードに応じたフォームの送信先を設定
-    if ($mode === 'create') {
-      $formAction = route('doctors.confirm');
-    } elseif ($mode === 'edit') {
-      $formAction = route('doctors.edit.confirm', $doctor->id);
-    } else { // duplicate
-      $formAction = route('doctors.duplicate.confirm');
-    }
-  @endphp
 
   <form action="{{ $formAction }}" method="POST">
     @if($mode === 'duplicate')

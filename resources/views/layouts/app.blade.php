@@ -10,7 +10,7 @@
 
 		<title>{{ config('app.name', 'Laravel') }}</title>
 
-		<!-- Google Fonts - Noto Sans JP -->
+		<!-- Google Fonts (Noto Sans JP) -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">		
@@ -21,19 +21,17 @@
 		<!-- DataTables CSS -->
 		<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
 
-		<!-- Sidebar CSS -->
-		<link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
-
-		<!-- Scripts -->
+		<!-- スクリプト -->
 		@vite(['resources/css/app.css', 'resources/js/app.js'])
 	</head>
-	<body class="min-vh-100">
-		<!-- header -->
+	<body class="app-layout min-vh-100">
+
+		<!-- ヘッダー -->
 		<header class="app-header">
 			@include('layouts.header')
 		</header>
 
-		<!-- Sidebar状態の事前読み込み（ちらつき防止） -->
+		<!-- サイドバー状態の事前読み込み（ちらつき防止） -->
 		<script>
 			(function() {
 				if (localStorage.getItem('sidebarState') === 'closed') {
@@ -42,12 +40,12 @@
 			})();
 		</script>
 
-		<!-- Content Wrapper (Sidebar + Main Content) -->
+		<!-- Content Wrapper（サイドバー ＋ メインコンテンツ） -->
 		<div class="content-wrapper">
-			<!-- Sidebar -->
+			<!-- サイドバー -->
 			@include('layouts.sidebar')
 
-			<!-- Page Content -->
+			<!-- メインコンテンツ -->
 			<div class="main-content">
 				<main>
 					{{ $slot }}
@@ -65,51 +63,8 @@
 		<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 		<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 
-		<!-- Sidebar JS -->
+		<!-- サイドバー JS -->
 		<script src="{{ asset('js/sidebar.js') }}"></script>
-
-		<!-- セッション管理スクリプト -->
-		<script>
-			(function() {
-				// 外部サイトへのリンククリックを検出
-				document.addEventListener('click', function(e) {
-					const target = e.target.closest('a');
-					if (!target) return;
-
-					const href = target.getAttribute('href');
-					if (!href) return;
-
-					// 外部リンクかどうかをチェック
-					try {
-						const currentDomain = window.location.hostname;
-						const url = new URL(href, window.location.origin);
-
-						// 外部ドメインへのリンクの場合
-						if (url.hostname !== currentDomain) {
-							// セッションを無効化するためのリクエストを送信
-							fetch('{{ route("logout") }}', {
-								method: 'POST',
-								headers: {
-									'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-									'Content-Type': 'application/json',
-								},
-								credentials: 'same-origin'
-							}).catch(function(error) {
-								console.log('Logout request failed:', error);
-							});
-						}
-					} catch (err) {
-						// URLが相対パスの場合などは何もしない
-					}
-				});
-
-				// ページ離脱時（beforeunload）の検出
-				window.addEventListener('beforeunload', function(e) {
-					// 次のページが同じドメインかどうかは判定できないため、
-					// ミドルウェア側で処理
-				});
-			})();
-		</script>
 
 		@stack('scripts')
 	</body>

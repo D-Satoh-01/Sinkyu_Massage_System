@@ -7,23 +7,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>利用者検索</title>
   <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-  <style>
-    .katakana-selected {
-      background-color: #007bff !important;
-      color: white !important;
-    }
-    .main-container {
-      display: flex;
-      gap: 20px;
-    }
-    .left-panel {
-      flex-shrink: 0;
-      width: 20rem;
-    }
-    .right-panel {
-      flex-grow: 1;
-    }
-  </style>
 </head>
 <body>
   <div class="main-container">
@@ -54,7 +37,6 @@
         <button type="button" id="search-btn">検索</button>
       </div>
 
-      <hr>
 
       <!-- 50音検索 -->
       <fieldset>
@@ -139,7 +121,6 @@
         </table>
       </fieldset>
 
-      <hr>
 
       <!-- 該当利用者一覧ボックス -->
       <div>

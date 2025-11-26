@@ -1,7 +1,8 @@
 <!-- resources/views/records/records_index.blade.php -->
 
+
 <x-app-layout>
-  <!-- <h2>実績データ</h2><br> -->
+  <h2>実績データ</h2><br>
 
   <!-- 利用者選択フォーム -->
   <form method="GET" action="{{ route('records.index') }}" id="filterForm">

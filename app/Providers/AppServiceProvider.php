@@ -23,5 +23,8 @@ class AppServiceProvider extends ServiceProvider
   {
     // Bootstrap 5のページネーションビューを全体で使用する設定
     Paginator::useBootstrapFive();
+
+    // パンくずリストの定義を読み込む
+    require base_path('routes/breadcrumbs.php');
   }
 }
