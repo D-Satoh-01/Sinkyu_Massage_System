@@ -8,16 +8,26 @@
 }
 
 .main-content {
-  flex: 1;
-  padding: 1rem;
+  position: absolute;
+  left: 200px;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1rem 1rem 0 1rem;
   overflow-y: auto;
+  transition: left 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content main {
+  flex: 1;
 }
 
 body.app-layout {
-  display: flex;
-  flex-direction: column;
   min-height: 100vh;
   background-color: #ddd;
+  overflow: hidden;
 }
 
 /* リンクの下線を削除 */
@@ -37,7 +47,12 @@ body.app-layout {
 /* サイドバー ＋ メインコンテンツ */
 .content-wrapper {
   display: flex;
-  flex: 1;
+  flex-wrap: wrap;
+  position: fixed;
+  top: calc(0.5rem * 2 + 1.5rem + 2px);
+  left: 0;
+  right: 0;
+  bottom: 0;
   overflow: hidden;
 }
 
@@ -71,10 +86,33 @@ body.app-layout {
 
 /*━━━━┫〈 ヘッダー 〉┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━*/
 .app-header {
-  flex-shrink: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   background-color: #eee;
   padding: 0.5rem 1rem;
-  border-bottom: 2px solid #00000080;
+}
+/*---------------------------------------------------------*/
+
+
+
+
+
+
+/*━━━━┫〈 フッター 〉┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━*/
+.app-footer {
+  margin: 2rem -1rem 0 -1rem;
+  background-color: #eee;
+}
+
+.sidebar.closed ~ .main-content {
+  left: 0;
+}
+
+html.sidebar-preload-closed .main-content {
+  left: 0;
 }
 /*---------------------------------------------------------*/
 
@@ -85,12 +123,15 @@ body.app-layout {
 
 /*━━━━┫〈 サイドバー 〉┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━*/
 .sidebar {
-  flex-shrink: 0;
+  position: fixed;
+  left: 0;
+  top: calc(0.5rem * 2 + 1.5rem + 2px);
+  bottom: 0;
   width: 200px;
   background-color: #eee;
-  border-right: 2px solid #00000080;
   transition: margin-left 0.2s ease;
   overflow-y: auto;
+  z-index: 999;
 }
 
 /* サイドバー格納状態 */
@@ -106,7 +147,6 @@ html.sidebar-preload-closed .sidebar {
 /* サイドバーヘッダー */
 .sidebar-header {
   padding: 10px 20px;
-  border-bottom: 2px solid #00000080;
 }
 
 /* ユーザー情報 */
@@ -132,10 +172,6 @@ html.sidebar-preload-closed .sidebar {
   list-style: none;
   padding: 0;
   margin: 0;
-}
-
-.sidebar-menu-item {
-  border-bottom: 1px solid #00000080;
 }
 
 .sidebar-link {
@@ -548,5 +584,17 @@ html.sidebar-preload-closed .sidebar {
 
 .pdf-insurances .status-updated {
   color: #666666;
+}
+/*---------------------------------------------------------*/
+
+
+
+
+
+
+/*━━━━┫〈 その他 〉┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━*/
+/* 登録画面のメッセージ */
+.registration-message {
+  margin-bottom: 2rem;
 }
 /*---------------------------------------------------------*/

@@ -2,8 +2,12 @@
 
 
 <x-app-layout>
-  <h2>{{ $name }} 様の保険情報</h2>
-  <br><br>
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate('clinic-users.insurances.index')"
+  />
+
+  <br>
 
   @if(session('success'))
   <div class="alert alert-success">

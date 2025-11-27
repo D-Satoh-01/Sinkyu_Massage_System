@@ -1,58 +1,490 @@
 <?php
-// routes/breadcrumbs.php
+// routes/breadcrumbs.php //
+
 
 use App\Support\Breadcrumbs;
 
+
+//━━━┫〈 ヘルパー関数 〉┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
 // ホーム
-Breadcrumbs::define('index', function() {
+function getIndexBreadcrumbs() {
   return [
     ['url' => route('index'), 'label' => 'ホーム'],
   ];
+}
+
+// マスター登録
+function getMasterBreadcrumbs() {
+  return [
+    ...getIndexBreadcrumbs(),
+    ['url' => route('master.index'), 'label' => 'マスター登録'],
+  ];
+}
+
+function getDoctorsBreadcrumbs() {
+  return [
+    ...getMasterBreadcrumbs(),
+    ['url' => route('doctors.index'), 'label' => '医師情報'],
+  ];
+}
+
+// 利用者情報
+function getClinicUsersBreadcrumbs() {
+  return [
+    ...getMasterBreadcrumbs(),
+    ['url' => route('clinic-users.index'), 'label' => '利用者情報'],
+  ];
+}
+
+// 施術者情報
+function getTherapistsBreadcrumbs() {
+  return [
+    ...getMasterBreadcrumbs(),
+    ['url' => route('therapists.index'), 'label' => '施術者情報'],
+  ];
+}
+
+// ケアマネ情報
+function getCareManagersBreadcrumbs() {
+  return [
+    ...getMasterBreadcrumbs(),
+    ['url' => route('caremanagers.index'), 'label' => 'ケアマネ情報'],
+  ];
+}
+
+// 自社情報
+function getClinicInfoBreadcrumbs() {
+  return [
+    ...getMasterBreadcrumbs(),
+    ['url' => route('clinic-info.index'), 'label' => '自社情報'],
+  ];
+}
+
+// サブマスター登録
+function getSubMasterBreadcrumbs() {
+  return [
+    ...getMasterBreadcrumbs(),
+    ['url' => route('submaster.index'), 'label' => 'サブマスター登録'],
+  ];
+}
+
+// 文書編集
+function getDocumentsBreadcrumbs() {
+  return [
+    ...getMasterBreadcrumbs(),
+    ['url' => route('master.documents.index'), 'label' => '文書編集'],
+  ];
+}
+
+// 施術料金編集
+function getTreatmentFeesBreadcrumbs() {
+  return [
+    ...getMasterBreadcrumbs(),
+    ['url' => route('master.treatment-fees.index'), 'label' => '施術料金編集'],
+  ];
+}
+
+// 自費施術料金編集
+function getSelfFeesBreadcrumbs() {
+  return [
+    ...getMasterBreadcrumbs(),
+    ['url' => route('master.self-fees.index'), 'label' => '自費施術料金編集'],
+  ];
+}
+
+// 標準文書の確認および関連付け
+function getDocumentAssociationBreadcrumbs() {
+  return [
+    ...getMasterBreadcrumbs(),
+    ['url' => route('master.document-association.index'), 'label' => '標準文書の確認および関連付け'],
+  ];
+}
+
+// 実績データ
+function getRecordsBreadcrumbs() {
+  return [
+    ...getIndexBreadcrumbs(),
+    ['url' => route('records.index'), 'label' => '実績データ'],
+  ];
+}
+//---------------------------------------------------------------//
+
+
+
+
+
+
+//━━━┫〈 パンくずリスト定義 〉┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
+// ホーム
+Breadcrumbs::define('index', function() {
+  return getIndexBreadcrumbs();
 });
 
 // マスター登録
 Breadcrumbs::define('master.index', function() {
-  return [
-    ['url' => route('index'), 'label' => 'ホーム'],
-    ['url' => route('master.index'), 'label' => 'マスター登録'],
-  ];
+  return getMasterBreadcrumbs();
 });
 
-// 医師情報 - 一覧
+// 医師情報 ｰ トップ
 Breadcrumbs::define('doctors.index', function() {
-  return [
-    ['url' => route('index'), 'label' => 'ホーム'],
-    ['url' => route('master.index'), 'label' => 'マスター登録'],
-    ['url' => route('doctors.index'), 'label' => '医師情報'],
-  ];
+  return getDoctorsBreadcrumbs();
 });
 
-// 医師情報 - 新規登録
+// 医師情報 ｰ 新規登録
 Breadcrumbs::define('doctors.create', function() {
   return [
-    ['url' => route('index'), 'label' => 'ホーム'],
-    ['url' => route('master.index'), 'label' => 'マスター登録'],
-    ['url' => route('doctors.index'), 'label' => '医師情報'],
-    ['url' => null, 'label' => '新規登録'],
+    ...getDoctorsBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (新規)'],
   ];
 });
 
-// 医師情報 - 編集
-Breadcrumbs::define('doctors.edit', function($doctorId = null) {
+// 医師情報 ｰ 新規登録確認
+Breadcrumbs::define('doctors.confirm', function() {
   return [
-    ['url' => route('index'), 'label' => 'ホーム'],
-    ['url' => route('master.index'), 'label' => 'マスター登録'],
-    ['url' => route('doctors.index'), 'label' => '医師情報'],
-    ['url' => null, 'label' => '編集'],
+    ...getDoctorsBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (新規)'],
   ];
 });
 
-// 医師情報 - 複製
-Breadcrumbs::define('doctors.duplicate', function($doctorId = null) {
+// 医師情報 ｰ 編集
+Breadcrumbs::define('doctors.edit', function() {
   return [
-    ['url' => route('index'), 'label' => 'ホーム'],
-    ['url' => route('master.index'), 'label' => 'マスター登録'],
-    ['url' => route('doctors.index'), 'label' => '医師情報'],
-    ['url' => null, 'label' => '複製'],
+    ...getDoctorsBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (編集)'],
   ];
 });
+
+// 医師情報 ｰ 編集確認
+Breadcrumbs::define('doctors.edit.confirm', function() {
+  return [
+    ...getDoctorsBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (編集)'],
+  ];
+});
+
+// 医師情報 ｰ 複製
+Breadcrumbs::define('doctors.duplicate', function() {
+  return [
+    ...getDoctorsBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (複製)'],
+  ];
+});
+
+// 医師情報 ｰ 複製確認
+Breadcrumbs::define('doctors.duplicate.confirm', function() {
+  return [
+    ...getDoctorsBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (複製)'],
+  ];
+});
+
+// 実績データ
+Breadcrumbs::define('records.index', function() {
+  return getRecordsBreadcrumbs();
+});
+
+// 利用者情報 ｰ トップ
+Breadcrumbs::define('clinic-users.index', function() {
+  return getClinicUsersBreadcrumbs();
+});
+
+// 利用者情報 ｰ 新規登録
+Breadcrumbs::define('clinic-users.create', function() {
+  return [
+    ...getClinicUsersBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (新規)'],
+  ];
+});
+
+// 利用者情報 ｰ 編集
+Breadcrumbs::define('clinic-users.edit', function() {
+  return [
+    ...getClinicUsersBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (編集)'],
+  ];
+});
+
+// 利用者情報 ｰ 保険情報
+Breadcrumbs::define('clinic-users.insurances.index', function() {
+  return [
+    ...getClinicUsersBreadcrumbs(),
+    ['url' => null, 'label' => '保険情報'],
+  ];
+});
+
+// 利用者情報 ｰ 保険情報 ｰ 新規登録
+Breadcrumbs::define('clinic-users.insurances.create', function() {
+  return [
+    ...getClinicUsersBreadcrumbs(),
+    ['url' => null, 'label' => '保険情報'],
+    ['url' => null, 'label' => '登録 (新規)'],
+  ];
+});
+
+// 利用者情報 ｰ 保険情報 ｰ 編集
+Breadcrumbs::define('clinic-users.insurances.edit', function() {
+  return [
+    ...getClinicUsersBreadcrumbs(),
+    ['url' => null, 'label' => '保険情報'],
+    ['url' => null, 'label' => '登録 (編集)'],
+  ];
+});
+
+// 利用者情報 ｰ 保険情報 ｰ 複製
+Breadcrumbs::define('clinic-users.insurances.duplicate', function() {
+  return [
+    ...getClinicUsersBreadcrumbs(),
+    ['url' => null, 'label' => '保険情報'],
+    ['url' => null, 'label' => '登録 (複製)'],
+  ];
+});
+
+// 利用者情報 ｰ 同意医師履歴（あんま・マッサージ）
+Breadcrumbs::define('clinic-users.consents-massage.index', function() {
+  return [
+    ...getClinicUsersBreadcrumbs(),
+    ['url' => null, 'label' => '同意医師履歴（あんま・マッサージ）'],
+  ];
+});
+
+// 利用者情報 ｰ 同意医師履歴（あんま・マッサージ） ｰ 新規登録
+Breadcrumbs::define('clinic-users.consents-massage.create', function() {
+  return [
+    ...getClinicUsersBreadcrumbs(),
+    ['url' => null, 'label' => '同意医師履歴（あんま・マッサージ）'],
+    ['url' => null, 'label' => '登録 (新規)'],
+  ];
+});
+
+// 利用者情報 ｰ 同意医師履歴（あんま・マッサージ） ｰ 編集
+Breadcrumbs::define('clinic-users.consents-massage.edit', function() {
+  return [
+    ...getClinicUsersBreadcrumbs(),
+    ['url' => null, 'label' => '同意医師履歴（あんま・マッサージ）'],
+    ['url' => null, 'label' => '登録 (編集)'],
+  ];
+});
+
+// 利用者情報 ｰ 同意医師履歴（あんま・マッサージ） ｰ 複製
+Breadcrumbs::define('clinic-users.consents-massage.duplicate', function() {
+  return [
+    ...getClinicUsersBreadcrumbs(),
+    ['url' => null, 'label' => '同意医師履歴（あんま・マッサージ）'],
+    ['url' => null, 'label' => '登録 (複製)'],
+  ];
+});
+
+// 利用者情報 ｰ 同意医師履歴（鍼灸）
+Breadcrumbs::define('clinic-users.consents-acupuncture.index', function() {
+  return [
+    ...getClinicUsersBreadcrumbs(),
+    ['url' => null, 'label' => '同意医師履歴（鍼灸）'],
+  ];
+});
+
+// 利用者情報 ｰ 同意医師履歴（鍼灸） ｰ 新規登録
+Breadcrumbs::define('clinic-users.consents-acupuncture.registration', function() {
+  return [
+    ...getClinicUsersBreadcrumbs(),
+    ['url' => null, 'label' => '同意医師履歴（鍼灸）'],
+    ['url' => null, 'label' => '登録 (新規)'],
+  ];
+});
+
+// 利用者情報 ｰ 同意医師履歴（鍼灸） ｰ 編集
+Breadcrumbs::define('clinic-users.consents-acupuncture.edit', function() {
+  return [
+    ...getClinicUsersBreadcrumbs(),
+    ['url' => null, 'label' => '同意医師履歴（鍼灸）'],
+    ['url' => null, 'label' => '登録 (編集)'],
+  ];
+});
+
+// 利用者情報 ｰ 同意医師履歴（鍼灸） ｰ 複製
+Breadcrumbs::define('clinic-users.consents-acupuncture.duplicate', function() {
+  return [
+    ...getClinicUsersBreadcrumbs(),
+    ['url' => null, 'label' => '同意医師履歴（鍼灸）'],
+    ['url' => null, 'label' => '登録 (複製)'],
+  ];
+});
+
+// 利用者情報 ｰ 計画情報
+Breadcrumbs::define('clinic-users.plans.index', function() {
+  return [
+    ...getClinicUsersBreadcrumbs(),
+    ['url' => null, 'label' => '計画情報'],
+  ];
+});
+
+// 利用者情報 ｰ 計画情報 ｰ 新規登録
+Breadcrumbs::define('clinic-users.plans.create', function() {
+  return [
+    ...getClinicUsersBreadcrumbs(),
+    ['url' => null, 'label' => '計画情報'],
+    ['url' => null, 'label' => '登録 (新規)'],
+  ];
+});
+
+// 利用者情報 ｰ 計画情報 ｰ 編集
+Breadcrumbs::define('clinic-users.plans.edit', function() {
+  return [
+    ...getClinicUsersBreadcrumbs(),
+    ['url' => null, 'label' => '計画情報'],
+    ['url' => null, 'label' => '登録 (編集)'],
+  ];
+});
+
+// 利用者情報 ｰ 計画情報 ｰ 複製
+Breadcrumbs::define('clinic-users.plans.duplicate', function() {
+  return [
+    ...getClinicUsersBreadcrumbs(),
+    ['url' => null, 'label' => '計画情報'],
+    ['url' => null, 'label' => '登録 (複製)'],
+  ];
+});
+
+// 施術者情報 ｰ トップ
+Breadcrumbs::define('therapists.index', function() {
+  return getTherapistsBreadcrumbs();
+});
+
+// 施術者情報 ｰ 新規登録
+Breadcrumbs::define('therapists.create', function() {
+  return [
+    ...getTherapistsBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (新規)'],
+  ];
+});
+
+// 施術者情報 ｰ 編集
+Breadcrumbs::define('therapists.edit', function() {
+  return [
+    ...getTherapistsBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (編集)'],
+  ];
+});
+
+// ケアマネ情報 ｰ トップ
+Breadcrumbs::define('caremanagers.index', function() {
+  return getCareManagersBreadcrumbs();
+});
+
+// ケアマネ情報 ｰ 新規登録
+Breadcrumbs::define('caremanagers.create', function() {
+  return [
+    ...getCareManagersBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (新規)'],
+  ];
+});
+
+// ケアマネ情報 ｰ 編集
+Breadcrumbs::define('caremanagers.edit', function() {
+  return [
+    ...getCareManagersBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (編集)'],
+  ];
+});
+
+// 自社情報
+Breadcrumbs::define('clinic-info.index', function() {
+  return getClinicInfoBreadcrumbs();
+});
+
+// サブマスター登録 ｰ トップ
+Breadcrumbs::define('submaster.index', function() {
+  return getSubMasterBreadcrumbs();
+});
+
+// サブマスター登録 ｰ 医療機関
+Breadcrumbs::define('submaster.medical-institutions', function() {
+  return [
+    ...getSubMasterBreadcrumbs(),
+    ['url' => null, 'label' => '医療機関'],
+  ];
+});
+
+// サブマスター登録 ｰ サービス提供者
+Breadcrumbs::define('submaster.service-providers', function() {
+  return [
+    ...getSubMasterBreadcrumbs(),
+    ['url' => null, 'label' => 'サービス提供者'],
+  ];
+});
+
+// サブマスター登録 ｰ 状態
+Breadcrumbs::define('submaster.conditions', function() {
+  return [
+    ...getSubMasterBreadcrumbs(),
+    ['url' => null, 'label' => '状態'],
+  ];
+});
+
+// サブマスター登録 ｰ 疾病（あんま・マッサージ）
+Breadcrumbs::define('submaster.illnesses-massage', function() {
+  return [
+    ...getSubMasterBreadcrumbs(),
+    ['url' => null, 'label' => '疾病（あんま・マッサージ）'],
+  ];
+});
+
+// 文書編集 ｰ トップ
+Breadcrumbs::define('master.documents.index', function() {
+  return getDocumentsBreadcrumbs();
+});
+
+// 文書編集 ｰ 新規登録
+Breadcrumbs::define('master.documents.create', function() {
+  return [
+    ...getDocumentsBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (新規)'],
+  ];
+});
+
+// 文書編集 ｰ 編集
+Breadcrumbs::define('master.documents.edit', function() {
+  return [
+    ...getDocumentsBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (編集)'],
+  ];
+});
+
+// 文書編集 ｰ 複製
+Breadcrumbs::define('master.documents.duplicate', function() {
+  return [
+    ...getDocumentsBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (複製)'],
+  ];
+});
+
+// 施術料金編集 ｰ トップ
+Breadcrumbs::define('master.treatment-fees.index', function() {
+  return getTreatmentFeesBreadcrumbs();
+});
+
+// 施術料金編集 ｰ 新規登録
+Breadcrumbs::define('master.treatment-fees.create', function() {
+  return [
+    ...getTreatmentFeesBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (新規)'],
+  ];
+});
+
+// 施術料金編集 ｰ 編集
+Breadcrumbs::define('master.treatment-fees.edit', function() {
+  return [
+    ...getTreatmentFeesBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (編集)'],
+  ];
+});
+
+// 自費施術料金編集
+Breadcrumbs::define('master.self-fees.index', function() {
+  return getSelfFeesBreadcrumbs();
+});
+
+// 標準文書の確認および関連付け
+Breadcrumbs::define('master.document-association.index', function() {
+  return getDocumentAssociationBreadcrumbs();
+});
+//---------------------------------------------------------------//

@@ -1,9 +1,10 @@
 <!-- resources/views/submaster/medical-institutions.blade.php -->
 
 <x-app-layout>
-  <h2>医療機関名</h2>
-  <a href="{{ route('submaster.index') }}">←サブマスター登録に戻る</a>
-  <br><br>
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate('submaster.medical-institutions')"
+  />
 
   @if(session('success'))
     <div style="color: green;">{{ session('success') }}</div>

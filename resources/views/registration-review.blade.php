@@ -2,9 +2,15 @@
 
 
 <x-app-layout>
-  <h2>{{ $page_title }}</h2><br><br>
+  @if(isset($breadcrumb_name))
+    <x-page-header
+      :title="$page_header_title"
+      :breadcrumbs="App\Support\Breadcrumbs::generate($breadcrumb_name)"
+    />
+  @endif
 
-  <p>{{ $registration_message }}</p><br>
+  {{-- <h5>{{ $registration_message }}</h5> --}}
+  <h5 class="registration-message">以下の内容で登録を行います。</h5>
 
   <div>
   @foreach($labels as $key => $label)
@@ -80,6 +86,6 @@
   <form action="{{ route($store_route) }}" method="POST" style="display: inline-block;">
   @endif
   @csrf
-  <button type="submit" class="me-3">登録する</button>
+  <button type="submit" class="me-3">登録</button>
   </form>
 </x-app-layout>

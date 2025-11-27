@@ -1,8 +1,21 @@
 <!-- resources/views/clinic-users/insurances/insurances_registration.blade.php -->
 
 <x-app-layout>
-  <h2>{{ $title }}</h2>
-  <br><br>
+  @php
+    // モードに応じたパンくずリスト定義名を決定
+    if ($mode === 'create') {
+      $breadcrumbName = 'clinic-users.insurances.create';
+    } elseif ($mode === 'edit') {
+      $breadcrumbName = 'clinic-users.insurances.edit';
+    } else { // duplicate
+      $breadcrumbName = 'clinic-users.insurances.duplicate';
+    }
+  @endphp
+
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate($breadcrumbName)"
+  />
 
   @if($errors->any())
     <div class="alert alert-danger">

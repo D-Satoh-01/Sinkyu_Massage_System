@@ -14,7 +14,10 @@ class TreatmentFeeController extends Controller
   public function index()
   {
     $items = DB::table('treatment_fees')->orderBy('period_start', 'desc')->get();
-    return view('master.treatment-fees.treatment-fees_index', compact('items'));
+    return view('master.treatment-fees.treatment-fees_index', [
+      'items' => $items,
+      'page_header_title' => '施術料金編集'
+    ]);
   }
 
   /**
@@ -24,7 +27,7 @@ class TreatmentFeeController extends Controller
   {
     return view('master.treatment-fees.treatment-fees_registration', [
       'mode' => 'create',
-      'title' => '施術料金新規登録',
+      'page_header_title' => '施術料金新規登録',
       'item' => (object)[]
     ]);
   }
@@ -89,7 +92,7 @@ class TreatmentFeeController extends Controller
 
     return view('master.treatment-fees.treatment-fees_registration', [
       'mode' => 'edit',
-      'title' => '施術料金編集',
+      'page_header_title' => '施術料金編集',
       'item' => $item
     ]);
   }

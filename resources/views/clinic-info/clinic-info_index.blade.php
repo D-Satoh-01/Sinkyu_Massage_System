@@ -1,7 +1,12 @@
 <!-- resources/views/clinic-info/clinic-info_index.blade.php -->
 
 <x-app-layout>
-  <h2>自社情報</h2><br><br>
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate('clinic-info.index')"
+  />
+
+  <br>
 
   @if(session('success'))
     <div class="alert alert-success">

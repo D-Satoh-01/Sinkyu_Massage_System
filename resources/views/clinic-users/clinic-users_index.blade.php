@@ -2,9 +2,12 @@
 
 
 <x-app-layout>
-  <h2>利用者情報</h2>
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate('clinic-users.index')"
+  />
 
-  <br><br>
+  <br>
 
   <a href="{{ route('clinic-users.create') }}">
   <button>利用者新規登録</button>

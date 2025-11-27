@@ -2,9 +2,12 @@
 
 
 <x-app-layout>
-  <h2>ケアマネ情報</h2>
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate('caremanagers.index')"
+  />
 
-  <br><br>
+  <br>
 
   <a href="{{ route('caremanagers.create') }}">
   <button>ケアマネ新規登録</button>

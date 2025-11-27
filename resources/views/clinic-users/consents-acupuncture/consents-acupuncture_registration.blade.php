@@ -1,7 +1,21 @@
 <!-- resources/views/clinic-users/consents-acupuncture/consents-acupuncture_registration.blade.php -->
 
 <x-app-layout>
-  <h2>{{ $title }}</h2><br><br>
+  @php
+    // モードに応じたパンくずリスト定義名を決定
+    if ($mode === 'create') {
+      $breadcrumbName = 'clinic-users.consents-acupuncture.registration';
+    } elseif ($mode === 'edit') {
+      $breadcrumbName = 'clinic-users.consents-acupuncture.edit';
+    } else { // duplicate
+      $breadcrumbName = 'clinic-users.consents-acupuncture.duplicate';
+    }
+  @endphp
+
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate($breadcrumbName)"
+  />
 
   @if($errors->any())
   <div class="alert alert-danger">

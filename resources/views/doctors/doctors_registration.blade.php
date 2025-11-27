@@ -16,11 +16,9 @@
   @endphp
 
   <x-page-header
-    title="医師情報"
+    :title="$page_header_title"
     :breadcrumbs="App\Support\Breadcrumbs::generate($breadcrumbName)"
   />
-
-  <br>
 
   @if($errors->any())
     <div class="alert alert-danger">

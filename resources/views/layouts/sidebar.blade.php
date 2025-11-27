@@ -1,8 +1,8 @@
 <!-- resources/views/layouts/sidebar.blade.php -->
 
 
-<aside id="sidebar" class="sidebar">
-  <div class="sidebar-header">
+<aside id="sidebar" class="sidebar border-end border-secondary border-2">
+  <div class="sidebar-header border-bottom border-secondary border-2">
     <div class="user-info">
       <div class="user-name">ログインユーザー名<br>：<b>{{ Auth::user()->name }}</b></div>
       <div class="last-login">
@@ -17,25 +17,25 @@
 
   <nav class="sidebar-nav">
     <ul class="sidebar-menu">
-      <li class="sidebar-menu-item">
+      <li class="sidebar-menu-item border-bottom border-secondary">
         <a href="{{ route('records.index') }}" class="sidebar-link">実績データ</a>
       </li>
-      <li class="sidebar-menu-item">
+      <li class="sidebar-menu-item border-bottom border-secondary">
         <a href="#" class="sidebar-link">報告書データ</a>
       </li>
-      <li class="sidebar-menu-item">
+      <li class="sidebar-menu-item border-bottom border-secondary">
         <a href="#" class="sidebar-link">スケジュール</a>
       </li>
-      <li class="sidebar-menu-item">
+      <li class="sidebar-menu-item border-bottom border-secondary">
         <a href="{{ route('master.index') }}" class="sidebar-link">マスター登録</a>
       </li>
-      <li class="sidebar-menu-item">
+      <li class="sidebar-menu-item border-bottom border-secondary">
         <a href="#" class="sidebar-link">印刷メニュー</a>
       </li>
-      <li class="sidebar-menu-item">
+      <li class="sidebar-menu-item border-bottom border-secondary">
         <a href="#" class="sidebar-link">要加療期限リスト</a>
       </li>
-      <li class="sidebar-menu-item">
+      <li class="sidebar-menu-item border-bottom border-secondary">
         <a href="#" class="sidebar-link">入金管理</a>
       </li>
     </ul>

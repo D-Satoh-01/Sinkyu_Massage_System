@@ -1,7 +1,21 @@
 <!-- resources/views/clinic-users/consents-massage/consents-massage_registration.blade.php -->
 
 <x-app-layout>
-  <h2>{{ $title }}</h2><br><br>
+  @php
+    // モードに応じたパンくずリスト定義名を決定
+    if ($mode === 'create') {
+      $breadcrumbName = 'clinic-users.consents-massage.create';
+    } elseif ($mode === 'edit') {
+      $breadcrumbName = 'clinic-users.consents-massage.edit';
+    } else { // duplicate
+      $breadcrumbName = 'clinic-users.consents-massage.duplicate';
+    }
+  @endphp
+
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate($breadcrumbName)"
+  />
 
   @if($errors->any())
   <div class="alert alert-danger">

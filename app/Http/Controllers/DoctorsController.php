@@ -45,7 +45,7 @@ class DoctorsController extends Controller
 
     return view('doctors.doctors_registration', [
       'mode' => 'create',
-      'title' => '医師情報新規登録',
+      'page_header_title' => '医師情報‐登録 (新規)',
       'doctor' => null,
       'medicalInstitutions' => $medicalInstitutions
     ]);
@@ -67,8 +67,9 @@ class DoctorsController extends Controller
       'labels' => $labels,
       'back_route' => 'doctors.create',
       'store_route' => 'doctors.store',
-      'page_title' => '医師情報登録内容確認',
       'registration_message' => '医師情報の登録を行います。',
+      'breadcrumb_name' => 'doctors.confirm',
+      'page_header_title' => '医師情報‐登録 (新規)',
     ]);
   }
 
@@ -143,7 +144,7 @@ class DoctorsController extends Controller
 
     return view('doctors.doctors_registration', [
       'mode' => 'edit',
-      'title' => '医師情報編集',
+      'page_header_title' => '医師情報‐登録 (編集)',
       'doctor' => $doctor,
       'medicalInstitutions' => $medicalInstitutions
     ]);
@@ -167,8 +168,9 @@ class DoctorsController extends Controller
       'back_route' => 'doctors.edit',
       'back_id' => $id,
       'store_route' => 'doctors.update',
-      'page_title' => '医師情報編集内容確認',
-      'registration_message' => '医師情報の更新を行います。',
+      'registration_message' => '',
+      'breadcrumb_name' => 'doctors.edit.confirm',
+      'page_header_title' => '医師情報‐登録 (編集)',
     ]);
   }
 
@@ -241,7 +243,7 @@ class DoctorsController extends Controller
 
     return view('doctors.doctors_registration', [
       'mode' => 'duplicate',
-      'title' => '医師情報複製',
+      'page_header_title' => '医師情報‐登録 (複製)',
       'doctor' => $doctor,
       'medicalInstitutions' => $medicalInstitutions
     ]);
@@ -265,8 +267,9 @@ class DoctorsController extends Controller
       'back_route' => 'doctors.duplicate',
       'back_id' => $validated['source_doctor_id'],
       'store_route' => 'doctors.duplicate.store',
-      'page_title' => '医師情報複製内容確認',
       'registration_message' => '医師情報の複製登録を行います。',
+      'breadcrumb_name' => 'doctors.duplicate.confirm',
+      'page_header_title' => '医師情報‐登録 (複製)',
     ]);
   }
 

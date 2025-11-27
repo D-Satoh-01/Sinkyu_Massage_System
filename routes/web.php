@@ -35,7 +35,7 @@ Route::middleware('auth')->group(function () {
   // 医師情報
   Route::get('/master/doctors/index', [DoctorsController::class, 'index'])->name('doctors.index');
   Route::get('/master/doctors/create', [DoctorsController::class, 'create'])->name('doctors.create');
-  Route::post('/master/doctors/confirm', [DoctorsController::class, 'confirm'])->name('doctors.confirm');
+  Route::post('/master/doctors/create/confirm', [DoctorsController::class, 'confirm'])->name('doctors.confirm');
   Route::post('/master/doctors/store', [DoctorsController::class, 'store'])->name('doctors.store');
 
   Route::get('/master/doctors/{id}/edit', [DoctorsController::class, 'edit'])->name('doctors.edit');
@@ -77,7 +77,7 @@ Route::middleware('auth')->group(function () {
   Route::post('/master/clinic-info/confirm', [CompanyInfoController::class, 'confirm'])->name('clinic-info.confirm');
   Route::post('/master/clinic-info/store', [CompanyInfoController::class, 'store'])->name('clinic-info.store');
 
-  // サブマスター編集
+  // サブマスター登録
   Route::get('/master/submaster/index', [SubMasterController::class, 'index'])->name('submaster.index');
 
   // 医療機関

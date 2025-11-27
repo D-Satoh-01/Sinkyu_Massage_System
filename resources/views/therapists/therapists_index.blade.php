@@ -2,9 +2,12 @@
 
 
 <x-app-layout>
-  <h2>施術者情報</h2>
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate('therapists.index')"
+  />
 
-  <br><br>
+  <br>
 
   <a href="{{ route('therapists.create') }}">
   <button>施術者新規登録</button>

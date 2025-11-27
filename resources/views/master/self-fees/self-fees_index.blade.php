@@ -1,9 +1,10 @@
 <!-- resources/views/master/self-pay-fees/index.blade.php -->
 
 <x-app-layout>
-  <h2>自費施術料金</h2>
-  <a href="{{ route('master.index') }}">←マスター登録に戻る</a>
-  <br><br>
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate('master.self-fees.index')"
+  />
 
   @if(session('success'))
     <div style="color: green;">{{ session('success') }}</div>

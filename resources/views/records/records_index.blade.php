@@ -2,7 +2,10 @@
 
 
 <x-app-layout>
-  <h2>実績データ</h2><br>
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate('records.index')"
+  />
 
   <!-- 利用者選択フォーム -->
   <form method="GET" action="{{ route('records.index') }}" id="filterForm">

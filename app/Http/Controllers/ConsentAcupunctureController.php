@@ -59,7 +59,8 @@ class ConsentAcupunctureController extends Controller
         return view('clinic-users.consents-acupuncture.consents-acupuncture_index', [
             'id' => $id,
             'name' => $user->clinic_user_name,
-            'consentingHistories' => $consentingHistories
+            'consentingHistories' => $consentingHistories,
+            'page_header_title' => '同意医師履歴（鍼灸）'
         ]);
     }
 
@@ -79,7 +80,7 @@ class ConsentAcupunctureController extends Controller
 
         return view('clinic-users.consents-acupuncture.consents-acupuncture_registration', array_merge([
             'mode' => 'create',
-            'title' => $user->clinic_user_name . ' 様の同意医師履歴新規登録',
+            'page_header_title' => $user->clinic_user_name . ' 様の同意医師履歴新規登録',
             'id' => $id,
             'history' => $history,
         ], $masterData));
@@ -105,7 +106,7 @@ class ConsentAcupunctureController extends Controller
             'back_route' => 'clinic-users.consents-acupuncture.registration',
             'back_id' => $id,
             'store_route' => 'clinic-users.consents-acupuncture.store',
-            'page_title' => '同意医師履歴（はり・きゅう）登録内容確認',
+            'page_header_title' => '同意医師履歴（はり・きゅう）登録内容確認',
             'registration_message' => '同意医師履歴（はり・きゅう）の登録を行います。',
         ]);
     }
@@ -171,7 +172,7 @@ class ConsentAcupunctureController extends Controller
 
         return view('clinic-users.consents-acupuncture.consents-acupuncture_registration', array_merge([
             'mode' => 'edit',
-            'title' => $user->clinic_user_name . ' 様の同意医師履歴編集',
+            'page_header_title' => $user->clinic_user_name . ' 様の同意医師履歴編集',
             'id' => $id,
             'history_id' => $history_id,
             'history' => $history,
@@ -199,7 +200,7 @@ class ConsentAcupunctureController extends Controller
             'back_id' => $id,
             'back_history_id' => $history_id,
             'store_route' => 'clinic-users.consents-acupuncture.edit.update',
-            'page_title' => '同意医師履歴（はり・きゅう）更新内容確認',
+            'page_header_title' => '同意医師履歴（はり・きゅう）更新内容確認',
             'registration_message' => '同意医師履歴（はり・きゅう）の更新を行います。',
         ]);
     }
@@ -266,7 +267,7 @@ class ConsentAcupunctureController extends Controller
 
         return view('clinic-users.consents-acupuncture.consents-acupuncture_registration', array_merge([
             'mode' => 'duplicate',
-            'title' => $user->clinic_user_name . ' 様の同意医師履歴複製',
+            'page_header_title' => $user->clinic_user_name . ' 様の同意医師履歴複製',
             'id' => $id,
             'history_id' => $history_id,
             'history' => $history,
@@ -294,7 +295,7 @@ class ConsentAcupunctureController extends Controller
             'back_id' => $id,
             'back_history_id' => $history_id,
             'store_route' => 'clinic-users.consents-acupuncture.duplicate.store',
-            'page_title' => '同意医師履歴（はり・きゅう）複製内容確認',
+            'page_header_title' => '同意医師履歴（はり・きゅう）複製内容確認',
             'registration_message' => '同意医師履歴（はり・きゅう）の複製を行います。',
         ]);
     }

@@ -21,7 +21,10 @@ class SubMasterController extends Controller
       'illnesses_massage' => DB::table('illnesses_massage')->count(),
     ];
 
-    return view('submaster.submaster_index', compact('counts'));
+    return view('submaster.submaster_index', [
+      'counts' => $counts,
+      'page_header_title' => 'サブマスター登録'
+    ]);
   }
 
   /**
@@ -30,7 +33,10 @@ class SubMasterController extends Controller
   public function medicalInstitutions()
   {
     $items = DB::table('medical_institutions')->orderBy('id')->get();
-    return view('submaster.medical-institutions', compact('items'));
+    return view('submaster.medical-institutions', [
+      'items' => $items,
+      'page_header_title' => '医療機関'
+    ]);
   }
 
   /**
@@ -78,7 +84,10 @@ class SubMasterController extends Controller
   public function serviceProviders()
   {
     $items = DB::table('service_providers')->orderBy('id')->get();
-    return view('submaster.service-providers', compact('items'));
+    return view('submaster.service-providers', [
+      'items' => $items,
+      'page_header_title' => 'サービス提供者'
+    ]);
   }
 
   /**
@@ -126,7 +135,10 @@ class SubMasterController extends Controller
   public function conditions()
   {
     $items = DB::table('conditions')->orderBy('id')->get();
-    return view('submaster.conditions', compact('items'));
+    return view('submaster.conditions', [
+      'items' => $items,
+      'page_header_title' => '状態'
+    ]);
   }
 
   /**
@@ -174,7 +186,10 @@ class SubMasterController extends Controller
   public function illnessesMassage()
   {
     $items = DB::table('illnesses_massage')->orderBy('id')->get();
-    return view('submaster.illnesses-massage', compact('items'));
+    return view('submaster.illnesses-massage', [
+      'items' => $items,
+      'page_header_title' => '疾病（マッサージ）'
+    ]);
   }
 
   /**

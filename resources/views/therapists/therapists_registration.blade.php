@@ -1,7 +1,21 @@
 <!-- resources/views/therapists/therapists_registration.blade.php -->
 
 <x-app-layout>
-  <h2>{{ $title }}</h2><br><br>
+  @php
+    // モードに応じたパンくずリスト定義名を決定
+    if ($mode === 'create') {
+      $breadcrumbName = 'therapists.create';
+    } elseif ($mode === 'edit') {
+      $breadcrumbName = 'therapists.edit';
+    } else { // duplicate
+      $breadcrumbName = 'therapists.duplicate';
+    }
+  @endphp
+
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate($breadcrumbName)"
+  />
 
   @if($errors->any())
     <div class="alert alert-danger">

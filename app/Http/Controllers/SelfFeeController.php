@@ -14,7 +14,10 @@ class SelfFeeController extends Controller
   public function index()
   {
     $items = DB::table('self_fees')->orderBy('id')->get();
-    return view('master.self-fees.self-fees_index', compact('items'));
+    return view('master.self-fees.self-fees_index', [
+      'items' => $items,
+      'page_header_title' => '自費施術料金編集'
+    ]);
   }
 
   /**

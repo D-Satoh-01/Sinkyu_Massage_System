@@ -22,7 +22,12 @@ class DocumentAssociationController extends Controller
     // document_associationから既存の関連付けを取得
     $associations = DB::table('document_association')->get()->keyBy('document_id_1');
 
-    return view('master.document-association.document-association_index', compact('categories', 'documents', 'associations'));
+    return view('master.document-association.document-association_index', [
+      'categories' => $categories,
+      'documents' => $documents,
+      'associations' => $associations,
+      'page_header_title' => '標準文書の確認および関連付け'
+    ]);
   }
 
   /**

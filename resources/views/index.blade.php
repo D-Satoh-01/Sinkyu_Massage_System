@@ -2,7 +2,15 @@
 
 
 <x-app-layout>
-  <h2>ホーム</h2><br><br>
+  @php
+    $page_header_title = 'ホーム';
+  @endphp
+
+  <x-page-header
+    :title="$page_header_title"
+  />
+
+  <br>
 
   <ul>
     <li><a href="{{ route('records.index') }}">実績データ</a></li>

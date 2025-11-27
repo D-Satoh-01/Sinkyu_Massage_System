@@ -18,7 +18,10 @@ class TherapistsController extends Controller
       ->orderBy('id', 'desc')
       ->get();
 
-    return view('therapists.therapists_index', compact('therapists'));
+    return view('therapists.therapists_index', [
+      'therapists' => $therapists,
+      'page_header_title' => '施術者情報',
+    ]);
   }
 
   // 施術者情報新規登録画面表示
@@ -35,7 +38,7 @@ class TherapistsController extends Controller
 
     return view('therapists.therapists_registration', [
       'mode' => 'create',
-      'title' => '施術者情報新規登録',
+      'page_header_title' => '施術者情報新規登録',
       'therapist' => null
     ]);
   }
@@ -56,7 +59,7 @@ class TherapistsController extends Controller
       'labels' => $labels,
       'back_route' => 'therapists.create',
       'store_route' => 'therapists.store',
-      'page_title' => '施術者情報登録内容確認',
+      'page_header_title' => '施術者情報登録内容確認',
       'registration_message' => '施術者情報の登録を行います。',
     ]);
   }
@@ -126,7 +129,7 @@ class TherapistsController extends Controller
 
     return view('therapists.therapists_registration', [
       'mode' => 'edit',
-      'title' => '施術者情報編集',
+      'page_header_title' => '施術者情報編集',
       'therapist' => $therapist
     ]);
   }
@@ -149,7 +152,7 @@ class TherapistsController extends Controller
       'back_route' => 'therapists.edit',
       'back_id' => $id,
       'store_route' => 'therapists.update',
-      'page_title' => '施術者情報編集内容確認',
+      'page_header_title' => '施術者情報編集内容確認',
       'registration_message' => '施術者情報の更新を行います。',
     ]);
   }

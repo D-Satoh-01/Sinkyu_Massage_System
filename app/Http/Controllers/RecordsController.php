@@ -45,6 +45,11 @@ class RecordsController extends Controller
     // 選択された利用者ID
     $selectedUserId = $request->input('clinic_user_id');
 
-    return view('records.records_index', compact('closedDays', 'clinicUsers', 'selectedUserId'));
+    return view('records.records_index', [
+      'closedDays' => $closedDays,
+      'clinicUsers' => $clinicUsers,
+      'selectedUserId' => $selectedUserId,
+      'page_header_title' => '実績データ',
+    ]);
   }
 }

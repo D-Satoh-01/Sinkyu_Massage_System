@@ -1,7 +1,21 @@
 <!-- resources/views/master/documents/documents_registration.blade.php -->
 
 <x-app-layout>
-  <h2>{{ $title ?? '文書新規登録' }}</h2><br><br>
+  @php
+    // モードに応じたパンくずリスト定義名を決定
+    if (($mode ?? 'create') === 'create') {
+      $breadcrumbName = 'master.documents.create';
+    } elseif ($mode === 'edit') {
+      $breadcrumbName = 'master.documents.edit';
+    } else { // duplicate
+      $breadcrumbName = 'master.documents.duplicate';
+    }
+  @endphp
+
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate($breadcrumbName)"
+  />
 
   @if($errors->any())
   <div class="alert alert-danger">

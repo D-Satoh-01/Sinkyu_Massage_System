@@ -2,7 +2,12 @@
 
 
 <x-app-layout>
-  <h2>{{ $name }} 様の同意医師履歴（あんま・マッサージ）</h2><br><br>
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate('clinic-users.consents-massage.index')"
+  />
+
+  <br>
 
   @if(session('success'))
   <div class="alert alert-success">

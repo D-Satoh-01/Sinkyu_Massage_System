@@ -14,7 +14,10 @@ class DocumentController extends Controller
   public function index()
   {
     $items = DB::table('documents')->orderBy('id')->get();
-    return view('master.documents.documents_index', compact('items'));
+    return view('master.documents.documents_index', [
+      'items' => $items,
+      'page_header_title' => '文書編集'
+    ]);
   }
 
   /**
@@ -32,7 +35,7 @@ class DocumentController extends Controller
 
     return view('master.documents.documents_registration', [
       'mode' => 'create',
-      'title' => '文書新規登録',
+      'page_header_title' => '文書新規登録',
       'categories' => $categories
     ]);
   }
@@ -59,7 +62,7 @@ class DocumentController extends Controller
 
     return view('master.documents.documents_registration', [
       'mode' => 'edit',
-      'title' => '文書編集',
+      'page_header_title' => '文書編集',
       'document' => $document,
       'categories' => $categories
     ]);
@@ -171,7 +174,7 @@ class DocumentController extends Controller
 
     return view('master.documents.documents_registration', [
       'mode' => 'duplicate',
-      'title' => '文書複製',
+      'page_header_title' => '文書複製',
       'document' => $document,
       'categories' => $categories
     ]);

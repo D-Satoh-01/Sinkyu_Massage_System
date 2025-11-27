@@ -50,7 +50,8 @@ class InsuranceController extends Controller
         return view('clinic-users.insurances.insurances_index', [
             'id' => $id,
             'name' => $user->clinic_user_name,
-            'insurances' => $insurances
+            'insurances' => $insurances,
+            'page_header_title' => '保険情報'
         ]);
     }
 
@@ -74,7 +75,7 @@ class InsuranceController extends Controller
 
         return view('clinic-users.insurances.insurances_registration', [
             'mode' => 'create',
-            'title' => $user->clinic_user_name . ' 様の保険情報新規登録',
+            'page_header_title' => $user->clinic_user_name . ' 様の保険情報新規登録',
             'userId' => $id,
             'insurance' => null,
             'insurers' => $insurers
@@ -100,7 +101,7 @@ class InsuranceController extends Controller
             'back_route' => 'clinic-users.insurances.create',
             'back_id' => $id,
             'store_route' => 'clinic-users.insurances.store',
-            'page_title' => '保険情報登録内容確認',
+            'page_header_title' => '保険情報登録内容確認',
             'registration_message' => '保険情報の登録を行います。',
         ]);
     }
@@ -136,7 +137,7 @@ class InsuranceController extends Controller
         $request->session()->forget('insurances_registration_data');
 
         return view('registration-done', [
-            'page_title' => '保険情報登録完了',
+            'page_header_title' => '保険情報登録完了',
             'message' => '保険情報を登録しました。',
             'index_route' => 'clinic-users.insurances.index',
             'index_id' => $id,
@@ -155,7 +156,7 @@ class InsuranceController extends Controller
 
         return view('clinic-users.insurances.insurances_registration', [
             'mode' => 'edit',
-            'title' => $user->clinic_user_name . ' 様の保険情報編集',
+            'page_header_title' => $user->clinic_user_name . ' 様の保険情報編集',
             'userId' => $id,
             'insurance' => $insurance,
             'insurers' => $insurers
@@ -185,7 +186,7 @@ class InsuranceController extends Controller
             'back_id' => $id,
             'back_insurance_id' => $insurance_id,
             'store_route' => 'clinic-users.insurances.edit.update',
-            'page_title' => '保険情報更新内容確認',
+            'page_header_title' => '保険情報更新内容確認',
             'registration_message' => '保険情報の更新を行います。',
         ]);
     }
@@ -232,7 +233,7 @@ class InsuranceController extends Controller
 
         return view('clinic-users.insurances.insurances_registration', [
             'mode' => 'duplicate',
-            'title' => $user->clinic_user_name . ' 様の保険情報複製',
+            'page_header_title' => $user->clinic_user_name . ' 様の保険情報複製',
             'userId' => $id,
             'insurance' => $insurance,
             'insurers' => $insurers
@@ -262,7 +263,7 @@ class InsuranceController extends Controller
             'back_id' => $id,
             'back_insurance_id' => $insurance_id,
             'store_route' => 'clinic-users.insurances.duplicate.store',
-            'page_title' => '保険情報複製内容確認',
+            'page_header_title' => '保険情報複製内容確認',
             'registration_message' => '保険情報の複製を行います。',
         ]);
     }

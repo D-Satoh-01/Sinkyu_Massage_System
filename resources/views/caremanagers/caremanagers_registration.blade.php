@@ -1,7 +1,21 @@
 <!-- resources/views/caremanagers/caremanagers_registration.blade.php -->
 
 <x-app-layout>
-  <h2>{{ $title }}</h2><br><br>
+  @php
+    // モードに応じたパンくずリスト定義名を決定
+    if ($mode === 'create') {
+      $breadcrumbName = 'caremanagers.create';
+    } elseif ($mode === 'edit') {
+      $breadcrumbName = 'caremanagers.edit';
+    } else { // duplicate
+      $breadcrumbName = 'caremanagers.duplicate';
+    }
+  @endphp
+
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate($breadcrumbName)"
+  />
 
   @if($errors->any())
     <div class="alert alert-danger">

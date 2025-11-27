@@ -2,7 +2,12 @@
 
 
 <x-app-layout>
-  <h2>{{ $name }} 様の同意医師履歴（はり・きゅう）</h2><br><br>
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate('clinic-users.consents-acupuncture.index')"
+  />
+
+  <br>
 
   @if(session('success'))
   <div class="alert alert-success">

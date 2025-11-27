@@ -2,7 +2,16 @@
 
 
 <x-app-layout>
-  <h2>マスター登録</h2><br><br>
+  @php
+    $page_header_title = 'マスター登録';
+  @endphp
+
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate('master.index')"
+  />
+
+  <br>
 
   ・<a href="{{ route('clinic-users.index') }}">利用者情報</a><br>
   ・<a href="{{ route('doctors.index') }}">医師情報</a><br>

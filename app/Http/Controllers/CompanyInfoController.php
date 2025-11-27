@@ -42,6 +42,7 @@ class CompanyInfoController extends Controller
       'bankAccountTypes' => $bankAccountTypes,
       'healthCenterLocations' => $healthCenterLocations,
       'documentFormats' => $documentFormats,
+      'page_header_title' => '自社情報'
     ]);
   }
 
@@ -64,7 +65,7 @@ class CompanyInfoController extends Controller
       'labels' => $labels,
       'back_route' => 'clinic-info.index',
       'store_route' => 'clinic-info.store',
-      'page_title' => '自社情報登録内容確認',
+      'page_header_title' => '自社情報登録内容確認',
       'registration_message' => $exists ? '自社情報の更新を行います。' : '自社情報の登録を行います。',
     ]);
   }

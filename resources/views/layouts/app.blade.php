@@ -16,7 +16,7 @@
 		<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">		
 
 		<!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
 		<!-- DataTables CSS -->
 		<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
@@ -27,7 +27,7 @@
 	<body class="app-layout min-vh-100">
 
 		<!-- ヘッダー -->
-		<header class="app-header">
+		<header class="app-header border-bottom border-secondary border-2">
 			@include('layouts.header')
 		</header>
 
@@ -40,7 +40,7 @@
 			})();
 		</script>
 
-		<!-- Content Wrapper（サイドバー ＋ メインコンテンツ） -->
+		<!-- Content Wrapper（サイドバー ＋ メインコンテンツ ＋ フッター） -->
 		<div class="content-wrapper">
 			<!-- サイドバー -->
 			@include('layouts.sidebar')
@@ -50,11 +50,12 @@
 				<main>
 					{{ $slot }}
 				</main>
+				<!-- フッター -->
+				<footer class="app-footer py-2 bg-body-subtle text-muted border-top border-dark-subtle">
+					<p class="mx-3 my-0">Copyright © All rights reserved.</p>
+				</footer>
 			</div>
 		</div>
-
-		<!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 		<!-- jQuery (required for DataTables) -->
 		<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

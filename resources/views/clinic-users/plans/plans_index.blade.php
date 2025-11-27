@@ -1,7 +1,12 @@
 <!-- resources/views/clinic-users/plans/plans_index.blade.php -->
 
 <x-app-layout>
-  <h2>{{ $name }} 様の計画情報</h2><br><br>
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate('clinic-users.plans.index')"
+  />
+
+  <br>
 
   @if(session('success'))
   <div class="alert alert-success">

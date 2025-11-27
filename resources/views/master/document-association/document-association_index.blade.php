@@ -1,9 +1,10 @@
 <!-- resources/views/master/document-association/document-association_index.blade.php -->
 
 <x-app-layout>
-  <h2>登録済み標準文書の確認･関連付け</h2>
-  <a href="{{ route('master.index') }}">←マスター登録に戻る</a>
-  <br><br>
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate('master.document-association.index')"
+  />
 
   @if(session('success'))
     <div style="color: green;">{{ session('success') }}</div>

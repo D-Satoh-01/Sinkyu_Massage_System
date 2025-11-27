@@ -1,9 +1,10 @@
 <!-- resources/views/submaster/illnesses-massage.blade.php -->
 
 <x-app-layout>
-  <h2>傷病名（あんま・マッサージ）</h2>
-  <a href="{{ route('submaster.index') }}">←サブマスター登録に戻る</a>
-  <br><br>
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate('submaster.illnesses-massage')"
+  />
 
   @if(session('success'))
     <div style="color: green;">{{ session('success') }}</div>

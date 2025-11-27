@@ -2,7 +2,14 @@
 
 
 <x-app-layout>
-  <h2>{{ $page_title }}</h2><br><br>
+  @if(isset($breadcrumb_name))
+    <x-page-header
+      :title="$page_header_title"
+      :breadcrumbs="App\Support\Breadcrumbs::generate($breadcrumb_name)"
+    />
+  @else
+    <h2>{{ $page_header_title }}</h2><br><br>
+  @endif
 
   <p>{{ $message }}</p><br>
 

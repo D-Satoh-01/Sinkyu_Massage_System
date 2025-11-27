@@ -34,7 +34,8 @@ class PlanController extends Controller
         return view('clinic-users.plans.plans_index', [
             'id' => $id,
             'name' => $user->clinic_user_name,
-            'planInfos' => $planInfos
+            'planInfos' => $planInfos,
+            'page_header_title' => '計画情報'
         ]);
     }
 
@@ -57,7 +58,7 @@ class PlanController extends Controller
 
         return view('clinic-users.plans.plans_registration', [
             'mode' => 'create',
-            'title' => $user->clinic_user_name . ' 様の計画情報新規登録',
+            'page_header_title' => $user->clinic_user_name . ' 様の計画情報新規登録',
             'id' => $id,
             'planInfo' => $planInfo,
             'assistanceLevels' => $assistanceLevels,
@@ -85,7 +86,7 @@ class PlanController extends Controller
             'back_route' => 'clinic-users.plans.create',
             'back_id' => $id,
             'store_route' => 'clinic-users.plans.store',
-            'page_title' => '計画情報登録内容確認',
+            'page_header_title' => '計画情報登録内容確認',
             'registration_message' => '計画情報の登録を行います。',
         ]);
     }
@@ -111,7 +112,7 @@ class PlanController extends Controller
         $request->session()->forget('plan_infos_registration_data');
 
         return view('registration-done', [
-            'page_title' => '計画情報登録完了',
+            'page_header_title' => '計画情報登録完了',
             'message' => '計画情報を登録しました。',
             'index_route' => 'clinic-users.plans.index',
             'index_id' => $id,
@@ -141,7 +142,7 @@ class PlanController extends Controller
 
         return view('clinic-users.plans.plans_registration', [
             'mode' => 'edit',
-            'title' => $user->clinic_user_name . ' 様の計画情報編集',
+            'page_header_title' => $user->clinic_user_name . ' 様の計画情報編集',
             'id' => $id,
             'plan_id' => $plan_id,
             'planInfo' => $planInfo,
@@ -171,7 +172,7 @@ class PlanController extends Controller
             'back_id' => $id,
             'back_plan_id' => $plan_id,
             'store_route' => 'clinic-users.plans.edit.update',
-            'page_title' => '計画情報更新内容確認',
+            'page_header_title' => '計画情報更新内容確認',
             'registration_message' => '計画情報の更新を行います。',
         ]);
     }
@@ -218,7 +219,7 @@ class PlanController extends Controller
 
         return view('clinic-users.plans.plans_registration', [
             'mode' => 'duplicate',
-            'title' => $user->clinic_user_name . ' 様の計画情報複製',
+            'page_header_title' => $user->clinic_user_name . ' 様の計画情報複製',
             'id' => $id,
             'plan_id' => $plan_id,
             'planInfo' => $planInfo,
@@ -248,7 +249,7 @@ class PlanController extends Controller
             'back_id' => $id,
             'back_plan_id' => $plan_id,
             'store_route' => 'clinic-users.plans.duplicate.store',
-            'page_title' => '計画情報複製内容確認',
+            'page_header_title' => '計画情報複製内容確認',
             'registration_message' => '計画情報の複製登録を行います。',
         ]);
     }
@@ -274,7 +275,7 @@ class PlanController extends Controller
         $request->session()->forget('plan_infos_duplicate_data');
 
         return view('registration-done', [
-            'page_title' => '計画情報複製完了',
+            'page_header_title' => '計画情報複製完了',
             'message' => '計画情報を複製登録しました。',
             'index_route' => 'clinic-users.plans.index',
             'index_id' => $id,

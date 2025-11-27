@@ -24,7 +24,10 @@ class CareManagersController extends Controller
       ->orderBy('caremanagers.id', 'desc')
       ->get();
 
-    return view('caremanagers.caremanagers_index', compact('careManagers'));
+    return view('caremanagers.caremanagers_index', [
+      'careManagers' => $careManagers,
+      'page_header_title' => 'ケアマネ情報',
+    ]);
   }
 
   // ケアマネ情報新規登録画面表示
@@ -46,7 +49,7 @@ class CareManagersController extends Controller
 
     return view('caremanagers.caremanagers_registration', [
       'mode' => 'create',
-      'title' => 'ケアマネ情報新規登録',
+      'page_header_title' => 'ケアマネ情報新規登録',
       'careManager' => null,
       'serviceProviders' => $serviceProviders
     ]);
@@ -73,7 +76,7 @@ class CareManagersController extends Controller
       'labels' => $labels,
       'back_route' => 'caremanagers.create',
       'store_route' => 'caremanagers.store',
-      'page_title' => 'ケアマネ情報登録内容確認',
+      'page_header_title' => 'ケアマネ情報登録内容確認',
       'registration_message' => 'ケアマネ情報の登録を行います。',
     ]);
   }
@@ -149,7 +152,7 @@ class CareManagersController extends Controller
 
     return view('caremanagers.caremanagers_registration', [
       'mode' => 'edit',
-      'title' => 'ケアマネ情報編集',
+      'page_header_title' => 'ケアマネ情報編集',
       'careManager' => $careManager,
       'serviceProviders' => $serviceProviders
     ]);
@@ -178,7 +181,7 @@ class CareManagersController extends Controller
       'back_route' => 'caremanagers.edit',
       'back_id' => $id,
       'store_route' => 'caremanagers.update',
-      'page_title' => 'ケアマネ情報編集内容確認',
+      'page_header_title' => 'ケアマネ情報編集内容確認',
       'registration_message' => 'ケアマネ情報の更新を行います。',
     ]);
   }

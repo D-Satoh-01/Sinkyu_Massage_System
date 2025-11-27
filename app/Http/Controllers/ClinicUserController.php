@@ -31,7 +31,10 @@ class ClinicUserController extends Controller
         // DataTablesを使用するため、全件取得
         $clinicUsers = ClinicUser::orderBy('id', 'desc')->get();
 
-        return view('clinic-users.clinic-users_index', compact('clinicUsers'));
+        return view('clinic-users.clinic-users_index', [
+            'clinicUsers' => $clinicUsers,
+            'page_header_title' => '利用者情報',
+        ]);
     }
 
     /**
@@ -43,7 +46,7 @@ class ClinicUserController extends Controller
     {
         return view('clinic-users.clinic-users_registration', [
             'mode' => 'create',
-            'title' => '利用者新規登録',
+            'page_header_title' => '利用者情報‐登録 (新規)',
             'clinicUser' => null
         ]);
     }
@@ -69,7 +72,7 @@ class ClinicUserController extends Controller
             'labels' => $labels,
             'back_route' => 'clinic-users.create',
             'store_route' => 'clinic-users.store',
-            'page_title' => '利用者登録内容確認',
+            'page_header_title' => '利用者登録内容確認',
             'registration_message' => '利用者情報の登録を行います。',
         ]);
     }
@@ -99,7 +102,7 @@ class ClinicUserController extends Controller
         $request->session()->forget('registration_data');
 
         return view('registration-done', [
-            'page_title' => '利用者情報登録完了',
+            'page_header_title' => '利用者情報登録完了',
             'message' => '入力された内容を登録しました。',
             'index_route' => 'clinic-users.index',
             'index_id' => null,
@@ -119,7 +122,7 @@ class ClinicUserController extends Controller
         
         return view('clinic-users.clinic-users_registration', [
             'mode' => 'edit',
-            'title' => '利用者情報編集',
+            'page_header_title' => '利用者情報‐登録 (編集)',
             'clinicUser' => $clinicUser
         ]);
     }
@@ -146,7 +149,7 @@ class ClinicUserController extends Controller
             'back_route' => 'clinic-users.edit',
             'back_id' => $validated['id'],
             'store_route' => 'clinic-users.edit.update',
-            'page_title' => '利用者情報更新内容確認',
+            'page_header_title' => '利用者情報更新内容確認',
             'registration_message' => '利用者情報の更新を行います。',
         ]);
     }
@@ -176,7 +179,7 @@ class ClinicUserController extends Controller
         $request->session()->forget('edit_data');
 
         return view('registration-done', [
-            'page_title' => '利用者情報更新完了',
+            'page_header_title' => '利用者情報更新完了',
             'message' => '入力された内容を更新しました。',
             'index_route' => 'clinic-users.index',
             'index_id' => null,
