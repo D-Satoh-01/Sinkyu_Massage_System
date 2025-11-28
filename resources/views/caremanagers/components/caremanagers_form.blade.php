@@ -4,7 +4,7 @@
   @csrf
 
   <div class="mb-3">
-    <label class="fw-semibold" for="caremanager_name">ケアマネ氏名 <span class="text-danger">*</span></label>
+    <label class="fw-semibold" for="caremanager_name">ケアマネ氏名</label>
     @error('caremanager_name')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror

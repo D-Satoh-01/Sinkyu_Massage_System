@@ -40,7 +40,7 @@
 			})();
 		</script>
 
-		<!-- Content Wrapper（サイドバー ＋ メインコンテンツ ＋ フッター） -->
+		<!-- Content Wrapper（サイドバー ＋ メインコンテンツ ＋ フッター）-->
 		<div class="content-wrapper">
 			<!-- サイドバー -->
 			@include('layouts.sidebar')

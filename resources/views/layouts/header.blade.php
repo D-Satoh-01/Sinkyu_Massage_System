@@ -13,11 +13,10 @@
 
   <form method="POST" action="{{ route('logout') }}" class="m-0">
   @csrf
-  <x-responsive-nav-link :href="route('logout')"
-    onclick="event.preventDefault();
-    this.closest('form').submit();"
-    class="fw-bold" style="padding: 0 !important">
+  <a href="{{ route('logout') }}"
+    onclick="event.preventDefault(); this.closest('form').submit();"
+    class="fw-bold text-decoration-none">
     {{ __('ログアウト') }}
-  </x-responsive-nav-link>
+  </a>
   </form>
 </div>

@@ -24,8 +24,30 @@
   </form>
   <br>
 
-  <form id="recordForm" method="POST" action="">
+  @if(session('success'))
+  <div class="alert alert-success">
+    {{ session('success') }}
+  </div>
+  @endif
+
+  @if($errors->any())
+  <div class="alert alert-danger">
+    <ul>
+    @foreach($errors->all() as $error)
+      <li>{{ $error }}</li>
+    @endforeach
+    </ul>
+  </div>
+  @endif
+
+  @if(!$selectedUserId)
+    <div style="padding: 20px; text-align: center; font-size: 1.2em; color: #666;">
+      利用者を選択してください
+    </div>
+  @else
+  <form id="recordForm" method="POST" action="{{ route('records.store') }}">
     @csrf
+    <input type="hidden" name="clinic_user_id" value="{{ $selectedUserId }}">
 
     <div style="display: flex; gap: 20px; align-items: flex-start;">
       <!-- カレンダー -->
@@ -44,86 +66,189 @@
         <button type="button" id="clear-selection-btn" style="margin-top: 0.5rem">選択解除</button>
       </div>
 
-      <div style="flex: 0; align-self: stretch;">
-        <div class="divider-vertical"></div>
-      </div>
+      <div class="vr border border-black border-1 mx-3"></div>
 
       <!-- 実績フィールド -->
       <div style="flex: 3;">
-        <div>
-          <label for="clinic_user_id">利用者ID</label>
-          <input type="number" id="clinic_user_id" name="clinic_user_id">
+        <!-- 施術種類 -->
+        <div style="margin-bottom: 15px;">
+          <label class="fw-semibold">施術種類</label>
+          @error('therapy_type')
+            <span class="text-danger ms-2">{{ $message }}</span>
+          @enderror
+          <br>
+          <div style="margin-bottom: 10px;">
+            <label><input type="radio" name="therapy_type" value="1" id="therapy_type_acupuncture"> はり･きゅう</label>
+            <label style="margin-left: 20px;"><input type="radio" name="therapy_type" value="2" id="therapy_type_massage"> あんま･マッサージ</label>
+          </div>
+
+          <!-- 身体部位チェックボックス（あんま･マッサージ選択時のみ表示） -->
+          <div id="bodyparts-section" style="display: none; margin-left: 20px;">
+            <label><input type="checkbox" name="bodyparts[]" value="1"> 躯幹</label><br>
+            <label><input type="checkbox" name="bodyparts[]" value="2"> 右上肢</label><br>
+            <label><input type="checkbox" name="bodyparts[]" value="3"> 左上肢</label><br>
+            <label><input type="checkbox" name="bodyparts[]" value="4"> 右下肢</label><br>
+            <label><input type="checkbox" name="bodyparts[]" value="5"> 左下肢</label>
+          </div>
         </div>
 
-        <div>
-          <label for="start_time">開始時刻</label>
+        <!-- 施術区分 -->
+        <div style="margin-bottom: 15px;">
+          <label class="fw-semibold">施術区分</label>
+          @error('therapy_category')
+            <span class="text-danger ms-2">{{ $message }}</span>
+          @enderror
+          <br>
+          <label><input type="radio" name="therapy_category" value="1" id="therapy_category_visit"> 通院</label>
+          <label style="margin-left: 20px;"><input type="radio" name="therapy_category" value="2" id="therapy_category_housecall"> 往療</label>
+        </div>
+
+        <!-- 往療距離（往療選択時のみ表示） -->
+        <div id="housecall-distance-section" style="display: none; margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; font-weight: bold;">往療距離</label>
+          <p style="margin: 5px 0; font-size: 0.9em; color: #666;">往療料が発生する場合は往療距離 (km) を入力（往療料無しなら0を入力）</p>
+          <div id="housecall-distance-inputs"></div>
+          <div style="margin-top: 10px;">
+            上記日付を全て <input type="number" id="bulk-distance" step="0.1" min="0" style="width: 80px;"> km に
+            <button type="button" id="apply-bulk-distance">変更</button>
+          </div>
+        </div>
+
+        <!-- 開始時刻 -->
+        <div style="margin-bottom: 15px;">
+          <label class="fw-semibold" for="start_time">開始時刻</label>
+          @error('start_time')
+            <span class="text-danger ms-2">{{ $message }}</span>
+          @enderror
+          <br>
           <input type="time" id="start_time" name="start_time">
         </div>
 
-        <div>
-          <label for="end_time">終了時刻</label>
+        <!-- 終了時刻 -->
+        <div style="margin-bottom: 15px;">
+          <label class="fw-semibold" for="end_time">終了時刻</label>
+          @error('end_time')
+            <span class="text-danger ms-2">{{ $message }}</span>
+          @enderror
+          <br>
           <input type="time" id="end_time" name="end_time">
         </div>
 
-        <div>
-          <label for="therapy_type">施術種類 <span style="color: red;">*</span></label>
-          <select id="therapy_type" name="therapy_type" required>
+        <!-- 施術内容 -->
+        <div style="margin-bottom: 15px;">
+          <label class="fw-semibold" for="therapy_content_id">施術内容</label>
+          @error('therapy_content_id')
+            <span class="text-danger ms-2">{{ $message }}</span>
+          @enderror
+          <br>
+          <select id="therapy_content_id" name="therapy_content_id">
             <option value="">選択してください</option>
-            <option value="massage">あんま・マッサージ</option>
-            <option value="acupuncture">鍼灸</option>
-            <option value="self">自費</option>
+            @foreach($therapyContents as $content)
+              <option value="{{ $content->id }}">{{ $content->therapy_content }}</option>
+            @endforeach
+          </select>
+
+          <!-- 複製チェックボックス（あんま･マッサージ選択時のみ表示） -->
+          <div id="therapy-content-duplication" style="display: none; margin-top: 10px; margin-left: 20px;">
+            <label><input type="checkbox" name="duplicate_massage" value="1"> マッサージを同一内容で複製する</label><br>
+            <label><input type="checkbox" name="duplicate_warm_compress" value="1"> 温罨法を同一内容で複製する</label><br>
+            <label><input type="checkbox" name="duplicate_warm_electric" value="1"> 温罨法・電気光線器具を同一内容で複製する</label><br>
+            <label><input type="checkbox" name="duplicate_manual_correction" value="1"> 変形徒手矯正術を同一内容で複製する</label>
+          </div>
+        </div>
+
+        <!-- 施術者 -->
+        <div style="margin-bottom: 15px;">
+          <label class="fw-semibold" for="therapist_id">施術者</label>
+          @error('therapist_id')
+            <span class="text-danger ms-2">{{ $message }}</span>
+          @enderror
+          <br>
+          <select id="therapist_id" name="therapist_id">
+            <option value="">選択してください</option>
+            @foreach($therapists as $therapist)
+              <option value="{{ $therapist->id }}">{{ $therapist->therapist_name }} @if($therapist->furigana)({{ $therapist->furigana }})@endif</option>
+            @endforeach
           </select>
         </div>
 
-        <div>
-          <label for="therapy_category">施術区分</label>
-          <input type="text" id="therapy_category" name="therapy_category">
+        <!-- 保険区分 -->
+        <div style="margin-bottom: 15px;">
+          <label class="fw-semibold">保険区分</label>
+          @error('insurance_category')
+            <span class="text-danger ms-2">{{ $message }}</span>
+          @enderror
+          <br>
+          @if($insurances && $insurances->count() > 0)
+            <select name="insurance_category">
+              <option value="">選択してください</option>
+              @foreach($insurances as $insurance)
+                @php
+                  $insurerNumberLength = strlen($insurance->insurer_number ?? '');
+                  $insuranceType = '';
+                  if($insurerNumberLength == 6) {
+                    $insuranceType = '国民健康保険';
+                  } elseif($insurerNumberLength == 8) {
+                    $insuranceType = '組合保険';
+                  } else {
+                    $insuranceType = '保険';
+                  }
+                  $expiryDate = $insurance->expiry_date ? date('Y/m/d', strtotime($insurance->expiry_date)) : '未設定';
+                @endphp
+                <option value="{{ $insurance->id }}">{{ $insuranceType }} (期限：{{ $expiryDate }})</option>
+              @endforeach
+            </select>
+          @else
+            <p style="color: #999;">保険情報が登録されていません</p>
+          @endif
         </div>
 
-        <div>
-          <label for="insurance_category">保険区分</label>
-          <input type="text" id="insurance_category" name="insurance_category">
+        <!-- 同意有効期限 -->
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; font-weight: bold;">同意有効期限</label>
+          <div id="consent-expiry-display">
+            <span id="consent-expiry-acupuncture" style="display: none;">
+              @if($consentsAcupuncture && $consentsAcupuncture->consenting_end_date)
+                {{ date('Y/m/d', strtotime($consentsAcupuncture->consenting_end_date)) }}
+              @else
+                未設定
+              @endif
+            </span>
+            <span id="consent-expiry-massage" style="display: none;">
+              @if($consentsMassage && $consentsMassage->consenting_end_date)
+                {{ date('Y/m/d', strtotime($consentsMassage->consenting_end_date)) }}
+              @else
+                未設定
+              @endif
+            </span>
+          </div>
+          <input type="hidden" name="consent_expiry" id="consent_expiry">
         </div>
 
-        <div>
-          <label for="housecall_distance">往療距離 (km)</label>
-          <input type="number" id="housecall_distance" name="housecall_distance" step="0.1" min="0">
+        <!-- 請求区分 -->
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; font-weight: bold;">請求区分</label>
+          <p>{{ $hasRecentRecords ? '継続' : '新規' }}</p>
+          <input type="hidden" name="bill_category_id" value="{{ $hasRecentRecords ? 2 : 1 }}">
         </div>
 
-        <div>
-          <label for="therapy_days">施術日数</label>
-          <input type="number" id="therapy_days" name="therapy_days" min="0">
+        <!-- 施術実日数 -->
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; font-weight: bold;">施術実日数</label>
+          <p id="therapy-days-display">0日</p>
         </div>
 
-        <div>
-          <label for="consent_expiry">同意書有効期限</label>
-          <input type="date" id="consent_expiry" name="consent_expiry">
+        <!-- 摘要 -->
+        <div style="margin-bottom: 15px;">
+          <label for="abstract" style="display: block; margin-bottom: 5px; font-weight: bold;">摘要</label>
+          <textarea id="abstract" name="abstract" rows="3" style="width: 100%;"></textarea>
         </div>
-
-        <div>
-          <label for="therapy_content_id">施術内容ID</label>
-          <input type="number" id="therapy_content_id" name="therapy_content_id">
-        </div>
-
-        <div>
-          <label for="bill_category_id">請求区分ID</label>
-          <input type="number" id="bill_category_id" name="bill_category_id">
-        </div>
-
-        <div>
-          <label for="therapist_id">施術者ID</label>
-          <input type="number" id="therapist_id" name="therapist_id">
-        </div>
-
-        <div>
-          <label for="abstract">摘要</label>
-          <textarea id="abstract" name="abstract"></textarea>
-        </div><br>
 
         <button type="submit">登録</button>
       </div>
     </div>
   </form>
+  @endif
 
   @push('scripts')
   <script>
@@ -142,6 +267,7 @@
 
     // PHP変数をJavaScriptに渡す
     const closedDays = @json($closedDays);
+    const selectedUserId = @json($selectedUserId);
 
     // グローバル変数
     let currentYear = new Date().getFullYear();
@@ -150,9 +276,12 @@
 
     // 初期化
     document.addEventListener('DOMContentLoaded', function() {
-      initializeMonthSelect();
-      renderCalendar(currentYear, currentMonth);
-      setupEventListeners();
+      if (selectedUserId) {
+        initializeMonthSelect();
+        renderCalendar(currentYear, currentMonth);
+        setupEventListeners();
+        setupFormEventListeners();
+      }
     });
 
     // カレンダータイトルセレクトボックスの初期化
@@ -301,6 +430,8 @@
         currentMonth = month - 1;
         selectedDates = []; // 選択をクリア
         renderCalendar(currentYear, currentMonth);
+        updateTherapyDaysDisplay();
+        updateHousecallDistanceInputs();
       });
 
       // 選択解除ボタン
@@ -308,6 +439,134 @@
         selectedDates = [];
         const selectedElements = document.querySelectorAll('.calendar-day.selected');
         selectedElements.forEach(el => el.classList.remove('selected'));
+        updateTherapyDaysDisplay();
+        updateHousecallDistanceInputs();
+      });
+    }
+
+    // 日付選択のトグル（オーバーライド）
+    function toggleDateSelection(dayElement) {
+      const date = dayElement.dataset.date;
+      if (!date) return;
+
+      if (dayElement.classList.contains('selected')) {
+        dayElement.classList.remove('selected');
+        const index = selectedDates.indexOf(date);
+        if (index > -1) {
+          selectedDates.splice(index, 1);
+        }
+      } else {
+        dayElement.classList.add('selected');
+        selectedDates.push(date);
+      }
+
+      // 施術実日数を更新
+      updateTherapyDaysDisplay();
+      // 往療距離入力欄を更新
+      updateHousecallDistanceInputs();
+    }
+
+    // フォーム関連のイベントリスナーを設定
+    function setupFormEventListeners() {
+      // 施術種類の変更イベント
+      const therapyTypeRadios = document.querySelectorAll('input[name="therapy_type"]');
+      therapyTypeRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+          const bodypartsSection = document.getElementById('bodyparts-section');
+          const therapyContentDuplication = document.getElementById('therapy-content-duplication');
+          const consentExpiryAcupuncture = document.getElementById('consent-expiry-acupuncture');
+          const consentExpiryMassage = document.getElementById('consent-expiry-massage');
+          const consentExpiryInput = document.getElementById('consent_expiry');
+
+          if (this.value === '2') { // あんま･マッサージ
+            bodypartsSection.style.display = 'block';
+            therapyContentDuplication.style.display = 'block';
+            consentExpiryAcupuncture.style.display = 'none';
+            consentExpiryMassage.style.display = 'block';
+            consentExpiryInput.value = consentExpiryMassage.textContent.trim();
+          } else { // はり･きゅう
+            bodypartsSection.style.display = 'none';
+            therapyContentDuplication.style.display = 'none';
+            consentExpiryAcupuncture.style.display = 'block';
+            consentExpiryMassage.style.display = 'none';
+            consentExpiryInput.value = consentExpiryAcupuncture.textContent.trim();
+          }
+        });
+      });
+
+      // 施術区分の変更イベント
+      const therapyCategoryRadios = document.querySelectorAll('input[name="therapy_category"]');
+      therapyCategoryRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+          const housecallDistanceSection = document.getElementById('housecall-distance-section');
+          if (this.value === '2') { // 往療
+            housecallDistanceSection.style.display = 'block';
+            updateHousecallDistanceInputs();
+          } else { // 通院
+            housecallDistanceSection.style.display = 'none';
+          }
+        });
+      });
+
+      // 往療距離一括変更ボタン
+      document.getElementById('apply-bulk-distance').addEventListener('click', function() {
+        const bulkDistance = document.getElementById('bulk-distance').value;
+        const distanceInputs = document.querySelectorAll('.housecall-distance-input');
+        distanceInputs.forEach(input => {
+          input.value = bulkDistance;
+        });
+      });
+    }
+
+    // 施術実日数の表示を更新
+    function updateTherapyDaysDisplay() {
+      const display = document.getElementById('therapy-days-display');
+      if (display) {
+        display.textContent = selectedDates.length + '日';
+      }
+    }
+
+    // 往療距離入力欄を更新
+    function updateHousecallDistanceInputs() {
+      const container = document.getElementById('housecall-distance-inputs');
+      if (!container) return;
+
+      container.innerHTML = '';
+
+      if (selectedDates.length === 0) {
+        return;
+      }
+
+      // 日付順にソート
+      const sortedDates = [...selectedDates].sort();
+
+      sortedDates.forEach(date => {
+        const dateObj = new Date(date);
+        const formattedDate = `${dateObj.getFullYear()}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${String(dateObj.getDate()).padStart(2, '0')}`;
+
+        const inputGroup = document.createElement('div');
+        inputGroup.style.marginBottom = '5px';
+
+        const label = document.createElement('span');
+        label.textContent = '・' + formattedDate + '：';
+
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.name = `housecall_distance[${date}]`;
+        input.className = 'housecall-distance-input';
+        input.step = '0.1';
+        input.min = '0';
+        input.style.width = '80px';
+        input.style.marginLeft = '5px';
+        input.value = '0';
+
+        const unit = document.createElement('span');
+        unit.textContent = ' km';
+
+        inputGroup.appendChild(label);
+        inputGroup.appendChild(input);
+        inputGroup.appendChild(unit);
+        container.appendChild(inputGroup);
       });
     }
   </script>

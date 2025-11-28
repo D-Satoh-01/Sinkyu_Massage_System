@@ -216,6 +216,7 @@ Route::middleware('auth')->group(function () {
 
   // 実績データ
   Route::get('/records/index', [RecordsController::class, 'index'])->name('records.index');
+  Route::post('/records/store', [RecordsController::class, 'store'])->name('records.store');
 
   // 利用者検索（共通）
   Route::get('/user-search', [UserSearchController::class, 'index'])->name('user.search');

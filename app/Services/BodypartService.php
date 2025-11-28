@@ -51,7 +51,7 @@ class BodypartService
     {
         $reverseMapping = array_flip(self::MAPPING);
 
-        $bodypartIds = DB::table('consents_massage-bodyparts')
+        $bodypartIds = DB::table('bodyparts-consents_massage')
             ->where('consenting_doctor_history_massage_id', $historyId)
             ->whereNotNull($columnName)
             ->pluck($columnName);
@@ -122,7 +122,7 @@ class BodypartService
             if (isset(self::MAPPING[$value])) {
                 $bodypart = Bodypart::where('bodypart', self::MAPPING[$value])->first();
                 if ($bodypart) {
-                    DB::table('consents_massage-bodyparts')->insert([
+                    DB::table('bodyparts-consents_massage')->insert([
                         'consenting_doctor_history_massage_id' => $consentId,
                         $columnName => $bodypart->id,
                         'created_at' => now(),
@@ -143,7 +143,7 @@ class BodypartService
      */
     public function deleteBodypartsRelations($historyId)
     {
-        DB::table('consents_massage-bodyparts')
+        DB::table('bodyparts-consents_massage')
             ->where('consenting_doctor_history_massage_id', $historyId)
             ->delete();
     }

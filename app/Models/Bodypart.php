@@ -19,7 +19,7 @@ class Bodypart extends Model
   {
     return $this->belongsToMany(
       ConsentMassage::class,
-      'consents_massage_bodyparts',
+      'bodyparts-consents_massage',
       'symtom_1_bodyparts_id',
       'consenting_doctor_history_massage_id'
     );

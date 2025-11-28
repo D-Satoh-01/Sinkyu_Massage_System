@@ -29,5 +29,5 @@
   </nav>
   @endif
 
-  <div class="divider-horizontal-bold"></div>
+  <hr class="border border-black border-1">
 </div>

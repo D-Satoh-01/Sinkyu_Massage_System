@@ -2,7 +2,20 @@
   "permissions": {
     "allow": [
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(php -r \"echo json_encode(DB::select(''SHOW TABLES''), JSON_PRETTY_PRINT);\")",
+      "Bash(php temp_check_tables.php:*)",
+      "Bash(php artisan make:migration:*)",
+      "Bash(php artisan migrate:*)",
+      "Bash(php temp_verify_rename.php:*)",
+      "Bash(del temp_check_tables.php temp_verify_rename.php)",
+      "Bash(php:*)",
+      "Bash(del temp_check_bodyparts_consents.php temp_verify_column_rename.php)",
+      "Bash(php -r:*)",
+      "Bash(php temp_get_tables.php:*)",
+      "Bash(del temp_get_tables.php temp_check_tables.php temp_check_data.php)",
+      "Bash(del:*)"
     ],
     "deny": [],
     "ask": []

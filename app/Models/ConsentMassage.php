@@ -72,7 +72,7 @@ class ConsentMassage extends Model
   {
     return $this->belongsToMany(
       Bodypart::class,
-      'consents_massage-bodyparts',
+      'bodyparts-consents_massage',
       'consenting_doctor_history_massage_id',
       'symtom_1_bodyparts_id'
     );
@@ -82,7 +82,7 @@ class ConsentMassage extends Model
   {
     return $this->belongsToMany(
       Bodypart::class,
-      'consents_massage-bodyparts',
+      'bodyparts-consents_massage',
       'consenting_doctor_history_massage_id',
       'symtom_2_bodyparts_id'
     );
@@ -92,7 +92,7 @@ class ConsentMassage extends Model
   {
     return $this->belongsToMany(
       Bodypart::class,
-      'consents_massage-bodyparts',
+      'bodyparts-consents_massage',
       'consenting_doctor_history_massage_id',
       'therapy_type_1_bodyparts_id'
     );
@@ -102,7 +102,7 @@ class ConsentMassage extends Model
   {
     return $this->belongsToMany(
       Bodypart::class,
-      'consents_massage-bodyparts',
+      'bodyparts-consents_massage',
       'consenting_doctor_history_massage_id',
       'therapy_type_2_bodyparts_id'
     );

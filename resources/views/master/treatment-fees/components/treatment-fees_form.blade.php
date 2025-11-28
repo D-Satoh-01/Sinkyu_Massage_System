@@ -47,6 +47,7 @@
     </tr>
   </tbody>
 </table>
+@error('kyu_normal')<div class="text-danger">{{ $message }}</div>@enderror
 
 <h3>あんま・マッサージ</h3>
 <table class="table table-bordered">
@@ -100,6 +101,22 @@
     </tr>
   </tbody>
 </table>
+@error('massage_trunk_first')<div class="text-danger">{{ $message }}</div>@enderror
+@error('massage_trunk_normal')<div class="text-danger">{{ $message }}</div>@enderror
+@error('massage_upper_limb_r_first')<div class="text-danger">{{ $message }}</div>@enderror
+@error('massage_upper_limb_r_normal')<div class="text-danger">{{ $message }}</div>@enderror
+@error('massage_upper_limb_l_first')<div class="text-danger">{{ $message }}</div>@enderror
+@error('massage_upper_limb_l_normal')<div class="text-danger">{{ $message }}</div>@enderror
+@error('massage_lower_limb_r_first')<div class="text-danger">{{ $message }}</div>@enderror
+@error('massage_lower_limb_r_normal')<div class="text-danger">{{ $message }}</div>@enderror
+@error('massage_lower_limb_l_first')<div class="text-danger">{{ $message }}</div>@enderror
+@error('massage_lower_limb_l_normal')<div class="text-danger">{{ $message }}</div>@enderror
+@error('manual_correction_first')<div class="text-danger">{{ $message }}</div>@enderror
+@error('manual_correction_normal')<div class="text-danger">{{ $message }}</div>@enderror
+@error('fomentation_first')<div class="text-danger">{{ $message }}</div>@enderror
+@error('fomentation_normal')<div class="text-danger">{{ $message }}</div>@enderror
+@error('fomentation_and_elec_ray_first')<div class="text-danger">{{ $message }}</div>@enderror
+@error('fomentation_and_elec_ray_normal')<div class="text-danger">{{ $message }}</div>@enderror
 
 <h3>往診料</h3>
 <table class="table table-bordered">
@@ -135,6 +152,8 @@
     <td><input type="date" name="period_end" value="{{ old('period_end', $item->period_end ?? '') }}" required></td>
   </tr>
 </table>
+@error('period_start')<div class="text-danger">{{ $message }}</div>@enderror
+@error('period_end')<div class="text-danger">{{ $message }}</div>@enderror
 
 <br>
 <button type="submit">{{ $submitLabel ?? '登録' }}</button>
