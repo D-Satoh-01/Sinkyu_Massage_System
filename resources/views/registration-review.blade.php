@@ -10,7 +10,7 @@
   @endif
 
   {{-- <h5>{{ $registration_message }}</h5> --}}
-  <h5 class="registration-message">以下の内容で登録を行います。</h5>
+  <h5 class="mb-4">以下の内容で登録を行います。</h5>
 
   <div>
   @foreach($labels as $key => $label)
@@ -69,21 +69,21 @@
     <button class="me-3">◀ 戻る</button>
   </a>
   @else
-  <form action="{{ route($back_route) }}" method="GET" style="display: inline-block;">
+  <form action="{{ route($back_route) }}" method="GET" class="d-inline-block">
     <button type="submit" class="me-3">◀ 戻る</button>
   </form>
   @endif
 
   @if(isset($back_insurance_id))
-  <form action="{{ route($store_route, ['id' => $back_id, 'insurance_id' => $back_insurance_id]) }}" method="POST" style="display: inline-block;">
+  <form action="{{ route($store_route, ['id' => $back_id, 'insurance_id' => $back_insurance_id]) }}" method="POST" class="d-inline-block">
   @elseif(isset($back_plan_id))
-  <form action="{{ route($store_route, ['id' => $back_id, 'plan_id' => $back_plan_id]) }}" method="POST" style="display: inline-block;">
+  <form action="{{ route($store_route, ['id' => $back_id, 'plan_id' => $back_plan_id]) }}" method="POST" class="d-inline-block">
   @elseif(isset($back_history_id))
-  <form action="{{ route($store_route, ['id' => $back_id, 'history_id' => $back_history_id]) }}" method="POST" style="display: inline-block;">
+  <form action="{{ route($store_route, ['id' => $back_id, 'history_id' => $back_history_id]) }}" method="POST" class="d-inline-block">
   @elseif(isset($back_id))
-  <form action="{{ route($store_route, ['id' => $back_id]) }}" method="POST" style="display: inline-block;">
+  <form action="{{ route($store_route, ['id' => $back_id]) }}" method="POST" class="d-inline-block">
   @else
-  <form action="{{ route($store_route) }}" method="POST" style="display: inline-block;">
+  <form action="{{ route($store_route) }}" method="POST" class="d-inline-block">
   @endif
   @csrf
   <button type="submit" class="me-3">登録</button>

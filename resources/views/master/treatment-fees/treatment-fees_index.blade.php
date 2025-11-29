@@ -41,7 +41,7 @@
         <td style="text-align: right;">{{ number_format($item->hari_normal) }} 円</td>
         <td>{{ $item->created_at }}</td>
         <td style="text-align: center;">
-          <form action="{{ route('master.treatment-fees.destroy', $item->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('本当に削除する？');">
+          <form action="{{ route('master.treatment-fees.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('本当に削除する？');">
             @csrf
             @method('DELETE')
             <button type="submit">削除</button>

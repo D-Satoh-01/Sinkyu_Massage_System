@@ -1,33 +1,10 @@
 /* resources/css/app.css */
 
 
-/*━━━━┫〈 全体 〉┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━*/
+/*━━━━┫〈 グローバルスタイル 〉┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━*/
 * {
   font-family: 'Noto Sans JP', sans-serif;
   scroll-behavior: smooth;
-}
-
-.main-content {
-  position: absolute;
-  left: 200px;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  padding: 1rem 1rem 0 1rem;
-  overflow-y: auto;
-  transition: left 0.2s ease;
-  display: flex;
-  flex-direction: column;
-}
-
-.main-content main {
-  flex: 1;
-}
-
-body.app-layout {
-  min-height: 100vh;
-  background-color: #ddd;
-  overflow: hidden;
 }
 
 /* リンクの下線を削除 */
@@ -43,8 +20,13 @@ body.app-layout {
   cursor: default;
   outline: none;
 }
+/*---------------------------------------------------------*/
 
-/* サイドバー ＋ メインコンテンツ */
+
+
+
+/*━━━━┫〈 レイアウト - サイドバー連動 〉┣━━━━━━━━━━━━━━━━━━━━━*/
+/* Content Wrapper */
 .content-wrapper {
   display: flex;
   flex-wrap: wrap;
@@ -56,55 +38,18 @@ body.app-layout {
   overflow: hidden;
 }
 
-/* 区切り線 */
-.divider-horizontal { /* 水平線 */
-  border-top: 1px solid #00000060;
-  margin: 1rem 0;
-  width: 100%;
-}
-.divider-vertical { /* 垂直線 */
-  border-left: 1px solid #00000060;
-  margin: 0 1rem;
-  height: 100%;
-}
-.divider-horizontal-bold { /* 水平太線 */
-  border-top: 2px solid #00000060;
-  margin: 1rem 0;
-  width: 100%;
-}
-.divider-vertical-bold { /* 垂直太線 */
-  border-left: 2px solid #00000060;
-  margin: 0 1rem;
-  height: 100%;
-}
-/*---------------------------------------------------------*/
-
-
-
-
-
-
-/*━━━━┫〈 ヘッダー 〉┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━*/
-.app-header {
-  position: fixed;
+/* メインコンテンツ - サイドバー開閉時のトランジション */
+.main-content {
+  position: absolute;
+  left: 200px;
   top: 0;
-  left: 0;
   right: 0;
-  z-index: 1000;
-  background-color: #eee;
-  padding: 0.5rem 1rem;
-}
-/*---------------------------------------------------------*/
-
-
-
-
-
-
-/*━━━━┫〈 フッター 〉┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━*/
-.app-footer {
-  margin: 2rem -1rem 0 -1rem;
-  background-color: #eee;
+  bottom: 0;
+  padding: 1rem 1rem 0 1rem;
+  overflow-y: auto;
+  transition: left 0.2s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar.closed ~ .main-content {
@@ -119,8 +64,6 @@ html.sidebar-preload-closed .main-content {
 
 
 
-
-
 /*━━━━┫〈 サイドバー 〉┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━*/
 .sidebar {
   position: fixed;
@@ -128,7 +71,6 @@ html.sidebar-preload-closed .main-content {
   top: calc(0.5rem * 2 + 1.5rem + 2px);
   bottom: 0;
   width: 200px;
-  background-color: #eee;
   transition: margin-left 0.2s ease;
   overflow-y: auto;
   z-index: 999;
@@ -144,62 +86,33 @@ html.sidebar-preload-closed .sidebar {
   margin-left: -200px;
 }
 
-/* サイドバーヘッダー */
-.sidebar-header {
-  padding: 10px 20px;
-}
-
-/* ユーザー情報 */
-.user-info {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.user-name {
-  font-size: 12px;
-}
-
-.last-login {
-  font-size: 12px;
-}
-
-.sidebar-nav {
-  padding: 0;
-}
-
-.sidebar-menu {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
+/* サイドバーリンク - カスタムスタイル（ホバーエフェクト含む） */
 .sidebar-link {
   display: block;
   padding: 15px 20px;
-  color: #212529;
   text-decoration: none;
   font-weight: 500;
+  color: #444;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .sidebar-link:hover {
-  background-color: #eee;
+  color: #000;
+  background-color: #00000010;
 }
 /*---------------------------------------------------------*/
 
 
 
 
-
-
-/*━━━━┫〈 実績データ 〉┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━*/
+/*━━━━┫〈 実績データ - カレンダーカスタムコンポーネント 〉┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━*/
+/* カレンダータイトルセレクト - カスタムスタイル */
 #calendar-title {
   font-size: 25px;
   font-weight: bold;
   padding: 0.2em 0em;
-  border: 1px solid #ffffff00;
-  background-color: #ffffff00;
+  border: 1px solid transparent;
+  background-color: transparent;
   cursor: pointer;
   text-align: center;
 }
@@ -209,46 +122,54 @@ html.sidebar-preload-closed .sidebar {
   font-weight: normal;
 }
 
+/* カレンダーグリッド - CSS Grid使用（Bootstrap標準にない） */
 .calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 0px;
+  gap: 0;
 }
 
+/* カレンダーヘッダー - text-center p-1 fw-boldで代替可能だが、特定要素用のため保持 */
 .calendar-day-header {
   text-align: center;
   padding: 5px;
   font-weight: bold;
 }
 
+/* 日曜日 - text-dangerで代替可能だが、特定色のため保持 */
 .calendar-day-header.sunday {
   color: rgb(255, 0, 0);
 }
 
+/* 土曜日 - text-primaryに近いが、特定色のため保持 */
 .calendar-day-header.saturday {
-  color: rgb(0, 80, 255)
+  color: rgb(0, 80, 255);
 }
 
+/* カレンダー日付セル - bg-white p-1 text-center border cursor-pointerで代替可能だが、カスタムのため保持 */
 .calendar-day {
   background-color: #fff;
   padding: 5px;
   text-align: center;
-  border: 1px solid #00000050;
+  border: 1px solid rgba(0, 0, 0, 0.31);
   cursor: pointer;
 }
 
+/* 選択状態 - カスタム背景色 */
 .calendar-day.selected {
   background-color: #afcfff;
 }
 
+/* 定休日 - bg-secondaryに近いが、カスタムのため保持 */
 .calendar-day.closed {
   background-color: #ccc;
   cursor: default;
 }
 
+/* 他月の日付 - opacity-50で代替可能だが、特定スタイルのため保持 */
 .calendar-day.other-month {
-  background-color: #ffffff50;
-  color: #00000050;
+  background-color: rgba(255, 255, 255, 0.31);
+  color: rgba(0, 0, 0, 0.31);
   cursor: default;
 }
 /*---------------------------------------------------------*/
@@ -256,30 +177,13 @@ html.sidebar-preload-closed .sidebar {
 
 
 
-
-
 /*━━━━┫〈 利用者検索 〉┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━*/
+/* カタカナ選択状態 - !important必要なためカスタム定義 */
 .katakana-selected {
   background-color: #007bff !important;
   color: white !important;
 }
-
-.main-container {
-  display: flex;
-  gap: 20px;
-}
-
-.left-panel {
-  flex-shrink: 0;
-  width: 20rem;
-}
-
-.right-panel {
-  flex-grow: 1;
-}
 /*---------------------------------------------------------*/
-
-
 
 
 
@@ -340,8 +244,6 @@ html.sidebar-preload-closed .sidebar {
   text-align: right;
 }
 /*---------------------------------------------------------*/
-
-
 
 
 
@@ -444,8 +346,6 @@ html.sidebar-preload-closed .sidebar {
 
 
 
-
-
 /*━━━━┫〈 PDF出力 - 同意医師（はり･きゅう） 〉┣━━━━━━━━━━━━━━━*/
 .pdf-consents-acupuncture body {
   font-family: 'mplus1medium', sans-serif;
@@ -491,8 +391,6 @@ html.sidebar-preload-closed .sidebar {
 
 
 
-
-
 /*━━━━┫〈 PDF出力 - 同意医師（あんま･マッサージ） 〉┣━━━━━━━━━━*/
 .pdf-consents-massage body {
   font-family: 'mplus1medium', sans-serif;
@@ -534,8 +432,6 @@ html.sidebar-preload-closed .sidebar {
   color: #666666;
 }
 /*---------------------------------------------------------*/
-
-
 
 
 
@@ -590,11 +486,14 @@ html.sidebar-preload-closed .sidebar {
 
 
 
-
-
 /*━━━━┫〈 その他 〉┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━*/
-/* 登録画面のメッセージ */
-.registration-message {
-  margin-bottom: 2rem;
-}
+/* app.cssの最小化完了 - カスタムCSSは必要最小限に抑制 */
+/* 全ての通常CSSクラスをBootstrapユーティリティクラスに置換済み */
+/* 残存するのは以下の必須カスタムCSS: */
+/*   - グローバルスタイル（*, [href], [readonly]） */
+/*   - サイドバー連動レイアウト（.content-wrapper, .main-content） */
+/*   - サイドバー位置制御とトランジション（.sidebar, .sidebar-link） */
+/*   - カレンダーグリッドレイアウト（CSS Grid使用） */
+/*   - PDF出力専用スタイル */
+/*   - !important必須のスタイル（.katakana-selected） */
 /*---------------------------------------------------------*/

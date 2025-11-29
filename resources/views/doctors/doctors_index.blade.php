@@ -52,10 +52,10 @@
       <a href="{{ route('doctors.duplicate', $doctor->id) }}">複製</a>
       </td>
       <td>
-      <form action="{{ route('doctors.delete', ['id' => $doctor->id]) }}" method="POST" class="delete-form" style="display: inline;">
+      <form action="{{ route('doctors.delete', ['id' => $doctor->id]) }}" method="POST" class="delete-form d-inline">
         @csrf
         @method('DELETE')
-        <button type="submit" class="delete-btn" style="background: none; border: none; color: #0d6efd; cursor: pointer;">削除</button>
+        <button type="submit" class="delete-btn btn btn-link p-0">削除</button>
       </form>
       </td>
     </tr>

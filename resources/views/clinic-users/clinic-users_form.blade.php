@@ -68,14 +68,14 @@
   <input type="date" id="birthday" name="birthday" value="{{ old('birthday', session($sessionKey . '.birthday', isset($clinicUser) && !empty($clinicUser->birthday) ? ($clinicUser->birthday instanceof \Carbon\Carbon ? $clinicUser->birthday->format('Y-m-d') : $clinicUser->birthday) : '')) }}">
   </div>
 
-  <div class="mb-3" style="position: relative;">
+  <div class="mb-3 position-relative">
   <label class="fw-semibold" for="age">年齢</label>
   @error('age')
     <span class="text-danger ms-2">{{ $message }}</span>
   @enderror
   <br>
-  <input type="number" id="age" name="age" value="{{ $get('age') }}" min="0" max="150" readonly style="background-color: #f0f0f0; cursor: default;" data-tooltip="生年月日から自動計算されます">
-  <span id="age-tooltip" class="custom-tooltip" style="display: none; position: absolute; background-color: #333; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; white-space: nowrap; z-index: 1000; pointer-events: none;"></span>
+  <input type="number" id="age" name="age" value="{{ $get('age') }}" min="0" max="150" readonly class="bg-light" style="cursor: default;" data-tooltip="生年月日から自動計算されます">
+  <span id="age-tooltip" class="custom-tooltip d-none position-absolute bg-dark text-white px-2 py-1 rounded small" style="white-space: nowrap; z-index: 1000; pointer-events: none;"></span>
   </div>
 
   <div class="mb-3">
@@ -95,7 +95,7 @@
   @enderror
   <br>
   <input type="text" id="postal_code" name="postal_code" value="{{ $get('postal_code') }}" placeholder="000-0000" maxlength="8">
-  <div id="address-message" class="loading" style="display: none; margin-top: 5px;"></div>
+  <div id="address-message" class="loading d-none mt-1"></div>
   </div>
 
   <div class="mb-3">

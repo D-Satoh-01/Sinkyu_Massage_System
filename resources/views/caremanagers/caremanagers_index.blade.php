@@ -50,10 +50,10 @@
           {{ $careManager->created_at ? \Carbon\Carbon::parse($careManager->created_at)->format('H:i') : '' }}
         </td>
         <td>
-          <form action="{{ route('caremanagers.delete', ['id' => $careManager->id]) }}" method="POST" class="delete-form" style="display: inline;">
+          <form action="{{ route('caremanagers.delete', ['id' => $careManager->id]) }}" method="POST" class="delete-form d-inline">
             @csrf
             @method('DELETE')
-            <button type="submit" class="delete-btn" style="background: none; border: none; color: #0d6efd; cursor: pointer;">削除</button>
+            <button type="submit" class="delete-btn btn btn-link p-0">削除</button>
           </form>
         </td>
       </tr>

@@ -31,7 +31,7 @@
           <input type="number" name="amount" value="" min="0" step="1" required style="width: 95%;" form="form-new">
         </td>
         <td colspan="2" style="text-align: center;">
-          <form action="{{ route('master.self-fees.store') }}" method="POST" id="form-new" style="display: inline;">
+          <form action="{{ route('master.self-fees.store') }}" method="POST" id="form-new" class="d-inline">
             @csrf
             <button type="submit">新規登録</button>
           </form>
@@ -55,7 +55,7 @@
           <button type="submit" form="form-{{ $item->id }}">更新</button>
         </td>
         <td style="text-align: center;">
-          <form action="{{ route('master.self-fees.destroy', $item->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('本当に削除する？');">
+          <form action="{{ route('master.self-fees.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('本当に削除する？');">
             @csrf
             @method('DELETE')
             <button type="submit">削除</button>

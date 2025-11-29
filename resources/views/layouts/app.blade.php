@@ -24,10 +24,10 @@
 		<!-- スクリプト -->
 		@vite(['resources/css/app.css', 'resources/js/app.js'])
 	</head>
-	<body class="app-layout min-vh-100">
+	<body class="min-vh-100 overflow-hidden bg-secondary-subtle">
 
 		<!-- ヘッダー -->
-		<header class="app-header border-bottom border-secondary border-2">
+		<header class="position-fixed top-0 start-0 end-0 border-bottom border-secondary border-2 px-3 py-2 bg-body-secondary" style="z-index: 1000;">
 			@include('layouts.header')
 		</header>
 
@@ -47,11 +47,11 @@
 
 			<!-- メインコンテンツ -->
 			<div class="main-content">
-				<main>
+				<main class="flex-fill">
 					{{ $slot }}
 				</main>
 				<!-- フッター -->
-				<footer class="app-footer py-2 bg-body-subtle text-muted border-top border-dark-subtle">
+				<footer class="py-2 text-muted border-top border-dark-subtle bg-body-secondary" style="margin: 2rem -1rem 0 -1rem;">
 					<p class="mx-3 my-0">Copyright © All rights reserved.</p>
 				</footer>
 			</div>

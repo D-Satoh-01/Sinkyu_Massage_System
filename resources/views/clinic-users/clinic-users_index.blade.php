@@ -32,7 +32,7 @@
     @foreach($clinicUsers as $user)
     <tr>
       <td>{{ $user->id }}</td>
-      <td>
+      <td data-order="{{ $user->full_kana }}">
       <a href="{{ route('clinic-users.edit', ['id' => $user->id]) }}">{{ $user->full_name }} [編集]</a><br>
       {{ $user->full_kana }}
       </td>
@@ -59,10 +59,10 @@
       <a href="{{ route('clinic-users.plans.index', ['id' => $user->id]) }}">計画情報</a>
       </td>
       <td>
-      <form action="{{ route('clinic-users.delete', ['id' => $user->id]) }}" method="POST" class="delete-form" style="display: inline;">
+      <form action="{{ route('clinic-users.delete', ['id' => $user->id]) }}" method="POST" class="delete-form d-inline">
         @csrf
         @method('DELETE')
-        <button type="submit" class="delete-btn" style="background: none; border: none; color: #0d6efd; cursor: pointer;">削除</button>
+        <button type="submit" class="delete-btn btn btn-link p-0">削除</button>
       </form>
       </td>
     </tr>

@@ -14,7 +14,7 @@
     @csrf
 
     @if ($errors->any())
-      <div style="color: red;">
+      <div class="text-danger">
         <ul>
           @foreach ($errors->all() as $error)
             <li>{{ $error }}</li>
@@ -27,7 +27,7 @@
       <label for="login_id">ユーザーID</label>
       <input id="login_id" type="text" name="login_id" value="{{ old('login_id') }}" required autofocus>
       @error('login_id')
-        <div style="color: red;">{{ $message }}</div>
+        <div class="text-danger">{{ $message }}</div>
       @enderror
     </div>
 
@@ -35,7 +35,7 @@
       <label for="password">パスワード</label>
       <input id="password" type="password" name="password" required>
       @error('password')
-        <div style="color: red;">{{ $message }}</div>
+        <div class="text-danger">{{ $message }}</div>
       @enderror
     </div>
 

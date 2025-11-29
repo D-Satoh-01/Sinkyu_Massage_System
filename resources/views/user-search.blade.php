@@ -9,20 +9,20 @@
   <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body>
-  <div class="main-container">
+  <div class="d-flex gap-3">
     <!-- 左側: 利用者情報表示ボックス -->
-    <div class="left-panel">
+    <div class="flex-shrink-0" style="width: 20rem;">
       <fieldset id="selected-user-box">
         <legend><button type="button" id="select-user-btn">この利用者を選択</button></legend>
         <div id="selected-user-info">
           <p>利用者が選択されていません</p>
         </div>
-        
+
       </fieldset>
     </div>
 
     <!-- 右側: 検索機能 -->
-    <div class="right-panel">
+    <div class="flex-grow-1">
       <!-- 検索対象指定ラジオボタン -->
       <fieldset>
         <legend>検索対象</legend>
@@ -226,7 +226,7 @@
 
         let birthdayDisplay = birthday;
         if (birthday && age) {
-          birthdayDisplay = birthday + ' (' + age + '歳)';
+          birthdayDisplay = birthday + '（' + age + '歳）';
         }
 
         selectedUserInfo.innerHTML = `

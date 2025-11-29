@@ -48,6 +48,7 @@ class RecordsController extends Controller
 
     // 利用者が選択されている場合、関連データを取得
     $insurances = null;
+    $latestInsuranceId = null;
     $consentsAcupuncture = null;
     $consentsMassage = null;
     $hasRecentRecords = false;
@@ -60,6 +61,11 @@ class RecordsController extends Controller
         ->select('insurances.*', 'insurers.insurer_number')
         ->orderBy('insurances.expiry_date', 'desc')
         ->get();
+
+      // 最新の保険IDを取得（有効期限の降順で最初のレコード）
+      if ($insurances && $insurances->count() > 0) {
+        $latestInsuranceId = $insurances->first()->id;
+      }
 
       // 同意書情報（はり・きゅう）を取得（同意終了日の降順）
       $consentsAcupuncture = DB::table('consents_acupuncture')
@@ -103,6 +109,7 @@ class RecordsController extends Controller
       'clinicUsers' => $clinicUsers,
       'selectedUserId' => $selectedUserId,
       'insurances' => $insurances,
+      'latestInsuranceId' => $latestInsuranceId,
       'consentsAcupuncture' => $consentsAcupuncture,
       'consentsMassage' => $consentsMassage,
       'hasRecentRecords' => $hasRecentRecords,

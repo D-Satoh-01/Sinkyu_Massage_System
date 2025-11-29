@@ -56,7 +56,7 @@
     @enderror
     <br>
     <input type="text" id="postal_code" name="postal_code" value="{{ old('postal_code', $doctor->postal_code ?? '') }}" placeholder="000-0000" maxlength="8">
-    <div id="doctor-address-message" class="loading" style="display: none; margin-top: 5px;"></div>
+    <div id="doctor-address-message" class="loading d-none mt-1"></div>
   </div>
 
   <div class="mb-3">

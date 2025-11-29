@@ -38,15 +38,15 @@
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
     <br>
-    <span style="font-size: 0.9em;">郵便番号を入力すると住所が自動で入力されます <a href="https://www.post.japanpost.jp/zipcode/" target="_blank">[日本郵便HPへ]</a></span>
+    <span class="small">郵便番号を入力すると住所が自動で入力されます <a href="https://www.post.japanpost.jp/zipcode/" target="_blank">[日本郵便HPへ]</a></span>
     <br>
-    <label for="postal_code">(郵便番号)</label><br>
+    <label for="postal_code" class="small fw-medium">郵便番号</label><br>
     <input type="text" id="postal_code" name="postal_code" value="{{ old('postal_code', $companyInfo->postal_code ?? '') }}" placeholder="000-0000" maxlength="8">
-    <div id="clinic-info-address-message" class="loading" style="display: none; margin-top: 5px;"></div>
+    <div id="clinic-info-address-message" class="loading d-none mt-1"></div>
   </div>
 
   <div class="mb-3">
-    <label for="address_1">(都道府県)</label>
+    <label for="address_1" class="small fw-medium">都道府県</label>
     @error('address_1')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
@@ -55,7 +55,7 @@
   </div>
 
   <div class="mb-3">
-    <label for="address_2">(市区町村番地以下)</label>
+    <label for="address_2" class="small fw-medium">市区町村番地以下</label>
     @error('address_2')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
@@ -64,7 +64,7 @@
   </div>
 
   <div class="mb-3">
-    <label for="address_3">(アパート・マンション名等)</label>
+    <label for="address_3" class="small fw-medium">アパート・マンション名等</label>
     @error('address_3')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
@@ -345,7 +345,7 @@
   </div>
 
   <div class="mb-3">
-    <label class="fw-semibold" for="therapist_number">施術者付与 (登録) 番号</label>
+    <label class="fw-semibold" for="therapist_number">施術者付与（登録）番号</label>
     @error('therapist_number')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror

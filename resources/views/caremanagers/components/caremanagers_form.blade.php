@@ -27,10 +27,10 @@
       @endforeach
     </select>
     <br>
-    <span style="font-size: 0.9em;">上記選択にない場合、下記に入力する事でマスターとして登録します。</span><br>
-    <span style="font-size: 0.9em;">もしくは<a href="#">こちらから</a>登録してください。</span>
+    <span class="small">上記選択にない場合、下記に入力する事でマスターとして登録します。</span><br>
+    <span class="small">もしくは<a href="#">こちらから</a>登録してください。</span>
     <br>
-    <input type="text" id="service_provider_name_custom" name="service_provider_name_custom" placeholder="入力されたデータをマスターとして新規登録します。" value="{{ old('service_provider_name_custom') }}">
+    <input type="text" id="service_provider_name_custom" name="service_provider_name_custom" placeholder="入力されたデータをマスターとして新規登録。" value="{{ old('service_provider_name_custom') }}">
   </div>
 
   <div class="mb-3">
@@ -50,15 +50,15 @@
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
     <br>
-    <span style="font-size: 0.9em;">郵便番号を入力すると住所が自動で入力されます <a href="https://www.post.japanpost.jp/zipcode/" target="_blank">[日本郵便HPへ]</a></span>
+    <span class="small">郵便番号を入力すると住所が自動で入力されます <a href="https://www.post.japanpost.jp/zipcode/" target="_blank">[日本郵便HPへ]</a></span>
     <br>
-    <label for="postal_code">(郵便番号)</label><br>
+    <label for="postal_code" class="small">郵便番号</label><br>
     <input type="text" id="postal_code" name="postal_code" value="{{ old('postal_code', $careManager->postal_code ?? '') }}" placeholder="000-0000" maxlength="8">
-    <div id="caremanager-address-message" class="loading" style="display: none; margin-top: 5px;"></div>
+    <div id="caremanager-address-message" class="loading d-none mt-1"></div>
   </div>
 
   <div class="mb-3">
-    <label for="address_1">(都道府県)</label>
+    <label for="address_1" class="small">都道府県</label>
     @error('address_1')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
@@ -67,7 +67,7 @@
   </div>
 
   <div class="mb-3">
-    <label for="address_2">(市区町村番地以下)</label>
+    <label for="address_2" class="small">市区町村番地以下</label>
     @error('address_2')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
@@ -76,7 +76,7 @@
   </div>
 
   <div class="mb-3">
-    <label for="address_3">(アパート・マンション名等)</label>
+    <label for="address_3" class="small">アパート・マンション名等</label>
     @error('address_3')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
