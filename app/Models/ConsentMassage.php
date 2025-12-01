@@ -73,7 +73,7 @@ class ConsentMassage extends Model
     return $this->belongsToMany(
       Bodypart::class,
       'bodyparts-consents_massage',
-      'consenting_doctor_history_massage_id',
+      'consents_massage_id',
       'symtom_1_bodyparts_id'
     );
   }
@@ -83,7 +83,7 @@ class ConsentMassage extends Model
     return $this->belongsToMany(
       Bodypart::class,
       'bodyparts-consents_massage',
-      'consenting_doctor_history_massage_id',
+      'consents_massage_id',
       'symtom_2_bodyparts_id'
     );
   }
@@ -93,7 +93,7 @@ class ConsentMassage extends Model
     return $this->belongsToMany(
       Bodypart::class,
       'bodyparts-consents_massage',
-      'consenting_doctor_history_massage_id',
+      'consents_massage_id',
       'therapy_type_1_bodyparts_id'
     );
   }
@@ -103,8 +103,23 @@ class ConsentMassage extends Model
     return $this->belongsToMany(
       Bodypart::class,
       'bodyparts-consents_massage',
-      'consenting_doctor_history_massage_id',
+      'consents_massage_id',
       'therapy_type_2_bodyparts_id'
     );
+  }
+
+  /**
+   * モデルの「起動」メソッド
+   */
+  protected static function boot()
+  {
+    parent::boot();
+
+    // 削除時に関連するbodyparts-consents_massageレコードも削除
+    static::deleting(function ($consentMassage) {
+      \DB::table('bodyparts-consents_massage')
+        ->where('consents_massage_id', $consentMassage->id)
+        ->delete();
+    });
   }
 }

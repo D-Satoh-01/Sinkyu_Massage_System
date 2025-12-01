@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ClinicUser;
-use App\Models\ConsentMassage;
+use App\Models\ConsentAcupuncture;
 use App\Models\Doctor;
 use App\Models\Illness;
 use App\Models\BillCategory;
@@ -52,7 +52,7 @@ class ConsentAcupunctureController extends Controller
     public function index($id)
     {
         $user = ClinicUser::findOrFail($id);
-        $consentingHistories = ConsentMassage::where('clinic_user_id', $id)
+        $consentingHistories = ConsentAcupuncture::where('clinic_user_id', $id)
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -128,22 +128,10 @@ class ConsentAcupunctureController extends Controller
         // カスタムマスターデータの処理
         $this->processCustomMasterData($data);
 
-        // チェックボックスのデータを抽出
-        $checkboxData = $this->processCheckboxData($data);
-
-        // チェックボックス以外のデータでConsentMassageを保存
+        // ConsentAcupunctureを保存（bodypartsリレーションは不要）
         $consentData = $this->extractConsentData($data);
 
-        $consentMassage = ConsentMassage::create($consentData);
-
-        // bodypartsとのリレーション保存
-        $this->bodypartService->saveBodypartsRelations(
-            $consentMassage,
-            $checkboxData['symptom1'],
-            $checkboxData['symptom2'],
-            $checkboxData['treatmentType1'],
-            $checkboxData['treatmentType2']
-        );
+        ConsentAcupuncture::create($consentData);
 
         $request->session()->forget('consents_acupuncture_registration_data');
 
@@ -163,8 +151,7 @@ class ConsentAcupunctureController extends Controller
         if ($sessionData) {
             $history = (object)$sessionData;
         } else {
-            $history = ConsentMassage::findOrFail($history_id);
-            $history = $this->prepareBodypartsForEdit($history, $history_id);
+            $history = ConsentAcupuncture::findOrFail($history_id);
         }
 
         // マスターデータを取得
@@ -220,25 +207,11 @@ class ConsentAcupunctureController extends Controller
         // カスタムマスターデータの処理
         $this->processCustomMasterData($data);
 
-        // チェックボックスのデータを抽出
-        $checkboxData = $this->processCheckboxData($data);
-
-        // チェックボックス以外のデータで更新
+        // ConsentAcupunctureを更新（bodypartsリレーションは不要）
         $consentData = $this->extractConsentData($data);
 
-        $history = ConsentMassage::findOrFail($history_id);
+        $history = ConsentAcupuncture::findOrFail($history_id);
         $history->update($consentData);
-
-        // 既存のbodypartsリレーションを削除してから再保存
-        $this->bodypartService->deleteBodypartsRelations($history_id);
-
-        $this->bodypartService->saveBodypartsRelations(
-            $history,
-            $checkboxData['symptom1'],
-            $checkboxData['symptom2'],
-            $checkboxData['treatmentType1'],
-            $checkboxData['treatmentType2']
-        );
 
         $request->session()->forget('consents_acupuncture_edit_data');
 
@@ -258,8 +231,7 @@ class ConsentAcupunctureController extends Controller
         if ($sessionData) {
             $history = (object)$sessionData;
         } else {
-            $history = ConsentMassage::findOrFail($history_id);
-            $history = $this->prepareBodypartsForEdit($history, $history_id);
+            $history = ConsentAcupuncture::findOrFail($history_id);
         }
 
         // マスターデータを取得
@@ -317,22 +289,10 @@ class ConsentAcupunctureController extends Controller
         // カスタムマスターデータの処理
         $this->processCustomMasterData($data);
 
-        // チェックボックスのデータを抽出
-        $checkboxData = $this->processCheckboxData($data);
-
-        // チェックボックス以外のデータで保存
+        // ConsentAcupunctureを保存（bodypartsリレーションは不要）
         $consentData = $this->extractConsentData($data);
 
-        $consentMassage = ConsentMassage::create($consentData);
-
-        // bodypartsとのリレーション保存
-        $this->bodypartService->saveBodypartsRelations(
-            $consentMassage,
-            $checkboxData['symptom1'],
-            $checkboxData['symptom2'],
-            $checkboxData['treatmentType1'],
-            $checkboxData['treatmentType2']
-        );
+        ConsentAcupuncture::create($consentData);
 
         $request->session()->forget('consents_acupuncture_duplicate_data');
 
@@ -345,7 +305,7 @@ class ConsentAcupunctureController extends Controller
      */
     public function destroy($id, $history_id)
     {
-        $history = ConsentMassage::findOrFail($history_id);
+        $history = ConsentAcupuncture::findOrFail($history_id);
         $history->delete();
 
         return redirect()->route('clinic-users.consents-acupuncture.index', $id)
@@ -358,7 +318,7 @@ class ConsentAcupunctureController extends Controller
     public function print($id)
     {
         $user = ClinicUser::findOrFail($id);
-        $histories = ConsentMassage::where('clinic_user_id', $id)
+        $histories = ConsentAcupuncture::where('clinic_user_id', $id)
             ->orderBy('created_at', 'desc')
             ->get();
 

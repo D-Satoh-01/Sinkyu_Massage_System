@@ -21,7 +21,7 @@ class Bodypart extends Model
       ConsentMassage::class,
       'bodyparts-consents_massage',
       'symtom_1_bodyparts_id',
-      'consenting_doctor_history_massage_id'
+      'consents_massage_id'
     );
   }
 }

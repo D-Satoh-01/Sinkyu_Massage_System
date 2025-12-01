@@ -54,8 +54,8 @@
       </td>
       <td>
       <a href="{{ route('clinic-users.insurances.index', ['id' => $user->id]) }}">保険情報</a><br>
-      <a href="{{ route('clinic-users.consents-massage.index', ['id' => $user->id]) }}">同意医師履歴（あんま・マッサージ）</a><br>
       <a href="{{ route('clinic-users.consents-acupuncture.index', ['id' => $user->id]) }}">同意医師履歴（はり・きゅう）</a><br>
+      <a href="{{ route('clinic-users.consents-massage.index', ['id' => $user->id]) }}">同意医師履歴（あんま・マッサージ）</a><br>
       <a href="{{ route('clinic-users.plans.index', ['id' => $user->id]) }}">計画情報</a>
       </td>
       <td>

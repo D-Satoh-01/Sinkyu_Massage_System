@@ -52,6 +52,9 @@ class RecordsController extends Controller
     $consentsAcupuncture = null;
     $consentsMassage = null;
     $hasRecentRecords = false;
+    $records = collect();
+    $selectedYear = null;
+    $selectedMonth = null;
 
     if ($selectedUserId) {
       // 保険情報を取得（有効期限の降順）
@@ -85,6 +88,46 @@ class RecordsController extends Controller
         ->where('clinic_user_id', $selectedUserId)
         ->where('date', '>=', $oneMonthAgo)
         ->exists();
+
+      // 選択された年月を取得（デフォルトは現在の年月）
+      $selectedYear = $request->input('year', date('Y'));
+      $selectedMonth = $request->input('month', date('m'));
+
+      // 選択された年月の実績データを取得
+      $startDate = sprintf('%04d-%02d-01', $selectedYear, $selectedMonth);
+      $endDate = date('Y-m-t', strtotime($startDate));
+
+      $records = DB::table('records')
+        ->leftJoin('therapy_contents', 'records.therapy_conetnt_id', '=', 'therapy_contents.id')
+        ->leftJoin('therapists', 'records.therapist_id', '=', 'therapists.id')
+        ->where('records.clinic_user_id', $selectedUserId)
+        ->whereBetween('records.date', [$startDate, $endDate])
+        ->select(
+          'records.*',
+          'therapy_contents.therapy_content',
+          'therapists.therapist_name'
+        )
+        ->orderBy('records.date')
+        ->orderBy('records.start_time')
+        ->get()
+        ->groupBy(function($record) {
+          // 施術内容、施術者、時刻が同じレコードをグループ化
+          return sprintf(
+            '%s_%s_%s_%s',
+            $record->therapy_conetnt_id,
+            $record->therapist_id,
+            $record->start_time,
+            $record->end_time
+          );
+        })
+        ->map(function($group) {
+          // グループの最初のレコードを代表として使用
+          $representative = $group->first();
+          // 施術日の配列を追加
+          $representative->dates = $group->pluck('date')->toArray();
+          return $representative;
+        })
+        ->values();
     }
 
     // 施術者リストを取得
@@ -116,6 +159,9 @@ class RecordsController extends Controller
       'therapists' => $therapists,
       'therapyContents' => $therapyContents,
       'billCategories' => $billCategories,
+      'records' => $records,
+      'selectedYear' => $selectedYear,
+      'selectedMonth' => $selectedMonth,
       'page_header_title' => '実績データ',
     ]);
   }

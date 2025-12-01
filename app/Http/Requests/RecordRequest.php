@@ -17,6 +17,19 @@ class RecordRequest extends FormRequest
   }
 
   /**
+   * バリデーション前のデータ準備
+   */
+  protected function prepareForValidation(): void
+  {
+    // consent_expiryが空文字列の場合はnullに変換
+    if ($this->consent_expiry === '') {
+      $this->merge([
+        'consent_expiry' => null,
+      ]);
+    }
+  }
+
+  /**
    * バリデーションルールを取得
    */
   public function rules(): array
@@ -30,7 +43,7 @@ class RecordRequest extends FormRequest
       'insurance_category' => 'required|integer',
       'housecall_distance' => 'nullable|array',
       'housecall_distance.*' => 'nullable|numeric|min:0',
-      'consent_expiry' => 'nullable|string',
+      'consent_expiry' => 'nullable|date_format:Y/m/d',
       'therapy_content_id' => 'required|integer|exists:therapy_contents,id',
       'bill_category_id' => 'required|integer|exists:bill_categories,id',
       'therapist_id' => 'required|integer|exists:therapists,id',
