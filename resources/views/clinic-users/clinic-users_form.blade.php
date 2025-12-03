@@ -68,14 +68,13 @@
   <input type="date" id="birthday" name="birthday" value="{{ old('birthday', session($sessionKey . '.birthday', isset($clinicUser) && !empty($clinicUser->birthday) ? ($clinicUser->birthday instanceof \Carbon\Carbon ? $clinicUser->birthday->format('Y-m-d') : $clinicUser->birthday) : '')) }}">
   </div>
 
-  <div class="mb-3 position-relative">
+  <div class="mb-3">
   <label class="fw-semibold" for="age">年齢</label>
   @error('age')
     <span class="text-danger ms-2">{{ $message }}</span>
   @enderror
   <br>
-  <input type="number" id="age" name="age" value="{{ $get('age') }}" min="0" max="150" readonly class="bg-light" style="cursor: default;" data-tooltip="生年月日から自動計算されます">
-  <span id="age-tooltip" class="custom-tooltip d-none position-absolute bg-dark text-white px-2 py-1 rounded small" style="white-space: nowrap; z-index: 1000; pointer-events: none;"></span>
+  <input type="number" id="age" name="age" value="{{ $get('age') }}" min="0" max="150" readonly class="bg-light" style="cursor: default;" data-tooltip="生年月日から自動入力されます">
   </div>
 
   <div class="mb-3">
@@ -104,7 +103,7 @@
     <span class="text-danger ms-2">{{ $message }}</span>
   @enderror
   <br>
-  <input type="text" id="address_1" name="address_1" value="{{ $get('address_1') }}" readonly>
+  <input type="text" id="address_1" name="address_1" value="{{ $get('address_1') }}" readonly data-tooltip="郵便番号から自動入力されます">
   </div>
 
   <div class="mb-3">
@@ -175,8 +174,3 @@
 
   <button type="submit">登録確認へ</button>
 </form>
-
-@push('scripts')
-  <script src="{{ asset('js/utility.js') }}"></script>
-  <script src="{{ asset('js/clinic-users.js') }}"></script>
-@endpush

@@ -217,6 +217,11 @@ Route::middleware('auth')->group(function () {
   // 実績データ
   Route::get('/records/index', [RecordsController::class, 'index'])->name('records.index');
   Route::post('/records/store', [RecordsController::class, 'store'])->name('records.store');
+  Route::get('/records/{id}/edit', [RecordsController::class, 'edit'])->name('records.edit');
+  Route::put('/records/{id}', [RecordsController::class, 'update'])->name('records.update');
+  Route::get('/records/{id}/duplicate-current', [RecordsController::class, 'duplicateCurrentMonth'])->name('records.duplicate.current');
+  Route::get('/records/{id}/duplicate-next', [RecordsController::class, 'duplicateNextMonth'])->name('records.duplicate.next');
+  Route::post('/records/duplicate/store', [RecordsController::class, 'duplicateStore'])->name('records.duplicate.store');
 
   // 利用者検索（共通）
   Route::get('/user-search', [UserSearchController::class, 'index'])->name('user.search');

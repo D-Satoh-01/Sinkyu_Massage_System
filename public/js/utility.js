@@ -220,6 +220,11 @@ function toggleFieldsByCheckbox(checkboxId, fieldIds, clearOnDisable = true) {
       }
     }
   });
+
+  // ツールチップを再初期化
+  if (typeof initializeReadonlyTooltips === 'function') {
+    initializeReadonlyTooltips();
+  }
 }
 
 /**
@@ -247,10 +252,15 @@ function toggleFieldsBySelect(selectId, targetValue, fieldIds, clearOnDisable = 
       }
     }
   });
+
+  // ツールチップを再初期化
+  if (typeof initializeReadonlyTooltips === 'function') {
+    initializeReadonlyTooltips();
+  }
 }
 
 /**
- * 保険者番号のバリデーションを行う汎用関数
+ * 郵便番号から住所を検索する汎用関数
  * @param {string} insurerNumberInputId - 保険者番号入力フィールドのID
  * @param {string} warningElementId - 警告メッセージを表示する要素のID
  * @param {string} selectedInsurerSelectId - 選択された保険者のセレクトボックスのID（オプション）
@@ -337,6 +347,11 @@ function toggleSelectAndNewFields(selectId, newFieldIds) {
       }
     }
   });
+
+  // ツールチップを再初期化
+  if (typeof initializeReadonlyTooltips === 'function') {
+    initializeReadonlyTooltips();
+  }
 }
 
 /**
@@ -355,5 +370,101 @@ function clearSelectOnNewFieldInput(newFieldId, selectId) {
 
   if (newField.value.trim() !== '') {
     select.value = '';
+  }
+}
+
+/**
+ * readonlyまたはdisabledフィールドにツールチップを設定する汎用関数
+ * data-tooltip属性を持つreadonlyまたはdisabledフィールドに自動的にツールチップを表示
+ */
+function initializeReadonlyTooltips() {
+  console.log('[Tooltip] initializeReadonlyTooltips() 実行開始');
+  
+  // data-tooltip属性を持つreadonlyまたはdisabledフィールドを全て取得
+  const readonlyFields = document.querySelectorAll('[readonly][data-tooltip], [disabled][data-tooltip]');
+  console.log('[Tooltip] 対象フィールド数:', readonlyFields.length);
+  
+  readonlyFields.forEach((field, index) => {
+    const tooltipText = field.getAttribute('data-tooltip');
+    console.log(`[Tooltip] フィールド${index + 1}:`, {
+      id: field.id,
+      name: field.name,
+      tagName: field.tagName,
+      disabled: field.disabled,
+      readOnly: field.readOnly,
+      tooltipText: tooltipText,
+      initialized: field.hasAttribute('data-tooltip-initialized')
+    });
+    
+    if (!tooltipText) {
+      console.log(`[Tooltip] フィールド${index + 1}: tooltip-textなし、スキップ`);
+      return;
+    }
+
+    // 既にツールチップが設定されているかチェック
+    if (field.hasAttribute('data-tooltip-initialized')) {
+      console.log(`[Tooltip] フィールド${index + 1}: 既に初期化済み、スキップ`);
+      return;
+    }
+
+    // ツールチップ要素を作成
+    const tooltip = document.createElement('span');
+    const tooltipId = 'tooltip-' + Math.random().toString(36).substr(2, 9);
+    tooltip.id = tooltipId;
+    tooltip.className = 'readonly-tooltip bg-white fw-medium px-2 pt-1 pb-2 rounded shadow-sm';
+    tooltip.style.cssText = 'display: none; position: fixed; white-space: nowrap; z-index: 1000; pointer-events: none;';
+    tooltip.textContent = tooltipText;
+    
+    // ツールチップをbodyに追加（position: fixedが正しく動作するように）
+    document.body.appendChild(tooltip);
+    field.setAttribute('data-tooltip-id', tooltipId);
+    field.setAttribute('data-tooltip-initialized', 'true');
+    console.log(`[Tooltip] フィールド${index + 1}: ツールチップ作成完了 (ID: ${tooltipId})`);
+
+    // マウスイベントリスナーを設定
+    field.addEventListener('mouseenter', function(e) {
+      console.log('[Tooltip] mouseenter:', {
+        id: this.id,
+        disabled: this.disabled,
+        readOnly: this.readOnly
+      });
+      // disabled属性がある場合のみツールチップを表示
+      if (this.disabled || this.readOnly) {
+        tooltip.style.display = 'block';
+        tooltip.style.top = (e.clientY + 15) + 'px';
+        tooltip.style.left = (e.clientX + 10) + 'px';
+        console.log('[Tooltip] ツールチップ表示:', tooltipText);
+      } else {
+        console.log('[Tooltip] disabled/readOnlyでないため非表示');
+      }
+    });
+
+    field.addEventListener('mousemove', function(e) {
+      if (tooltip.style.display === 'block') {
+        tooltip.style.top = (e.clientY + 15) + 'px';
+        tooltip.style.left = (e.clientX + 10) + 'px';
+      }
+    });
+
+    field.addEventListener('mouseleave', function() {
+      console.log('[Tooltip] mouseleave: ツールチップ非表示');
+      tooltip.style.display = 'none';
+    });
+  });
+  
+  console.log('[Tooltip] initializeReadonlyTooltips() 実行完了');
+}
+
+// 関数をグローバルスコープに公開
+if (typeof window !== 'undefined') {
+  window.initializeReadonlyTooltips = initializeReadonlyTooltips;
+}
+
+// ページ読み込み時に自動的にツールチップを初期化
+if (typeof window !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeReadonlyTooltips);
+  } else {
+    initializeReadonlyTooltips();
   }
 }

@@ -39,7 +39,7 @@
       <td>
       @if(!empty($user->birthday))
         {{ optional($user->birthday)->format('Y/m/d') }}
-        ({{ $user->birthday ? \Carbon\Carbon::parse($user->birthday)->age : '' }}才)
+        （{{ $user->birthday ? \Carbon\Carbon::parse($user->birthday)->age : '' }}才）
       @endif
       </td>
       <td>

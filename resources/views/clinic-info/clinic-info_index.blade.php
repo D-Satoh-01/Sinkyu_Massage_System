@@ -35,4 +35,9 @@
       'cancelRoute' => route('master.index')
     ])
   </form>
+
+  @push('scripts')
+    <script src="{{ asset('js/utility.js') }}"></script>
+    <script src="{{ asset('js/clinic-info.js') }}"></script>
+  @endpush
 </x-app-layout>

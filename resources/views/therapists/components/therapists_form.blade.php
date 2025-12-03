@@ -39,7 +39,7 @@
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
     <br>
-    <input type="text" id="address_1" name="address_1" value="{{ old('address_1', $therapist->address_1 ?? '') }}" readonly>
+    <input type="text" id="address_1" name="address_1" value="{{ old('address_1', $therapist->address_1 ?? '') }}" readonly data-tooltip="郵便番号から自動入力されます">
   </div>
 
   <div class="mb-3">
@@ -214,8 +214,3 @@
     <button type="button">キャンセル</button>
   </a>
 </div>
-
-@push('scripts')
-  <script src="{{ asset('js/utility.js') }}"></script>
-  <script src="{{ asset('js/therapists.js') }}"></script>
-@endpush

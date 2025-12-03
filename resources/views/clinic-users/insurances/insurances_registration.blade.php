@@ -50,4 +50,9 @@
       'cancelRoute' => route('clinic-users.insurances.index', $userId)
     ])
   </form>
+
+  @push('scripts')
+    <script src="{{ asset('js/utility.js') }}"></script>
+    <script src="{{ asset('js/insurances.js') }}"></script>
+  @endpush
 </x-app-layout>

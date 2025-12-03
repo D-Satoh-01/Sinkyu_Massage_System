@@ -41,7 +41,7 @@
             @endif
             {{ $therapist->license_hari_number }}
             @if(!empty($therapist->license_hari_issued_date))
-              ({{ \Carbon\Carbon::parse($therapist->license_hari_issued_date)->format('Y/m/d') }})
+              （{{ \Carbon\Carbon::parse($therapist->license_hari_issued_date)->format('Y/m/d') }}）
             @endif
             <br>
           @endif
@@ -52,7 +52,7 @@
             @endif
             {{ $therapist->license_kyu_number }}
             @if(!empty($therapist->license_kyu_issued_date))
-              ({{ \Carbon\Carbon::parse($therapist->license_kyu_issued_date)->format('Y/m/d') }})
+              （{{ \Carbon\Carbon::parse($therapist->license_kyu_issued_date)->format('Y/m/d') }}）
             @endif
             <br>
           @endif
@@ -63,7 +63,7 @@
             @endif
             {{ $therapist->license_massage_number }}
             @if(!empty($therapist->license_massage_issued_date))
-              ({{ \Carbon\Carbon::parse($therapist->license_massage_issued_date)->format('Y/m/d') }})
+              （{{ \Carbon\Carbon::parse($therapist->license_massage_issued_date)->format('Y/m/d') }}）
             @endif
           @endif
           @if(empty($therapist->license_hari_id) && empty($therapist->license_hari_number) && empty($therapist->license_kyu_id) && empty($therapist->license_kyu_number) && empty($therapist->license_massage_id) && empty($therapist->license_massage_number))

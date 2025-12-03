@@ -180,22 +180,22 @@
   <div id="medical-assistance-fields">
   <div class="mb-3">
     <label class="fw-semibold" for="public_funds_payer_code">公費負担者番号</label><br>
-    <input type="text" id="public_funds_payer_code" name="public_funds_payer_code" value="{{ old('public_funds_payer_code', $insurance->public_funds_payer_code ?? '') }}">
+    <input type="text" id="public_funds_payer_code" name="public_funds_payer_code" value="{{ old('public_funds_payer_code', $insurance->public_funds_payer_code ?? '') }}" data-tooltip="医療助成対象がチェック状態の場合に入力可能です">
   </div>
 
   <div class="mb-3">
     <label class="fw-semibold" for="public_funds_recipient_code">公費受給者番号</label><br>
-    <input type="text" id="public_funds_recipient_code" name="public_funds_recipient_code" value="{{ old('public_funds_recipient_code', $insurance->public_funds_recipient_code ?? '') }}">
+    <input type="text" id="public_funds_recipient_code" name="public_funds_recipient_code" value="{{ old('public_funds_recipient_code', $insurance->public_funds_recipient_code ?? '') }}" data-tooltip="医療助成対象がチェック状態の場合に入力可能です">
   </div>
 
   <div class="mb-3">
     <label class="fw-semibold" for="locality_code_family">区市町村番号（家族）</label><br>
-    <input type="text" id="locality_code_family" name="locality_code_family" value="{{ old('locality_code_family', ($insurance->locality_code_family ?? '')) }}">
+    <input type="text" id="locality_code_family" name="locality_code_family" value="{{ old('locality_code_family', ($insurance->locality_code_family ?? '')) }}" data-tooltip="利用者との続柄で『家族』が選択されている場合のみ入力可能です">
   </div>
 
   <div class="mb-3">
     <label class="fw-semibold" for="recipient_code_family">受給者番号（家族）</label><br>
-    <input type="text" id="recipient_code_family" name="recipient_code_family" value="{{ old('recipient_code_family', ($insurance->recipient_code_family ?? '')) }}">
+    <input type="text" id="recipient_code_family" name="recipient_code_family" value="{{ old('recipient_code_family', ($insurance->recipient_code_family ?? '')) }}" data-tooltip="利用者との続柄で『家族』が選択されている場合のみ入力可能です">
   </div>
   </div>
 
@@ -254,8 +254,3 @@
   <button>キャンセル</button>
 	</a>
 </div>
-
-@push('scripts')
-  <script src="{{ asset('js/utility.js') }}"></script>
-  <script src="{{ asset('js/insurances.js') }}"></script>
-@endpush

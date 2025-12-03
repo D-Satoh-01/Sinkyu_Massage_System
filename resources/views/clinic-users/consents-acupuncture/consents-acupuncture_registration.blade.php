@@ -41,7 +41,7 @@
   @if($mode === 'duplicate')
   <div class="alert alert-warning">
     <strong>複製元の履歴:</strong> {{ $history->consenting_doctor_name }}
-    (同意日: {{ $history->consenting_date?->format('Y年m月d日') ?? '未設定' }})
+    （同意日: {{ $history->consenting_date?->format('Y年m月d日') ?? '未設定' }}）
   </div>
   @endif
 

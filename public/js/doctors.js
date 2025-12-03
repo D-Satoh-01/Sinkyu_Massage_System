@@ -24,4 +24,5 @@ function clearMedicalInstitutionSelect() {
 document.addEventListener('DOMContentLoaded', function() {
   // 郵便番号入力時の処理
   setupPostalCodeInput('postal_code', searchAddress);
+
 });

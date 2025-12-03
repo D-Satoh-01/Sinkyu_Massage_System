@@ -13,6 +13,7 @@ use App\Http\Requests\RecordRequest;
  * 利用者の施術実績データの管理を担当する。
  * - 実績データの一覧表示
  * - 利用者選択による絞り込み
+ * - 実績データの編集・更新
  */
 class RecordsController extends Controller
 {
@@ -107,8 +108,7 @@ class RecordsController extends Controller
           'therapy_contents.therapy_content',
           'therapists.therapist_name'
         )
-        ->orderBy('records.date')
-        ->orderBy('records.start_time')
+        ->orderBy('records.created_at', 'desc')
         ->get()
         ->groupBy(function($record) {
           // 施術内容、施術者、時刻が同じレコードをグループ化
@@ -280,6 +280,556 @@ class RecordsController extends Controller
         ->back()
         ->withInput()
         ->withErrors(['error' => 'データの登録に失敗しました：' . $e->getMessage()]);
+    }
+  }
+
+  /**
+   * 実績データ編集画面を表示
+   *
+   * @param int $id
+   * @return \Illuminate\View\View
+   */
+  public function edit($id)
+  {
+    // 同一グループの実績データを取得（最初のレコードを代表として取得）
+    $record = DB::table('records')
+      ->where('id', $id)
+      ->first();
+
+    if (!$record) {
+      return redirect()
+        ->route('records.index')
+        ->withErrors(['error' => '実績データが見つかりません。']);
+    }
+
+    // 同一グループのレコードを全て取得（施術内容、施術者、時刻が同じもの）
+    $groupRecords = DB::table('records')
+      ->where('clinic_user_id', $record->clinic_user_id)
+      ->where('therapy_conetnt_id', $record->therapy_conetnt_id)
+      ->where('therapist_id', $record->therapist_id)
+      ->where('start_time', $record->start_time)
+      ->where('end_time', $record->end_time)
+      ->orderBy('date')
+      ->get();
+
+    // 施術日の配列を作成
+    $originalDates = $groupRecords->pluck('date')->toArray();
+
+    // 往療距離の配列を作成
+    $originalDistances = [];
+    foreach ($groupRecords as $rec) {
+      $originalDistances[$rec->date] = $rec->housecall_distance;
+    }
+
+    // clinic_infoテーブルから定休日情報を取得
+    $clinicInfo = DB::table('clinic_info')->first();
+    $closedDays = [
+      'monday' => $clinicInfo->closed_day_monday ?? 0,
+      'tuesday' => $clinicInfo->closed_day_tuesday ?? 0,
+      'wednesday' => $clinicInfo->closed_day_wednesday ?? 0,
+      'thursday' => $clinicInfo->closed_day_thursday ?? 0,
+      'friday' => $clinicInfo->closed_day_friday ?? 0,
+      'saturday' => $clinicInfo->closed_day_saturday ?? 0,
+      'sunday' => $clinicInfo->closed_day_sunday ?? 0,
+    ];
+
+    // 保険情報を取得
+    $insurances = DB::table('insurances')
+      ->leftJoin('insurers', 'insurances.insurers_id', '=', 'insurers.id')
+      ->where('insurances.clinic_user_id', $record->clinic_user_id)
+      ->select('insurances.*', 'insurers.insurer_number')
+      ->orderBy('insurances.expiry_date', 'desc')
+      ->get();
+
+    // 同意書情報（はり・きゅう）を取得
+    $consentsAcupuncture = DB::table('consents_acupuncture')
+      ->where('clinic_user_id', $record->clinic_user_id)
+      ->orderBy('consenting_end_date', 'desc')
+      ->first();
+
+    // 同意書情報（あんま・マッサージ）を取得
+    $consentsMassage = DB::table('consents_massage')
+      ->where('clinic_user_id', $record->clinic_user_id)
+      ->orderBy('consenting_end_date', 'desc')
+      ->first();
+
+    // 1ヶ月以内の実績データの有無をチェック
+    $oneMonthAgo = date('Y-m-d', strtotime('-1 month'));
+    $hasRecentRecords = DB::table('records')
+      ->where('clinic_user_id', $record->clinic_user_id)
+      ->where('date', '>=', $oneMonthAgo)
+      ->exists();
+
+    // 施術者リストを取得
+    $therapists = DB::table('therapists')
+      ->select('id', 'therapist_name', 'furigana')
+      ->orderBy('furigana')
+      ->get();
+
+    // 施術内容リストを取得
+    $therapyContents = DB::table('therapy_contents')
+      ->select('id', 'therapy_content')
+      ->orderBy('id')
+      ->get();
+
+    // 身体部位情報を取得（あんま・マッサージの場合）
+    $selectedBodyparts = [];
+    if ($record->therapy_type == 2) {
+      $selectedBodyparts = DB::table('bodyparts-records')
+        ->where('records_id', $id)
+        ->pluck('therapy_type_bodyparts_id')
+        ->map(function($item) {
+          return (string)$item;
+        })
+        ->toArray();
+    }
+
+    return view('records.records_edit', [
+      'record' => $record,
+      'originalDates' => $originalDates,
+      'originalDistances' => $originalDistances,
+      'closedDays' => $closedDays,
+      'insurances' => $insurances,
+      'consentsAcupuncture' => $consentsAcupuncture,
+      'consentsMassage' => $consentsMassage,
+      'hasRecentRecords' => $hasRecentRecords,
+      'therapists' => $therapists,
+      'therapyContents' => $therapyContents,
+      'selectedBodyparts' => $selectedBodyparts,
+      'page_header_title' => '実績データ編集',
+    ]);
+  }
+
+  /**
+   * 実績データを更新
+   *
+   * @param RecordRequest $request
+   * @param int $id
+   * @return \Illuminate\Http\RedirectResponse
+   */
+  public function update(RecordRequest $request, $id)
+  {
+    $validated = $request->validated();
+
+    try {
+      DB::beginTransaction();
+
+      // 元のレコードを取得
+      $originalRecord = DB::table('records')->where('id', $id)->first();
+
+      if (!$originalRecord) {
+        return redirect()
+          ->route('records.index')
+          ->withErrors(['error' => '実績データが見つかりません。']);
+      }
+
+      // 同一グループの全レコードを削除（施術内容、施術者、時刻が同じもの）
+      $deletedRecords = DB::table('records')
+        ->where('clinic_user_id', $originalRecord->clinic_user_id)
+        ->where('therapy_conetnt_id', $originalRecord->therapy_conetnt_id)
+        ->where('therapist_id', $originalRecord->therapist_id)
+        ->where('start_time', $originalRecord->start_time)
+        ->where('end_time', $originalRecord->end_time)
+        ->get();
+
+      // 削除対象のレコードIDを取得
+      $deletedRecordIds = $deletedRecords->pluck('id')->toArray();
+
+      // bodyparts-recordsテーブルから関連データを削除
+      DB::table('bodyparts-records')
+        ->whereIn('records_id', $deletedRecordIds)
+        ->delete();
+
+      // recordsテーブルから削除
+      DB::table('records')
+        ->whereIn('id', $deletedRecordIds)
+        ->delete();
+
+      // 往療距離の配列を取得
+      $housecallDistances = $request->input('housecall_distance', []);
+
+      // 新しいレコードを作成
+      foreach ($housecallDistances as $date => $distance) {
+        // recordsテーブルにデータを挿入
+        $recordId = DB::table('records')->insertGetId([
+          'clinic_user_id' => $validated['clinic_user_id'],
+          'date' => $date,
+          'start_time' => $validated['start_time'],
+          'end_time' => $validated['end_time'],
+          'therapy_type' => $validated['therapy_type'],
+          'therapy_category' => $validated['therapy_category'],
+          'insurance_category' => $validated['insurance_category'] ?? null,
+          'housecall_distance' => $validated['therapy_category'] == 2 ? $distance : null,
+          'therapy_days' => count($housecallDistances),
+          'consent_expiry' => $validated['consent_expiry'] ?? null,
+          'therapy_conetnt_id' => $validated['therapy_content_id'],
+          'bill_category_id' => $validated['bill_category_id'],
+          'therapist_id' => $validated['therapist_id'],
+          'abstract' => $validated['abstract'] ?? null,
+          'created_at' => now(),
+          'updated_at' => now(),
+        ]);
+
+        // あんま･マッサージの場合、bodyparts-recordsテーブルに身体部位を保存
+        if ($validated['therapy_type'] == 2 && isset($validated['bodyparts'])) {
+          foreach ($validated['bodyparts'] as $bodypartId) {
+            DB::table('bodyparts-records')->insert([
+              'records_id' => $recordId,
+              'therapy_type_bodyparts_id' => $bodypartId,
+              'created_at' => now(),
+              'updated_at' => now(),
+            ]);
+          }
+        }
+
+        // 複製チェックボックスが選択されている場合、追加の施術内容を登録
+        if ($validated['therapy_type'] == 2) {
+          $duplicateContents = [];
+
+          if ($request->input('duplicate_massage') == 1) {
+            $duplicateContents[] = 7; // マッサージ
+          }
+          if ($request->input('duplicate_warm_compress') == 1) {
+            $duplicateContents[] = 9; // 温罨法
+          }
+          if ($request->input('duplicate_warm_electric') == 1) {
+            $duplicateContents[] = 10; // 温罨法・電気光線器具
+          }
+          if ($request->input('duplicate_manual_correction') == 1) {
+            $duplicateContents[] = 8; // 変形徒手矯正術
+          }
+
+          foreach ($duplicateContents as $contentId) {
+            $duplicateRecordId = DB::table('records')->insertGetId([
+              'clinic_user_id' => $validated['clinic_user_id'],
+              'date' => $date,
+              'start_time' => $validated['start_time'],
+              'end_time' => $validated['end_time'],
+              'therapy_type' => $validated['therapy_type'],
+              'therapy_category' => $validated['therapy_category'],
+              'insurance_category' => $validated['insurance_category'] ?? null,
+              'housecall_distance' => $validated['therapy_category'] == 2 ? $distance : null,
+              'therapy_days' => count($housecallDistances),
+              'consent_expiry' => $validated['consent_expiry'] ?? null,
+              'therapy_conetnt_id' => $contentId,
+              'bill_category_id' => $validated['bill_category_id'],
+              'therapist_id' => $validated['therapist_id'],
+              'abstract' => $validated['abstract'] ?? null,
+              'created_at' => now(),
+              'updated_at' => now(),
+            ]);
+
+            // 複製したレコードにも身体部位を保存
+            if (isset($validated['bodyparts'])) {
+              foreach ($validated['bodyparts'] as $bodypartId) {
+                DB::table('bodyparts-records')->insert([
+                  'records_id' => $duplicateRecordId,
+                  'therapy_type_bodyparts_id' => $bodypartId,
+                  'created_at' => now(),
+                  'updated_at' => now(),
+                ]);
+              }
+            }
+          }
+        }
+      }
+
+      DB::commit();
+
+      return redirect()
+        ->route('records.index', ['clinic_user_id' => $validated['clinic_user_id']])
+        ->with('success', '実績データを更新しました。');
+
+    } catch (\Exception $e) {
+      DB::rollBack();
+      return redirect()
+        ->back()
+        ->withInput()
+        ->withErrors(['error' => 'データの更新に失敗しました：' . $e->getMessage()]);
+    }
+  }
+
+  /**
+   * 当月へ複製画面を表示
+   *
+   * @param int $id
+   * @return \Illuminate\View\View
+   */
+  public function duplicateCurrentMonth($id)
+  {
+    return $this->duplicateForm($id, 'current');
+  }
+
+  /**
+   * 翌月へ複製画面を表示
+   *
+   * @param int $id
+   * @return \Illuminate\View\View
+   */
+  public function duplicateNextMonth($id)
+  {
+    return $this->duplicateForm($id, 'next');
+  }
+
+  /**
+   * 複製フォームを表示（共通処理）
+   *
+   * @param int $id
+   * @param string $type 'current' or 'next'
+   * @return \Illuminate\View\View
+   */
+  private function duplicateForm($id, $type)
+  {
+    // 同一グループの実績データを取得
+    $record = DB::table('records')
+      ->where('id', $id)
+      ->first();
+
+    if (!$record) {
+      return redirect()
+        ->route('records.index')
+        ->withErrors(['error' => '実績データが見つかりません。']);
+    }
+
+    // 同一グループのレコードを全て取得
+    $groupRecords = DB::table('records')
+      ->where('clinic_user_id', $record->clinic_user_id)
+      ->where('therapy_conetnt_id', $record->therapy_conetnt_id)
+      ->where('therapist_id', $record->therapist_id)
+      ->where('start_time', $record->start_time)
+      ->where('end_time', $record->end_time)
+      ->orderBy('date')
+      ->get();
+
+    // 施術日の配列を作成
+    $originalDates = $groupRecords->pluck('date')->toArray();
+
+    // 複製先の年月を計算
+    if ($type === 'next') {
+      // 翌月の場合、日付を翌月に変更
+      $duplicatedDates = array_map(function($date) {
+        $dateObj = new \DateTime($date);
+        $dateObj->modify('+1 month');
+        return $dateObj->format('Y-m-d');
+      }, $originalDates);
+    } else {
+      // 当月の場合、日付はそのまま
+      $duplicatedDates = $originalDates;
+    }
+
+    // 往療距離の配列を作成
+    $originalDistances = [];
+    foreach ($groupRecords as $rec) {
+      $originalDistances[$rec->date] = $rec->housecall_distance;
+    }
+
+    // 複製先の日付に対応する往療距離を作成
+    $duplicatedDistances = [];
+    if ($type === 'next') {
+      foreach ($originalDistances as $date => $distance) {
+        $dateObj = new \DateTime($date);
+        $dateObj->modify('+1 month');
+        $newDate = $dateObj->format('Y-m-d');
+        $duplicatedDistances[$newDate] = $distance;
+      }
+    } else {
+      $duplicatedDistances = $originalDistances;
+    }
+
+    // clinic_infoテーブルから定休日情報を取得
+    $clinicInfo = DB::table('clinic_info')->first();
+    $closedDays = [
+      'monday' => $clinicInfo->closed_day_monday ?? 0,
+      'tuesday' => $clinicInfo->closed_day_tuesday ?? 0,
+      'wednesday' => $clinicInfo->closed_day_wednesday ?? 0,
+      'thursday' => $clinicInfo->closed_day_thursday ?? 0,
+      'friday' => $clinicInfo->closed_day_friday ?? 0,
+      'saturday' => $clinicInfo->closed_day_saturday ?? 0,
+      'sunday' => $clinicInfo->closed_day_sunday ?? 0,
+    ];
+
+    // 保険情報を取得
+    $insurances = DB::table('insurances')
+      ->leftJoin('insurers', 'insurances.insurers_id', '=', 'insurers.id')
+      ->where('insurances.clinic_user_id', $record->clinic_user_id)
+      ->select('insurances.*', 'insurers.insurer_number')
+      ->orderBy('insurances.expiry_date', 'desc')
+      ->get();
+
+    // 同意書情報（はり・きゅう）を取得
+    $consentsAcupuncture = DB::table('consents_acupuncture')
+      ->where('clinic_user_id', $record->clinic_user_id)
+      ->orderBy('consenting_end_date', 'desc')
+      ->first();
+
+    // 同意書情報（あんま・マッサージ）を取得
+    $consentsMassage = DB::table('consents_massage')
+      ->where('clinic_user_id', $record->clinic_user_id)
+      ->orderBy('consenting_end_date', 'desc')
+      ->first();
+
+    // 1ヶ月以内の実績データの有無をチェック
+    $oneMonthAgo = date('Y-m-d', strtotime('-1 month'));
+    $hasRecentRecords = DB::table('records')
+      ->where('clinic_user_id', $record->clinic_user_id)
+      ->where('date', '>=', $oneMonthAgo)
+      ->exists();
+
+    // 施術者リストを取得
+    $therapists = DB::table('therapists')
+      ->select('id', 'therapist_name', 'furigana')
+      ->orderBy('furigana')
+      ->get();
+
+    // 施術内容リストを取得
+    $therapyContents = DB::table('therapy_contents')
+      ->select('id', 'therapy_content')
+      ->orderBy('id')
+      ->get();
+
+    // 身体部位情報を取得（あんま・マッサージの場合）
+    $selectedBodyparts = [];
+    if ($record->therapy_type == 2) {
+      $selectedBodyparts = DB::table('bodyparts-records')
+        ->where('records_id', $id)
+        ->pluck('therapy_type_bodyparts_id')
+        ->map(function($item) {
+          return (string)$item;
+        })
+        ->toArray();
+    }
+
+    return view('records.records_duplicate', [
+      'record' => $record,
+      'originalDates' => $duplicatedDates,
+      'originalDistances' => $duplicatedDistances,
+      'closedDays' => $closedDays,
+      'insurances' => $insurances,
+      'consentsAcupuncture' => $consentsAcupuncture,
+      'consentsMassage' => $consentsMassage,
+      'hasRecentRecords' => $hasRecentRecords,
+      'therapists' => $therapists,
+      'therapyContents' => $therapyContents,
+      'selectedBodyparts' => $selectedBodyparts,
+      'duplicateType' => $type,
+      'page_header_title' => $type === 'next' ? '実績データ複製（翌月）' : '実績データ複製（当月）',
+    ]);
+  }
+
+  /**
+   * 複製データを保存
+   *
+   * @param RecordRequest $request
+   * @return \Illuminate\Http\RedirectResponse
+   */
+  public function duplicateStore(RecordRequest $request)
+  {
+    $validated = $request->validated();
+
+    try {
+      DB::beginTransaction();
+
+      // 往療距離の配列を取得
+      $housecallDistances = $request->input('housecall_distance', []);
+
+      // 新しいレコードを作成
+      foreach ($housecallDistances as $date => $distance) {
+        // recordsテーブルにデータを挿入
+        $recordId = DB::table('records')->insertGetId([
+          'clinic_user_id' => $validated['clinic_user_id'],
+          'date' => $date,
+          'start_time' => $validated['start_time'],
+          'end_time' => $validated['end_time'],
+          'therapy_type' => $validated['therapy_type'],
+          'therapy_category' => $validated['therapy_category'],
+          'insurance_category' => $validated['insurance_category'] ?? null,
+          'housecall_distance' => $validated['therapy_category'] == 2 ? $distance : null,
+          'therapy_days' => count($housecallDistances),
+          'consent_expiry' => $validated['consent_expiry'] ?? null,
+          'therapy_conetnt_id' => $validated['therapy_content_id'],
+          'bill_category_id' => $validated['bill_category_id'],
+          'therapist_id' => $validated['therapist_id'],
+          'abstract' => $validated['abstract'] ?? null,
+          'created_at' => now(),
+          'updated_at' => now(),
+        ]);
+
+        // あんま･マッサージの場合、bodyparts-recordsテーブルに身体部位を保存
+        if ($validated['therapy_type'] == 2 && isset($validated['bodyparts'])) {
+          foreach ($validated['bodyparts'] as $bodypartId) {
+            DB::table('bodyparts-records')->insert([
+              'records_id' => $recordId,
+              'therapy_type_bodyparts_id' => $bodypartId,
+              'created_at' => now(),
+              'updated_at' => now(),
+            ]);
+          }
+        }
+
+        // 複製チェックボックスが選択されている場合、追加の施術内容を登録
+        if ($validated['therapy_type'] == 2) {
+          $duplicateContents = [];
+
+          if ($request->input('duplicate_massage') == 1) {
+            $duplicateContents[] = 7; // マッサージ
+          }
+          if ($request->input('duplicate_warm_compress') == 1) {
+            $duplicateContents[] = 9; // 温罨法
+          }
+          if ($request->input('duplicate_warm_electric') == 1) {
+            $duplicateContents[] = 10; // 温罨法・電気光線器具
+          }
+          if ($request->input('duplicate_manual_correction') == 1) {
+            $duplicateContents[] = 8; // 変形徒手矯正術
+          }
+
+          foreach ($duplicateContents as $contentId) {
+            $duplicateRecordId = DB::table('records')->insertGetId([
+              'clinic_user_id' => $validated['clinic_user_id'],
+              'date' => $date,
+              'start_time' => $validated['start_time'],
+              'end_time' => $validated['end_time'],
+              'therapy_type' => $validated['therapy_type'],
+              'therapy_category' => $validated['therapy_category'],
+              'insurance_category' => $validated['insurance_category'] ?? null,
+              'housecall_distance' => $validated['therapy_category'] == 2 ? $distance : null,
+              'therapy_days' => count($housecallDistances),
+              'consent_expiry' => $validated['consent_expiry'] ?? null,
+              'therapy_conetnt_id' => $contentId,
+              'bill_category_id' => $validated['bill_category_id'],
+              'therapist_id' => $validated['therapist_id'],
+              'abstract' => $validated['abstract'] ?? null,
+              'created_at' => now(),
+              'updated_at' => now(),
+            ]);
+
+            // 複製したレコードにも身体部位を保存
+            if (isset($validated['bodyparts'])) {
+              foreach ($validated['bodyparts'] as $bodypartId) {
+                DB::table('bodyparts-records')->insert([
+                  'records_id' => $duplicateRecordId,
+                  'therapy_type_bodyparts_id' => $bodypartId,
+                  'created_at' => now(),
+                  'updated_at' => now(),
+                ]);
+              }
+            }
+          }
+        }
+      }
+
+      DB::commit();
+
+      return redirect()
+        ->route('records.index', ['clinic_user_id' => $validated['clinic_user_id']])
+        ->with('success', '実績データを複製しました。');
+
+    } catch (\Exception $e) {
+      DB::rollBack();
+      return redirect()
+        ->back()
+        ->withInput()
+        ->withErrors(['error' => 'データの複製に失敗しました：' . $e->getMessage()]);
     }
   }
 }

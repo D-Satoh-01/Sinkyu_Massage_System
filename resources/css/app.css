@@ -157,7 +157,7 @@ html.sidebar-preload-closed .sidebar {
 
 /* 選択状態 - カスタム背景色 */
 .calendar-day.selected {
-  background-color: #afcfff;
+  background-color: #c4e6ff;
 }
 
 /* 定休日 - bg-secondaryに近いが、カスタムのため保持 */

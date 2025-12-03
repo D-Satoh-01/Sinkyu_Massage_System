@@ -42,4 +42,9 @@
       'cancelRoute' => route('doctors.index')
     ])
   </form>
+
+  @push('scripts')
+    <script src="{{ asset('js/utility.js') }}"></script>
+    <script src="{{ asset('js/doctors.js') }}"></script>
+  @endpush
 </x-app-layout>

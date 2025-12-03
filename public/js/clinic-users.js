@@ -26,37 +26,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // カスタムツールチップの実装
-  const ageInput = document.getElementById('age');
-  const tooltip = document.getElementById('age-tooltip');
-
-  if (ageInput && tooltip) {
-    // マウスオーバーで即座にツールチップを表示
-    ageInput.addEventListener('mouseenter', function(e) {
-      const tooltipText = this.getAttribute('data-tooltip');
-      if (tooltipText) {
-        tooltip.textContent = tooltipText;
-        tooltip.style.display = 'block';
-
-        // 初期位置をカーソル位置に設定
-        const rect = this.getBoundingClientRect();
-        tooltip.style.position = 'fixed';
-        tooltip.style.top = (e.clientY + 15) + 'px';
-        tooltip.style.left = (e.clientX + 10) + 'px';
-      }
-    });
-
-    // マウス移動でツールチップをカーソルに追従
-    ageInput.addEventListener('mousemove', function(e) {
-      if (tooltip.style.display === 'block') {
-        tooltip.style.top = (e.clientY + 15) + 'px';
-        tooltip.style.left = (e.clientX + 10) + 'px';
-      }
-    });
-
-    // マウスアウトでツールチップを非表示
-    ageInput.addEventListener('mouseleave', function() {
-      tooltip.style.display = 'none';
-    });
-  }
 });

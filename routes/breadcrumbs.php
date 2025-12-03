@@ -183,6 +183,22 @@ Breadcrumbs::define('records.index', function() {
   return getRecordsBreadcrumbs();
 });
 
+// 実績データ ｰ 編集
+Breadcrumbs::define('records.edit', function() {
+  return [
+    ...getRecordsBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (編集)'],
+  ];
+});
+
+// 実績データ ｰ 複製
+Breadcrumbs::define('records.duplicate', function() {
+  return [
+    ...getRecordsBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (複製)'],
+  ];
+});
+
 // 利用者情報 ｰ トップ
 Breadcrumbs::define('clinic-users.index', function() {
   return getClinicUsersBreadcrumbs();

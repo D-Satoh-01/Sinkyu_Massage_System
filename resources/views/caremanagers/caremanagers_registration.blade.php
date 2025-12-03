@@ -43,4 +43,9 @@
       'cancelRoute' => route('caremanagers.index')
     ])
   </form>
+
+  @push('scripts')
+    <script src="{{ asset('js/utility.js') }}"></script>
+    <script src="{{ asset('js/caremanagers.js') }}"></script>
+  @endpush
 </x-app-layout>

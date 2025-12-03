@@ -44,7 +44,7 @@
     @error('new_medical_institution_name')
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
-    <input type="text" id="new_medical_institution_name" name="new_medical_institution_name" value="{{ old('new_medical_institution_name', '') }}" placeholder="新規登録する医療機関名を入力" oninput="clearMedicalInstitutionSelect()">
+    <input type="text" id="new_medical_institution_name" name="new_medical_institution_name" value="{{ old('new_medical_institution_name', '') }}" placeholder="" oninput="clearMedicalInstitutionSelect()" data-tooltip="">
   </div>
 
   <br>
@@ -65,7 +65,7 @@
       <span class="text-danger ms-2">{{ $message }}</span>
     @enderror
     <br>
-    <input type="text" id="address_1" name="address_1" value="{{ old('address_1', $doctor->address_1 ?? '') }}" readonly>
+    <input type="text" id="address_1" name="address_1" value="{{ old('address_1', $doctor->address_1 ?? '') }}" readonly data-tooltip="郵便番号から自動入力されます">
   </div>
 
   <div class="mb-3">
@@ -136,8 +136,3 @@
     <button type="button">キャンセル</button>
   </a>
 </div>
-
-@push('scripts')
-  <script src="{{ asset('js/utility.js') }}"></script>
-  <script src="{{ asset('js/doctors.js') }}"></script>
-@endpush
