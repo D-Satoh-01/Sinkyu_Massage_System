@@ -10,7 +10,6 @@
   <!-- 利用者選択フォーム -->
   <form method="GET" action="{{ route('records.index') }}" id="filterForm">
     <div class="mb-3">
-      <button type="button" onclick="openUserSearchPopup()">利用者検索</button>
       <label for="clinic_user_id"></label>
       <select name="clinic_user_id" id="clinic_user_id" onchange="document.getElementById('filterForm').submit();">
         <option value="">╌╌╌</option>
@@ -20,6 +19,7 @@
           </option>
         @endforeach
       </select>
+      <button type="button" onclick="openUserSearchPopup()" class="mx-2">利用者検索</button>
     </div>
   </form>
   <br>
@@ -145,7 +145,7 @@
           @enderror
           <div class="vr ms-1 me-2" style="height: 1.4rem; position: relative; top: 0.3rem;"></div>
           <select id="therapy_content_id" name="therapy_content_id" data-tooltip="先に日付を選択してください">
-            <option value="">選択してください</option>
+            <option value="">╌╌╌</option>
             @foreach($therapyContents as $content)
               <option value="{{ $content->id }}" {{ old('therapy_content_id') == $content->id ? 'selected' : '' }}>{{ $content->therapy_content }}</option>
             @endforeach
@@ -168,7 +168,7 @@
           @enderror
           <div class="vr ms-1 me-2" style="height: 1.4rem; position: relative; top: 0.3rem;"></div>
           <select id="therapist_id" name="therapist_id" data-tooltip="先に日付を選択してください">
-            <option value="">選択してください</option>
+            <option value="">╌╌╌</option>
             @foreach($therapists as $therapist)
               <option value="{{ $therapist->id }}" {{ old('therapist_id') == $therapist->id ? 'selected' : '' }}>{{ $therapist->therapist_name }} @if($therapist->furigana)({{ $therapist->furigana }})@endif</option>
             @endforeach
@@ -184,7 +184,7 @@
           <div class="vr ms-1 me-2" style="height: 1.4rem; position: relative; top: 0.3rem;"></div>
           @if($insurances && $insurances->count() > 0)
             <select name="insurance_category" data-tooltip="先に日付を選択してください">
-              <option value="">選択してください</option>
+              <option value="">╌╌╌</option>
               @foreach($insurances as $insurance)
                 @php
                   $insurerNumberLength = strlen($insurance->insurer_number ?? '');
@@ -199,7 +199,7 @@
                   $expiryDate = $insurance->expiry_date ? date('Y/m/d', strtotime($insurance->expiry_date)) : '未設定';
                   $isSelected = old('insurance_category') ? old('insurance_category') == $insurance->id : $latestInsuranceId == $insurance->id;
                 @endphp
-                <option value="{{ $insurance->id }}" {{ $isSelected ? 'selected' : '' }}>{{ $insuranceType }}(期限:{{ $expiryDate }})</option>
+                <option value="{{ $insurance->id }}" {{ $isSelected ? 'selected' : '' }}>{{ $insuranceType }}（期限：{{ $expiryDate }}）</option>
               @endforeach
             </select>
           @else
@@ -261,84 +261,104 @@
 
 
   <!-- 実績データ一覧テーブル -->
-  @if($selectedUserId && $records->count() > 0)
+  @if($selectedUserId)
     <div>
       <p class="mb-3">{{ $selectedYear }}年 {{ sprintf('%02d', $selectedMonth) }}月 の実績データ</p>
 
-      <div class="mb-3">
-        <button type="button">はり･きゅう支給申請書印刷</button>
-        <button type="button">あんま･マッサージ支給申請書印刷</button>
-      </div>
+      @if($records->count() > 0)
+        <div class="mb-3">
+          <button type="button">はり･きゅう支給申請書印刷</button>
+          <button type="button">あんま･マッサージ支給申請書印刷</button>
+        </div>
 
-      <div class="table-responsive">
-        <table class="table table-bordered fw-medium" style="font-size: 0.7rem;">
-          <thead>
-            <tr>
-              <th class="align-middle text-center" style="min-width: 90px;">編集</th>
-              <th class="align-middle text-center" style="min-width: 50px;">施術内容 / 施術者 / 時刻</th>
-              <th class="align-middle text-center" style="min-width: 50px;">登録日時 / 更新日時</th>
-              <th colspan="{{ date('t', strtotime("$selectedYear-$selectedMonth-01")) }}" class="text-center">施術日（通院：○｜往療：◎）</th>
-            </tr>
-          </thead>
-          <tbody>
-            @php
-              $daysInMonth = date('t', strtotime("$selectedYear-$selectedMonth-01"));
-            @endphp
-            @foreach($records as $record)
+        <div class="table-responsive">
+          <table class="table table-bordered fw-medium" style="font-size: 0.7rem;">
+            <thead>
               <tr>
-                <td rowspan="3" class="align-middle">
-                  <a href="{{ route('records.edit', $record->id) }}"><button type="button">編集</button></a><br>
-                  <a href="{{ route('records.duplicate.current', $record->id) }}"><button type="button">当月へ複製</button></a><br>
-                  <a href="{{ route('records.duplicate.next', $record->id) }}"><button type="button">翌月へ複製</button></a><br>
-                  <button type="button">削除</button>
-                </td>
-                <td rowspan="3" class="align-middle">
-                  {{ $record->therapy_content ?? '未設定' }}<br>
-                  {{ $record->therapist_name ?? '未設定' }}<br>
-                  {{ $record->start_time ? date('H:i', strtotime($record->start_time)) : '--:--' }} ~ {{ $record->end_time ? date('H:i', strtotime($record->end_time)) : '--:--' }}
-                </td>
-                <td rowspan="3" class="align-middle">
-                  {{ date('Y/m/d H:i', strtotime($record->created_at)) }}<br>
-                  {{ date('Y/m/d H:i', strtotime($record->updated_at)) }}
-                </td>
-                @for($day = 1; $day <= $daysInMonth; $day++)
-                  <td class="p-0 text-center" style="height: 1.2rem">{{ $day }}</td>
-                @endfor
+                <th class="align-middle text-center" style="min-width: 90px;">[ 編集 ]</th>
+                <th class="align-middle text-center" style="min-width: 50px;">施術内容 / 施術者 / 時刻</th>
+                <th class="align-middle text-center" style="min-width: 50px;">登録日時 / 更新日時</th>
+                <th colspan="{{ date('t', strtotime("$selectedYear-$selectedMonth-01")) }}" class="text-center">施術日（通院：○｜往療：◎）</th>
               </tr>
-              <tr>
-                @for($day = 1; $day <= $daysInMonth; $day++)
-                  @php
-                    $date = sprintf('%04d-%02d-%02d', $selectedYear, $selectedMonth, $day);
-                    $dayOfWeek = date('w', strtotime($date));
-                    $dayClass = '';
-                    if ($dayOfWeek == 0) {
-                      $dayClass = 'text-danger'; // 日曜日
-                    } elseif ($dayOfWeek == 6) {
-                      $dayClass = 'text-primary'; // 土曜日
-                    }
-                    $dayNames = ['日', '月', '火', '水', '木', '金', '土'];
-                  @endphp
-                  <td class="p-1 text-center {{ $dayClass }}" style="height: 1.2rem">{{ $dayNames[$dayOfWeek] }}</td>
-                @endfor
-              </tr>
-              <tr>
-                @for($day = 1; $day <= $daysInMonth; $day++)
-                  @php
-                    $currentDate = sprintf('%04d-%02d-%02d', $selectedYear, $selectedMonth, $day);
-                    $hasRecord = in_array($currentDate, $record->dates);
-                    $mark = '';
-                    if ($hasRecord) {
-                      // 通院なら○、往療なら◎
-                      $mark = $record->therapy_category == 1 ? '○' : '◎';
-                    }
-                  @endphp
-                  <td class="p-0 text-center">{{ $mark }}</td>
-                @endfor
-              </tr>
-            @endforeach
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              @php
+                $daysInMonth = date('t', strtotime("$selectedYear-$selectedMonth-01"));
+              @endphp
+              @foreach($records as $record)
+                <tr>
+                  <td rowspan="3" class="align-middle">
+                    <a href="{{ route('records.edit', $record->id) }}"><button type="button">編集</button></a><br>
+                    <a href="{{ route('records.duplicate.current', $record->id) }}"><button type="button">当月へ複製</button></a><br>
+                    <a href="{{ route('records.duplicate.next', $record->id) }}"><button type="button">翌月へ複製</button></a><br>
+                    <form method="POST" action="{{ route('records.destroy', $record->id) }}" style="display:inline;" onsubmit="return confirm('この実績データを削除してもよろしいですか？');">
+                      @csrf
+                      @method('DELETE')
+                      <button type="submit">削除</button>
+                    </form>
+                  </td>
+                  <td rowspan="3" class="align-middle">
+                    {{ $record->therapy_content ?? '未設定' }}<br>
+                    {{ $record->therapist_name ?? '未設定' }}<br>
+                    {{ $record->start_time ? date('H:i', strtotime($record->start_time)) : '--:--' }} ~ {{ $record->end_time ? date('H:i', strtotime($record->end_time)) : '--:--' }}
+                  </td>
+                  <td rowspan="3" class="align-middle">
+                    {{ date('Y/m/d H:i', strtotime($record->created_at)) }}<br>
+                    {{ date('Y/m/d H:i', strtotime($record->updated_at)) }}
+                  </td>
+                  @for($day = 1; $day <= $daysInMonth; $day++)
+                    <td class="p-0 text-center" style="height: 1.2rem">{{ $day }}</td>
+                  @endfor
+                </tr>
+                <tr>
+                  @for($day = 1; $day <= $daysInMonth; $day++)
+                    @php
+                      $date = sprintf('%04d-%02d-%02d', $selectedYear, $selectedMonth, $day);
+                      $dayOfWeek = date('w', strtotime($date));
+                      $dayClass = '';
+                      if ($dayOfWeek == 0) {
+                        $dayClass = 'text-danger'; // 日曜日
+                      } elseif ($dayOfWeek == 6) {
+                        $dayClass = 'text-primary'; // 土曜日
+                      }
+                      $dayNames = ['日', '月', '火', '水', '木', '金', '土'];
+                    @endphp
+                    <td class="p-1 text-center {{ $dayClass }}" style="height: 1.2rem">{{ $dayNames[$dayOfWeek] }}</td>
+                  @endfor
+                </tr>
+                <tr>
+                  @for($day = 1; $day <= $daysInMonth; $day++)
+                    @php
+                      $currentDate = sprintf('%04d-%02d-%02d', $selectedYear, $selectedMonth, $day);
+                      $hasRecord = in_array($currentDate, $record->dates);
+                      $mark = '';
+                      if ($hasRecord) {
+                        // 通院なら○、往療なら◎
+                        $mark = $record->therapy_category == 1 ? '○' : '◎';
+                      }
+                    @endphp
+                    <td class="p-0 text-center">{{ $mark }}</td>
+                  @endfor
+                </tr>
+              @endforeach
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-3">
+          <form method="POST" action="{{ route('records.bulk.duplicate.next') }}" id="bulkDuplicateForm" onsubmit="return confirmBulkDuplicate();">
+            @csrf
+            <input type="hidden" name="clinic_user_id" value="{{ $selectedUserId }}">
+            <input type="hidden" name="year" value="{{ $selectedYear }}">
+            <input type="hidden" name="month" value="{{ $selectedMonth }}">
+            <button type="submit">当月の全実績データを翌月へ複製</button>
+          </form>
+        </div>
+      @else
+        <div class="p-4 text-center fs-5 text-secondary">
+          該当データなし
+        </div>
+      @endif
     </div>
   @endif
   @endif
@@ -355,6 +375,16 @@
       initialMonth: @json($selectedMonth),
       userSearchUrl: '{{ route("user.search") }}'
     };
+
+    // 一括複製の確認ダイアログ
+    function confirmBulkDuplicate() {
+      const year = document.querySelector('input[name="year"]').value;
+      const month = document.querySelector('input[name="month"]').value;
+      const nextMonth = parseInt(month) === 12 ? 1 : parseInt(month) + 1;
+      const nextYear = parseInt(month) === 12 ? parseInt(year) + 1 : year;
+
+      return confirm(`${year}年${month}月の全実績データを${nextYear}年${nextMonth}月へ複製してもよろしいですか？`);
+    }
   </script>
   <script src="{{ asset('js/utility.js') }}"></script>
   <script src="{{ asset('js/records.js') }}"></script>

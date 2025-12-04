@@ -832,4 +832,158 @@ class RecordsController extends Controller
         ->withErrors(['error' => 'データの複製に失敗しました：' . $e->getMessage()]);
     }
   }
+
+  /**
+   * 実績データを削除
+   *
+   * @param int $id
+   * @return \Illuminate\Http\RedirectResponse
+   */
+  public function destroy($id)
+  {
+    try {
+      DB::beginTransaction();
+
+      // 削除対象のレコードを取得
+      $record = DB::table('records')->where('id', $id)->first();
+
+      if (!$record) {
+        return redirect()
+          ->route('records.index')
+          ->withErrors(['error' => '実績データが見つかりません。']);
+      }
+
+      // 同一グループの全レコードを取得（施術内容、施術者、時刻が同じもの）
+      $groupRecords = DB::table('records')
+        ->where('clinic_user_id', $record->clinic_user_id)
+        ->where('therapy_conetnt_id', $record->therapy_conetnt_id)
+        ->where('therapist_id', $record->therapist_id)
+        ->where('start_time', $record->start_time)
+        ->where('end_time', $record->end_time)
+        ->get();
+
+      // 削除対象のレコードIDを取得
+      $recordIds = $groupRecords->pluck('id')->toArray();
+
+      // bodyparts-recordsテーブルから関連データを削除
+      DB::table('bodyparts-records')
+        ->whereIn('records_id', $recordIds)
+        ->delete();
+
+      // recordsテーブルから削除
+      DB::table('records')
+        ->whereIn('id', $recordIds)
+        ->delete();
+
+      DB::commit();
+
+      return redirect()
+        ->route('records.index', ['clinic_user_id' => $record->clinic_user_id])
+        ->with('success', '実績データを削除しました。');
+
+    } catch (\Exception $e) {
+      DB::rollBack();
+      return redirect()
+        ->back()
+        ->withErrors(['error' => 'データの削除に失敗しました：' . $e->getMessage()]);
+    }
+  }
+
+  /**
+   * 当月の全実績データを翌月へ一括複製
+   *
+   * @param Request $request
+   * @return \Illuminate\Http\RedirectResponse
+   */
+  public function bulkDuplicateToNextMonth(Request $request)
+  {
+    $clinicUserId = $request->input('clinic_user_id');
+    $year = $request->input('year');
+    $month = $request->input('month');
+
+    if (!$clinicUserId || !$year || !$month) {
+      return redirect()
+        ->back()
+        ->withErrors(['error' => '必要なパラメータが不足しています。']);
+    }
+
+    try {
+      DB::beginTransaction();
+
+      // 当月の実績データを取得
+      $startDate = sprintf('%04d-%02d-01', $year, $month);
+      $endDate = date('Y-m-t', strtotime($startDate));
+
+      $records = DB::table('records')
+        ->where('clinic_user_id', $clinicUserId)
+        ->whereBetween('date', [$startDate, $endDate])
+        ->get();
+
+      if ($records->count() === 0) {
+        return redirect()
+          ->route('records.index', ['clinic_user_id' => $clinicUserId])
+          ->withErrors(['error' => '当月の実績データがありません。']);
+      }
+
+      $duplicatedCount = 0;
+
+      // 各レコードを翌月に複製
+      foreach ($records as $record) {
+        // 翌月の日付を計算
+        $dateObj = new \DateTime($record->date);
+        $dateObj->modify('+1 month');
+        $newDate = $dateObj->format('Y-m-d');
+
+        // 新しいレコードを作成
+        $newRecordId = DB::table('records')->insertGetId([
+          'clinic_user_id' => $record->clinic_user_id,
+          'date' => $newDate,
+          'start_time' => $record->start_time,
+          'end_time' => $record->end_time,
+          'therapy_type' => $record->therapy_type,
+          'therapy_category' => $record->therapy_category,
+          'insurance_category' => $record->insurance_category,
+          'housecall_distance' => $record->housecall_distance,
+          'therapy_days' => $record->therapy_days,
+          'consent_expiry' => $record->consent_expiry,
+          'therapy_conetnt_id' => $record->therapy_conetnt_id,
+          'bill_category_id' => $record->bill_category_id,
+          'therapist_id' => $record->therapist_id,
+          'abstract' => $record->abstract,
+          'created_at' => now(),
+          'updated_at' => now(),
+        ]);
+
+        // 身体部位情報を複製（あんま・マッサージの場合）
+        if ($record->therapy_type == 2) {
+          $bodyparts = DB::table('bodyparts-records')
+            ->where('records_id', $record->id)
+            ->get();
+
+          foreach ($bodyparts as $bodypart) {
+            DB::table('bodyparts-records')->insert([
+              'records_id' => $newRecordId,
+              'therapy_type_bodyparts_id' => $bodypart->therapy_type_bodyparts_id,
+              'created_at' => now(),
+              'updated_at' => now(),
+            ]);
+          }
+        }
+
+        $duplicatedCount++;
+      }
+
+      DB::commit();
+
+      return redirect()
+        ->route('records.index', ['clinic_user_id' => $clinicUserId])
+        ->with('success', "{$duplicatedCount}件の実績データを翌月へ複製しました。");
+
+    } catch (\Exception $e) {
+      DB::rollBack();
+      return redirect()
+        ->back()
+        ->withErrors(['error' => '一括複製に失敗しました：' . $e->getMessage()]);
+    }
+  }
 }

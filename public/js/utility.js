@@ -455,16 +455,38 @@ function initializeReadonlyTooltips() {
   console.log('[Tooltip] initializeReadonlyTooltips() 実行完了');
 }
 
+/**
+ * アラートメッセージを5秒後に自動消去する汎用関数
+ * alert-successクラスを持つ要素を自動的に消去
+ */
+function initializeAutoHideAlerts() {
+  const alerts = document.querySelectorAll('.alert-success');
+  alerts.forEach(function(alert) {
+    setTimeout(function() {
+      alert.style.transition = 'opacity 0.5s';
+      alert.style.opacity = '0';
+      setTimeout(function() {
+        alert.remove();
+      }, 500);
+    }, 5000);
+  });
+}
+
 // 関数をグローバルスコープに公開
 if (typeof window !== 'undefined') {
   window.initializeReadonlyTooltips = initializeReadonlyTooltips;
+  window.initializeAutoHideAlerts = initializeAutoHideAlerts;
 }
 
-// ページ読み込み時に自動的にツールチップを初期化
+// ページ読み込み時に自動的にツールチップとアラート自動消去を初期化
 if (typeof window !== 'undefined') {
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeReadonlyTooltips);
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeReadonlyTooltips();
+      initializeAutoHideAlerts();
+    });
   } else {
     initializeReadonlyTooltips();
+    initializeAutoHideAlerts();
   }
 }

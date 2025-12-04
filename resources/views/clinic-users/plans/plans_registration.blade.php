@@ -54,4 +54,8 @@
       'cancelRoute' => route('clinic-users.plans.index', $id)
     ])
   </form>
+
+  @push('scripts')
+  <script src="{{ asset('js/utility.js') }}"></script>
+  @endpush
 </x-app-layout>

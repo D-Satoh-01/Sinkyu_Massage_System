@@ -1,0 +1,226 @@
+<!-- resources/views/reports/reports_index.blade.php -->
+
+
+<x-app-layout>
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate('reports.index')"
+  />
+
+  <!-- 利用者選択フォーム -->
+  <form method="GET" action="{{ route('reports.index') }}" id="filterForm">
+    <div class="mb-3">
+      <label for="clinic_user_id"></label>
+      <select name="clinic_user_id" id="clinic_user_id" onchange="document.getElementById('filterForm').submit();">
+        <option value="">╌╌╌</option>
+        @foreach($clinicUsers as $user)
+          <option value="{{ $user->id }}" {{ $selectedUserId == $user->id ? 'selected' : '' }}>
+            {{ $user->last_name }} {{ $user->first_name }}({{ $user->last_kana }} {{ $user->first_kana }})
+          </option>
+        @endforeach
+      </select>
+      <button type="button" onclick="openUserSearchPopup()" class="mx-2">利用者検索</button>
+    </div>
+  </form>
+  <br>
+
+  @if(session('success'))
+  <div class="alert alert-success">
+    {{ session('success') }}
+  </div>
+  @endif
+
+  @if($errors->any())
+  <div class="alert alert-danger">
+    <ul>
+    @foreach($errors->all() as $error)
+      <li>{{ $error }}</li>
+    @endforeach
+    </ul>
+  </div>
+  @endif
+
+  @if(!$selectedUserId)
+    <div class="p-4 text-center fs-5 text-secondary">
+      利用者を選択してください
+    </div>
+  @else
+    <!-- 報告書データ一覧表示エリア -->
+    <div id="reports-list-area" style="max-height: 70vh; overflow-y: auto; overflow-x: hidden; border: 1px solid #dee2e6; padding: 1rem;">
+      @foreach($reportsByMonth as $item)
+        @php
+          $yearMonth = sprintf('%04d-%02d', $item['year'], $item['month']);
+        @endphp
+        <div class="report-month-section mb-4" data-year-month="{{ $yearMonth }}">
+          @if($item['report'])
+            <!-- 報告書データあり -->
+            <div class="fw-bold fs-5">{{ $item['year'] }}年 {{ sprintf('%02d', $item['month']) }}月</div>
+            <div style="overflow-x: hidden;">
+              <table class="table table-bordered" style="font-size: 0.9rem; table-layout: fixed; width: 100%;">
+                <tbody>
+                  <tr>
+                    <th class="align-middle text-center bg-light" style="width: 7rem;">データ操作</th>
+                    <td class="align-middle" style="white-space: nowrap;">
+                      <a href="{{ route('reports.edit', $item['report']->id) }}"><button type="button">編集</button></a>
+                      <a href="{{ route('reports.duplicate', $item['report']->id) }}"><button type="button">複製</button></a>
+                      <form method="POST" action="{{ route('reports.destroy', $item['report']->id) }}" style="display:inline;" onsubmit="return confirm('この報告書データを削除してもよろしいですか？');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit">削除</button>
+                      </form>
+                      <button type="button">印刷</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th class="align-middle text-center bg-light">主観症状</th>
+                    <td class="align-middle report-text-cell" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 0;">{{ $item['report']->subjective_symptom_and_wish ?? '' }}</td>
+                  </tr>
+                  <tr>
+                    <th class="align-middle text-center bg-light">客観症状</th>
+                    <td class="align-middle report-text-cell" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 0;">{{ $item['report']->objective_symptom ?? '' }}</td>
+                  </tr>
+                  <tr>
+                    <th class="align-middle text-center bg-light">施術内容</th>
+                    <td class="align-middle report-text-cell" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 0;">{{ $item['report']->therapy_content ?? '' }}</td>
+                  </tr>
+                  <tr>
+                    <th class="align-middle text-center bg-light">治療計画</th>
+                    <td class="align-middle report-text-cell" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 0;">{{ $item['report']->therapy_plan ?? '' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          @else
+            <!-- 報告書データなし -->
+            <div class="d-flex align-items-center">
+              <div class="fw-bold fs-5 mb-0">{{ $item['year'] }}年 {{ sprintf('%02d', $item['month']) }}月</div>
+              <div class="vr ms-3 me-5" style="height: 1.4rem; position: relative; top: 0.3rem;"></div>
+              <span class="text-secondary me-3">該当データなし</span>
+              <a href="{{ route('reports.create', ['clinic_user_id' => $selectedUserId, 'year' => $item['year'], 'month' => $item['month']]) }}">
+                <button type="button">新規登録</button>
+              </a>
+            </div>
+          @endif
+        </div>
+        <hr>
+      @endforeach
+    </div>
+  @endif
+
+  @push('scripts')
+  <script src="{{ asset('js/utility.js') }}"></script>
+  <script>
+    // PHP変数をJavaScriptに渡す
+    window.reportsConfig = {
+      selectedUserId: @json($selectedUserId),
+      scrollToYearMonth: @json($scrollToYearMonth),
+      userSearchUrl: '{{ route("user.search") }}'
+    };
+
+    // テキストが1行に収まるか判定し、収まらない場合は省略記号を表示
+    function adjustReportTextCells() {
+      const cells = document.querySelectorAll('.report-text-cell');
+
+      // requestAnimationFrameで最適化
+      requestAnimationFrame(() => {
+        cells.forEach(cell => {
+          // 元のテキストを保存（初回のみ）
+          if (!cell.hasAttribute('data-original-text')) {
+            cell.setAttribute('data-original-text', cell.textContent);
+          }
+
+          const originalText = cell.getAttribute('data-original-text');
+
+          // 空テキストの場合はスキップ
+          if (!originalText.trim()) return;
+
+          // 元のテキストを一旦復元
+          cell.textContent = originalText;
+
+          // セルの幅を測定
+          const cellWidth = cell.clientWidth;
+
+          // テキストが収まらない場合
+          if (cell.scrollWidth > cellWidth) {
+            // 二分探索で最適な文字数を高速に見つける
+            let left = 0;
+            let right = originalText.length;
+            let bestFit = 0;
+
+            while (left <= right) {
+              const mid = Math.floor((left + right) / 2);
+              cell.textContent = originalText.slice(0, mid).trim() + ' ⋯';
+
+              if (cell.scrollWidth <= cellWidth) {
+                bestFit = mid;
+                left = mid + 1;
+              } else {
+                right = mid - 1;
+              }
+            }
+
+            // 最適な長さで設定
+            cell.textContent = originalText.slice(0, bestFit).trim() + ' ⋯';
+          }
+        });
+      });
+    }
+
+    // デバウンス関数（リサイズイベントの頻度を制限）
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+
+    // ページ読み込み時に指定された年月へ自動スクロール
+    document.addEventListener('DOMContentLoaded', function() {
+      // テキストセルの調整
+      adjustReportTextCells();
+
+      if (window.reportsConfig.scrollToYearMonth) {
+        const targetSection = document.querySelector(`[data-year-month="${window.reportsConfig.scrollToYearMonth}"]`);
+        if (targetSection) {
+          const container = document.getElementById('reports-list-area');
+          if (container) {
+            // コンテナの上部からターゲットセクションまでのオフセットを計算
+            const containerRect = container.getBoundingClientRect();
+            const targetRect = targetSection.getBoundingClientRect();
+            const scrollOffset = targetRect.top - containerRect.top + container.scrollTop;
+
+            // スムーズにスクロール
+            container.scrollTo({
+              top: scrollOffset,
+              behavior: 'smooth'
+            });
+          }
+        }
+      }
+    });
+
+    // ウィンドウリサイズ時にもテキストセルを再調整（デバウンス適用：150ms）
+    window.addEventListener('resize', debounce(adjustReportTextCells, 150));
+
+    // 利用者検索ポップアップを開く
+    function openUserSearchPopup() {
+      const url = window.reportsConfig.userSearchUrl;
+      const popup = window.open(url, 'UserSearch', 'width=800,height=600,scrollbars=yes');
+      if (popup) {
+        popup.focus();
+      }
+    }
+
+    // 利用者検索ポップアップからの選択を受け取る
+    window.selectUser = function(userId) {
+      document.getElementById('clinic_user_id').value = userId;
+      document.getElementById('filterForm').submit();
+    };
+  </script>
+  @endpush
+</x-app-layout>

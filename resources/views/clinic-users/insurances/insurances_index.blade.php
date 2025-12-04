@@ -96,6 +96,7 @@
   </table>
 
   @push('scripts')
+  <script src="{{ asset('js/utility.js') }}"></script>
   <script>
     $(document).ready(function() {
       // デバッグ: テーブル構造をチェック

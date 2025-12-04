@@ -21,7 +21,7 @@
         <a href="{{ route('records.index') }}" class="sidebar-link">実績データ</a>
       </li>
       <li class="border-bottom border-secondary">
-        <a href="#" class="sidebar-link">報告書データ</a>
+        <a href="{{ route('reports.index') }}" class="sidebar-link">報告書データ</a>
       </li>
       <li class="border-bottom border-secondary">
         <a href="#" class="sidebar-link">スケジュール</a>

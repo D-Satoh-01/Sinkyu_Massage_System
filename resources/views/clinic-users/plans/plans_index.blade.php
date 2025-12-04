@@ -85,6 +85,7 @@
   </table>
 
   @push('scripts')
+  <script src="{{ asset('js/utility.js') }}"></script>
   <script src="{{ asset('js/plans.js') }}"></script>
   @endpush
 </x-app-layout>

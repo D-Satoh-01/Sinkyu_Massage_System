@@ -91,6 +91,7 @@
   </table>
 
   @push('scripts')
+  <script src="{{ asset('js/utility.js') }}"></script>
   <script src="{{ asset('js/consents-massage.js') }}"></script>
   @endpush
 </x-app-layout>

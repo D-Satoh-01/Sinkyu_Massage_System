@@ -107,6 +107,14 @@ function getRecordsBreadcrumbs() {
     ['url' => route('records.index'), 'label' => '実績データ'],
   ];
 }
+
+// 報告書データ
+function getReportsBreadcrumbs() {
+  return [
+    ...getIndexBreadcrumbs(),
+    ['url' => route('reports.index'), 'label' => '報告書データ'],
+  ];
+}
 //---------------------------------------------------------------//
 
 
@@ -195,6 +203,35 @@ Breadcrumbs::define('records.edit', function() {
 Breadcrumbs::define('records.duplicate', function() {
   return [
     ...getRecordsBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (複製)'],
+  ];
+});
+
+// 報告書データ
+Breadcrumbs::define('reports.index', function() {
+  return getReportsBreadcrumbs();
+});
+
+// 報告書データ ｰ 新規登録
+Breadcrumbs::define('reports.create', function() {
+  return [
+    ...getReportsBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (新規)'],
+  ];
+});
+
+// 報告書データ ｰ 編集
+Breadcrumbs::define('reports.edit', function() {
+  return [
+    ...getReportsBreadcrumbs(),
+    ['url' => null, 'label' => '登録 (編集)'],
+  ];
+});
+
+// 報告書データ ｰ 複製
+Breadcrumbs::define('reports.duplicate', function() {
+  return [
+    ...getReportsBreadcrumbs(),
     ['url' => null, 'label' => '登録 (複製)'],
   ];
 });

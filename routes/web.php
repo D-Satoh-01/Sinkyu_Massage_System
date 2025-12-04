@@ -19,6 +19,7 @@ use App\Http\Controllers\TreatmentFeeController;
 use App\Http\Controllers\SelfFeeController;
 use App\Http\Controllers\DocumentAssociationController;
 use App\Http\Controllers\RecordsController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UserSearchController;
 
 Route::get('/', fn() => redirect()->route('login'));
@@ -222,6 +223,18 @@ Route::middleware('auth')->group(function () {
   Route::get('/records/{id}/duplicate-current', [RecordsController::class, 'duplicateCurrentMonth'])->name('records.duplicate.current');
   Route::get('/records/{id}/duplicate-next', [RecordsController::class, 'duplicateNextMonth'])->name('records.duplicate.next');
   Route::post('/records/duplicate/store', [RecordsController::class, 'duplicateStore'])->name('records.duplicate.store');
+  Route::post('/records/bulk-duplicate-next', [RecordsController::class, 'bulkDuplicateToNextMonth'])->name('records.bulk.duplicate.next');
+  Route::delete('/records/{id}', [RecordsController::class, 'destroy'])->name('records.destroy');
+
+  // 報告書データ
+  Route::get('/reports/index', [ReportsController::class, 'index'])->name('reports.index');
+  Route::get('/reports/create', [ReportsController::class, 'create'])->name('reports.create');
+  Route::post('/reports/store', [ReportsController::class, 'store'])->name('reports.store');
+  Route::get('/reports/{id}/edit', [ReportsController::class, 'edit'])->name('reports.edit');
+  Route::put('/reports/{id}', [ReportsController::class, 'update'])->name('reports.update');
+  Route::get('/reports/{id}/duplicate', [ReportsController::class, 'duplicate'])->name('reports.duplicate');
+  Route::post('/reports/duplicate/store', [ReportsController::class, 'duplicateStore'])->name('reports.duplicate.store');
+  Route::delete('/reports/{id}', [ReportsController::class, 'destroy'])->name('reports.destroy');
 
   // 利用者検索（共通）
   Route::get('/user-search', [UserSearchController::class, 'index'])->name('user.search');

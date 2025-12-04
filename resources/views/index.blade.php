@@ -14,7 +14,7 @@
 
   <ul>
     <li><a href="{{ route('records.index') }}">実績データ</a></li>
-    <li><a>報告書データ</a></li>
+    <li><a href="{{ route('reports.index') }}">報告書データ</a></li>
     <li><a>スケジュール</a></li>
     <li><a href="{{ route('master.index') }}">マスター登録</a></li>
     <li><a>印刷メニュー</a></li>
