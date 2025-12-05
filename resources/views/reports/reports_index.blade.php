@@ -47,62 +47,92 @@
   @else
     <!-- 報告書データ一覧表示エリア -->
     <div id="reports-list-area" style="max-height: 70vh; overflow-y: auto; overflow-x: hidden; border: 1px solid #dee2e6; padding: 1rem;">
-      @foreach($reportsByMonth as $item)
+      @foreach($reportsByYear as $year => $yearData)
         @php
-          $yearMonth = sprintf('%04d-%02d', $item['year'], $item['month']);
+          $hasReports = $yearData['has_reports'];
+          $months = $yearData['months'];
+          $collapseId = 'year-' . $year;
         @endphp
-        <div class="report-month-section mb-4" data-year-month="{{ $yearMonth }}">
-          @if($item['report'])
-            <!-- 報告書データあり -->
-            <div class="fw-bold fs-5">{{ $item['year'] }}年 {{ sprintf('%02d', $item['month']) }}月</div>
-            <div style="overflow-x: hidden;">
-              <table class="table table-bordered" style="font-size: 0.9rem; table-layout: fixed; width: 100%;">
-                <tbody>
-                  <tr>
-                    <th class="align-middle text-center bg-light" style="width: 7rem;">データ操作</th>
-                    <td class="align-middle" style="white-space: nowrap;">
-                      <a href="{{ route('reports.edit', $item['report']->id) }}"><button type="button">編集</button></a>
-                      <a href="{{ route('reports.duplicate', $item['report']->id) }}"><button type="button">複製</button></a>
-                      <form method="POST" action="{{ route('reports.destroy', $item['report']->id) }}" style="display:inline;" onsubmit="return confirm('この報告書データを削除してもよろしいですか？');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit">削除</button>
-                      </form>
-                      <button type="button">印刷</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th class="align-middle text-center bg-light">主観症状</th>
-                    <td class="align-middle report-text-cell" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 0;">{{ $item['report']->subjective_symptom_and_wish ?? '' }}</td>
-                  </tr>
-                  <tr>
-                    <th class="align-middle text-center bg-light">客観症状</th>
-                    <td class="align-middle report-text-cell" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 0;">{{ $item['report']->objective_symptom ?? '' }}</td>
-                  </tr>
-                  <tr>
-                    <th class="align-middle text-center bg-light">施術内容</th>
-                    <td class="align-middle report-text-cell" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 0;">{{ $item['report']->therapy_content ?? '' }}</td>
-                  </tr>
-                  <tr>
-                    <th class="align-middle text-center bg-light">治療計画</th>
-                    <td class="align-middle report-text-cell" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 0;">{{ $item['report']->therapy_plan ?? '' }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          @else
-            <!-- 報告書データなし -->
-            <div class="d-flex align-items-center">
-              <div class="fw-bold fs-5 mb-0">{{ $item['year'] }}年 {{ sprintf('%02d', $item['month']) }}月</div>
-              <div class="vr ms-3 me-5" style="height: 1.4rem; position: relative; top: 0.3rem;"></div>
-              <span class="text-secondary me-3">該当データなし</span>
-              <a href="{{ route('reports.create', ['clinic_user_id' => $selectedUserId, 'year' => $item['year'], 'month' => $item['month']]) }}">
-                <button type="button">新規登録</button>
-              </a>
-            </div>
-          @endif
+
+        <!-- 年ヘッダー（折り畳み・展開ボタン） -->
+        <div class="year-header mb-2">
+          <button
+            class="btn btn-link text-decoration-none p-0 fw-bold fs-4 text-dark d-flex align-items-center"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#{{ $collapseId }}"
+            aria-expanded="{{ $hasReports ? 'true' : 'false' }}"
+            aria-controls="{{ $collapseId }}"
+          >
+            <span class="toggle-icon">
+              {{ $hasReports ? '▾' : '▸' }}
+            </span>
+            <span>
+              ［ {{ $year }} ］
+            </span>
+          </button>
         </div>
-        <hr>
+
+        <!-- 月別データ（折り畳み可能） -->
+        <div class="collapse {{ $hasReports ? 'show' : '' }}" id="{{ $collapseId }}" data-year="{{ $year }}">
+          @foreach($months as $item)
+            @php
+              $yearMonth = sprintf('%04d-%02d', $item['year'], $item['month']);
+            @endphp
+            <div class="report-month-section mb-4 ms-4" data-year-month="{{ $yearMonth }}">
+              @if($item['report'])
+                <!-- 報告書データあり -->
+                <div class="fw-bold fs-5">{{ $item['year'] }}年 {{ sprintf('%02d', $item['month']) }}月</div>
+                <div style="overflow-x: hidden;">
+                  <table class="table table-bordered" style="font-size: 0.9rem; table-layout: fixed; width: 100%;">
+                    <tbody>
+                      <tr>
+                        <th class="align-middle text-center bg-light" style="width: 7rem;">データ操作</th>
+                        <td class="align-middle" style="white-space: nowrap;">
+                          <a href="{{ route('reports.edit', $item['report']->id) }}"><button type="button">編集</button></a>
+                          <a href="{{ route('reports.duplicate', $item['report']->id) }}"><button type="button">複製</button></a>
+                          <form method="POST" action="{{ route('reports.destroy', $item['report']->id) }}" style="display:inline;" onsubmit="return confirm('この報告書データを削除してもよろしいですか？');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit">削除</button>
+                          </form>
+                          <button type="button">印刷</button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="align-middle text-center bg-light">主観症状</th>
+                        <td class="align-middle report-text-cell" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 0;">{{ $item['report']->subjective_symptom_and_wish ?? '' }}</td>
+                      </tr>
+                      <tr>
+                        <th class="align-middle text-center bg-light">客観症状</th>
+                        <td class="align-middle report-text-cell" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 0;">{{ $item['report']->objective_symptom ?? '' }}</td>
+                      </tr>
+                      <tr>
+                        <th class="align-middle text-center bg-light">施術内容</th>
+                        <td class="align-middle report-text-cell" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 0;">{{ $item['report']->therapy_content ?? '' }}</td>
+                      </tr>
+                      <tr>
+                        <th class="align-middle text-center bg-light">治療計画</th>
+                        <td class="align-middle report-text-cell" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 0;">{{ $item['report']->therapy_plan ?? '' }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              @else
+                <!-- 報告書データなし -->
+                <div class="d-flex align-items-center">
+                  <div class="fw-bold fs-5 mb-0">{{ $item['year'] }}年 {{ sprintf('%02d', $item['month']) }}月</div>
+                  <div class="vr ms-3 me-5" style="height: 1.4rem; position: relative; top: 0.3rem;"></div>
+                  <span class="text-secondary me-3">該当データなし</span>
+                  <a href="{{ route('reports.create', ['clinic_user_id' => $selectedUserId, 'year' => $item['year'], 'month' => $item['month']]) }}">
+                    <button type="button">新規登録</button>
+                  </a>
+                </div>
+              @endif
+            </div>
+            <hr>
+          @endforeach
+        </div>
       @endforeach
     </div>
   @endif
@@ -116,6 +146,28 @@
       scrollToYearMonth: @json($scrollToYearMonth),
       userSearchUrl: '{{ route("user.search") }}'
     };
+
+    // 年ヘッダーのアイコン切り替え（Bootstrapイベントを使用）
+    document.addEventListener('DOMContentLoaded', function() {
+      // すべての折り畳みセクションにイベントリスナーを追加
+      document.querySelectorAll('.collapse').forEach(function(collapseElement) {
+        collapseElement.addEventListener('show.bs.collapse', function() {
+          const button = document.querySelector(`[data-bs-target="#${this.id}"]`);
+          if (button) {
+            const icon = button.querySelector('.toggle-icon');
+            if (icon) icon.textContent = '▾';
+          }
+        });
+
+        collapseElement.addEventListener('hide.bs.collapse', function() {
+          const button = document.querySelector(`[data-bs-target="#${this.id}"]`);
+          if (button) {
+            const icon = button.querySelector('.toggle-icon');
+            if (icon) icon.textContent = '▸';
+          }
+        });
+      });
+    });
 
     // テキストが1行に収まるか判定し、収まらない場合は省略記号を表示
     function adjustReportTextCells() {
@@ -187,19 +239,31 @@
       if (window.reportsConfig.scrollToYearMonth) {
         const targetSection = document.querySelector(`[data-year-month="${window.reportsConfig.scrollToYearMonth}"]`);
         if (targetSection) {
-          const container = document.getElementById('reports-list-area');
-          if (container) {
-            // コンテナの上部からターゲットセクションまでのオフセットを計算
-            const containerRect = container.getBoundingClientRect();
-            const targetRect = targetSection.getBoundingClientRect();
-            const scrollOffset = targetRect.top - containerRect.top + container.scrollTop;
-
-            // スムーズにスクロール
-            container.scrollTo({
-              top: scrollOffset,
-              behavior: 'smooth'
+          // ターゲットセクションが属する年を展開
+          const collapseParent = targetSection.closest('.collapse');
+          if (collapseParent && !collapseParent.classList.contains('show')) {
+            const collapseInstance = new bootstrap.Collapse(collapseParent, {
+              toggle: true
             });
+            // アイコンを更新（Bootstrapイベントで自動的に更新されるため不要）
           }
+
+          // スクロール処理（collapse展開後に実行）
+          setTimeout(() => {
+            const container = document.getElementById('reports-list-area');
+            if (container) {
+              // コンテナの上部からターゲットセクションまでのオフセットを計算
+              const containerRect = container.getBoundingClientRect();
+              const targetRect = targetSection.getBoundingClientRect();
+              const scrollOffset = targetRect.top - containerRect.top + container.scrollTop;
+
+              // スムーズにスクロール
+              container.scrollTo({
+                top: scrollOffset,
+                behavior: 'smooth'
+              });
+            }
+          }, 350);
         }
       }
     });

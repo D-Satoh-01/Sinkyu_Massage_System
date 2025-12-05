@@ -35,15 +35,15 @@ class ReportsController extends Controller
     // 選択された利用者ID
     $selectedUserId = $request->input('clinic_user_id');
 
-    // 報告書データ一覧（年月ごと）
-    $reportsByMonth = collect();
+    // 報告書データ一覧（年ごとにグループ化）
+    $reportsByYear = [];
     $scrollToYearMonth = null;
 
     if ($selectedUserId) {
-      // 2000年01月から現在年月+6ヵ月までの年月リストを生成
-      $startDate = new DateTime('2000-01-01');
+      // 2020年01月から現在年月+2ヵ月までの年月リストを生成
+      $startDate = new DateTime('2020-01-01');
       $currentDate = new DateTime();
-      $endDate = (clone $currentDate)->modify('+6 months');
+      $endDate = (clone $currentDate)->modify('+2 months');
 
       $yearMonths = [];
       $tempDate = clone $startDate;
@@ -57,6 +57,7 @@ class ReportsController extends Controller
       }
 
       // 各年月ごとの報告書データを取得
+      $reportsByMonth = collect();
       foreach ($yearMonths as $ym) {
         $report = DB::table('reports')
           ->where('clinic_user_id', $selectedUserId)
@@ -75,6 +76,20 @@ class ReportsController extends Controller
       // 逆順に並べる（新しい年月を上に表示）
       $reportsByMonth = $reportsByMonth->reverse();
 
+      // 年ごとにグループ化
+      $groupedByYear = $reportsByMonth->groupBy('year');
+      foreach ($groupedByYear as $year => $months) {
+        // その年に報告書データが1件でもあるかチェック
+        $hasReports = $months->contains(function ($item) {
+          return $item['report'] !== null;
+        });
+
+        $reportsByYear[$year] = [
+          'has_reports' => $hasReports,
+          'months' => $months->values()->all(),
+        ];
+      }
+
       // スクロール位置の決定（対象年月の1ヶ月後を表示）
       if ($request->has('scroll_year') && $request->has('scroll_month')) {
         // 新規登録・編集・複製後：指定年月の1ヶ月後
@@ -92,7 +107,7 @@ class ReportsController extends Controller
     return view('reports.reports_index', [
       'clinicUsers' => $clinicUsers,
       'selectedUserId' => $selectedUserId,
-      'reportsByMonth' => $reportsByMonth,
+      'reportsByYear' => $reportsByYear,
       'scrollToYearMonth' => $scrollToYearMonth,
       'page_header_title' => '報告書データ',
     ]);

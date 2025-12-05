@@ -125,7 +125,7 @@
             <span class="text-danger ms-2">{{ $message }}</span>
           @enderror
           <div class="vr ms-1 me-2" style="height: 1.4rem; position: relative; top: 0.3rem;"></div>
-          <input type="time" id="start_time" name="start_time" value="{{ old('start_time') }}" data-tooltip="先に日付を選択してください">
+          <input type="time" id="start_time" name="start_time" value="{{ old('start_time') }}" step="600" data-tooltip="先に日付を選択してください">
         </div>
 
         <div class="mb-3">
@@ -134,7 +134,7 @@
             <span class="text-danger ms-2">{{ $message }}</span>
           @enderror
           <div class="vr ms-1 me-2" style="height: 1.4rem; position: relative; top: 0.3rem;"></div>
-          <input type="time" id="end_time" name="end_time" value="{{ old('end_time') }}" data-tooltip="先に日付を選択してください">
+          <input type="time" id="end_time" name="end_time" value="{{ old('end_time') }}" step="600" data-tooltip="先に日付を選択してください">
         </div>
 
         <!-- 施術内容 -->
@@ -155,7 +155,7 @@
           <div id="therapy-content-duplication" class="d-none mt-2 ms-3">
             <label><input type="checkbox" name="duplicate_massage" value="1" {{ old('duplicate_massage') ? 'checked' : '' }} data-tooltip="先に日付を選択してください"> マッサージを同一内容で複製する</label><br>
             <label><input type="checkbox" name="duplicate_warm_compress" value="1" {{ old('duplicate_warm_compress') ? 'checked' : '' }} data-tooltip="先に日付を選択してください"> 温庵法を同一内容で複製する</label><br>
-            <label><input type="checkbox" name="duplicate_warm_electric" value="1" {{ old('duplicate_warm_electric') ? 'checked' : '' }} data-tooltip="先に日付を選択してください"> 温庵法・電気光線器具を同一内容で複製する</label><br>
+            <label><input type="checkbox" name="duplicate_warm_electric" value="1" {{ old('duplicate_warm_electric') ? 'checked' : '' }} data-tooltip="先に日付を選択してください"> 温庵法･電気光線器具を同一内容で複製する</label><br>
             <label><input type="checkbox" name="duplicate_manual_correction" value="1" {{ old('duplicate_manual_correction') ? 'checked' : '' }} data-tooltip="先に日付を選択してください"> 変形徒手矯正術を同一内容で複製する</label>
           </div>
         </div>

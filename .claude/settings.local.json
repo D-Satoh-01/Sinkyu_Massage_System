@@ -15,7 +15,8 @@
       "Bash(php -r:*)",
       "Bash(php temp_get_tables.php:*)",
       "Bash(del temp_get_tables.php temp_check_tables.php temp_check_data.php)",
-      "Bash(del:*)"
+      "Bash(del:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

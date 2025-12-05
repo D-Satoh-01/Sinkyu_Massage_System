@@ -20,6 +20,7 @@ use App\Http\Controllers\SelfFeeController;
 use App\Http\Controllers\DocumentAssociationController;
 use App\Http\Controllers\RecordsController;
 use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\UserSearchController;
 
 Route::get('/', fn() => redirect()->route('login'));
@@ -235,6 +236,10 @@ Route::middleware('auth')->group(function () {
   Route::get('/reports/{id}/duplicate', [ReportsController::class, 'duplicate'])->name('reports.duplicate');
   Route::post('/reports/duplicate/store', [ReportsController::class, 'duplicateStore'])->name('reports.duplicate.store');
   Route::delete('/reports/{id}', [ReportsController::class, 'destroy'])->name('reports.destroy');
+
+  // スケジュール
+  Route::get('/schedules/index', [ScheduleController::class, 'index'])->name('schedules.index');
+  Route::get('/schedules/data', [ScheduleController::class, 'getData'])->name('schedules.data');
 
   // 利用者検索（共通）
   Route::get('/user-search', [UserSearchController::class, 'index'])->name('user.search');

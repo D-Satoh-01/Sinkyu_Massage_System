@@ -29,8 +29,8 @@ function initializeMonthSelect() {
   const startMonth = 0; // 1月 (0-based)
   const now = new Date();
 
-  // 6ヶ月後の年月を計算
-  const futureDate = new Date(now.getFullYear(), now.getMonth() + 6, 1);
+  // 2ヶ月後の年月を計算
+  const futureDate = new Date(now.getFullYear(), now.getMonth() + 2, 1);
   const endYear = futureDate.getFullYear();
   const endMonth = futureDate.getMonth();
 

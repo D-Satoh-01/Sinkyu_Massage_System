@@ -36,8 +36,18 @@ class RecordRequest extends FormRequest
   {
     return [
       'clinic_user_id' => 'required|integer|exists:clinic_users,id',
-      'start_time' => 'required|date_format:H:i',
-      'end_time' => 'required|date_format:H:i|after:start_time',
+      'start_time' => ['required', 'date_format:H:i', function ($_, $value, $fail) {
+        $minutes = (int) substr($value, 3, 2);
+        if ($minutes % 10 !== 0) {
+          $fail('開始時刻は10分刻みで入力してください。');
+        }
+      }],
+      'end_time' => ['required', 'date_format:H:i', 'after:start_time', function ($_, $value, $fail) {
+        $minutes = (int) substr($value, 3, 2);
+        if ($minutes % 10 !== 0) {
+          $fail('終了時刻は10分刻みで入力してください。');
+        }
+      }],
       'therapy_type' => 'required|in:1,2',
       'therapy_category' => 'required|in:1,2',
       'insurance_category' => 'required|integer',
