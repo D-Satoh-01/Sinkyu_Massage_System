@@ -21,31 +21,71 @@ class ScheduleController extends Controller
    * スケジュール画面を表示
    *
    * @param Request $request
-   * @return \Illuminate\View\View
+   * @return \Illuminate\Http\Response
    */
   public function index(Request $request)
   {
-    // 施術者リストを取得
+    // 施術者リストを取得（ID昇順）
     $therapists = DB::table('therapists')
       ->select('id', 'therapist_name', 'furigana')
-      ->orderBy('furigana')
+      ->orderBy('id')
       ->get();
 
-    // 選択された施術者ID
+    // 選択された施術者ID（優先順位：リクエスト > Cookie > デフォルト）
     $selectedTherapistId = $request->input('therapist_id');
+
+    if (!$selectedTherapistId) {
+      // リクエストで未指定の場合はCookieから取得
+      $selectedTherapistId = $request->cookie('schedule_therapist_id');
+
+      // Cookieにもない場合はIDが最小の施術者を選択
+      if (!$selectedTherapistId && $therapists->isNotEmpty()) {
+        $selectedTherapistId = $therapists->first()->id;
+      }
+    }
 
     // 営業時間を取得
     $clinicInfo = DB::table('clinic_info')->first();
     $businessHoursStart = $clinicInfo->business_hours_start ?? '09:00:00';
     $businessHoursEnd = $clinicInfo->business_hours_end ?? '18:00:00';
 
-    return view('schedules.schedules_index', [
-      'therapists' => $therapists,
-      'selectedTherapistId' => $selectedTherapistId,
-      'businessHoursStart' => $businessHoursStart,
-      'businessHoursEnd' => $businessHoursEnd,
-      'page_header_title' => 'スケジュール',
-    ]);
+    // 時刻行を生成（営業時間に基づく）
+    $timeSlots = $this->generateTimeSlots($businessHoursStart, $businessHoursEnd);
+
+    // ビューを生成してCookieを付与（365日間保持）
+    return response()
+      ->view('schedules.schedules_index', [
+        'therapists' => $therapists,
+        'selectedTherapistId' => $selectedTherapistId,
+        'businessHoursStart' => $businessHoursStart,
+        'businessHoursEnd' => $businessHoursEnd,
+        'timeSlots' => $timeSlots,
+        'page_header_title' => 'スケジュール',
+      ])
+      ->cookie('schedule_therapist_id', $selectedTherapistId, 60 * 24 * 365);
+  }
+
+  /**
+   * 営業時間に基づいて時刻スロットを生成
+   *
+   * @param string $startTime 開始時刻（HH:MM:SS形式）
+   * @param string $endTime 終了時刻（HH:MM:SS形式）
+   * @return array 時刻スロットの配列
+   */
+  private function generateTimeSlots($startTime, $endTime)
+  {
+    $slots = [];
+    $start = new DateTime($startTime);
+    $end = new DateTime($endTime);
+
+    // 開始時刻から終了時刻まで1時間刻みで生成
+    $current = clone $start;
+    while ($current <= $end) {
+      $slots[] = $current->format('H:i');
+      $current->modify('+1 hour');
+    }
+
+    return $slots;
   }
 
   /**
@@ -72,7 +112,8 @@ class ScheduleController extends Controller
       )
       ->whereBetween('records.date', [$startDate, $endDate]);
 
-    if ($therapistId) {
+    // 'all'以外の施術者が選択されている場合は施術者でフィルタリング
+    if ($therapistId && $therapistId !== 'all') {
       $query->where('records.therapist_id', $therapistId);
     }
 

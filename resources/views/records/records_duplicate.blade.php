@@ -92,21 +92,23 @@
 
         <!-- 開始時刻 & 終了時刻 -->
         <div class="mb-3">
-          <label class="fw-semibold" for="start_time">開始時刻</label>
+          <label class="fw-semibold">開始時刻</label>
           @error('start_time')
             <span class="text-danger ms-2">{{ $message }}</span>
           @enderror
           <div class="vr ms-1 me-2" style="height: 1.4rem; position: relative; top: 0.3rem;"></div>
-          <input type="time" id="start_time" name="start_time" value="{{ old('start_time', $record->start_time ? date('H:i', strtotime($record->start_time)) : '') }}">
+          <div class="time-picker-wrapper" id="start-time-picker"></div>
+          <input type="hidden" id="start_time" name="start_time" value="{{ old('start_time', $record->start_time ? date('H:i', strtotime($record->start_time)) : '') }}">
         </div>
 
         <div class="mb-3">
-          <label class="fw-semibold" for="end_time">終了時刻</label>
+          <label class="fw-semibold">終了時刻</label>
           @error('end_time')
             <span class="text-danger ms-2">{{ $message }}</span>
           @enderror
           <div class="vr ms-1 me-2" style="height: 1.4rem; position: relative; top: 0.3rem;"></div>
-          <input type="time" id="end_time" name="end_time" value="{{ old('end_time', $record->end_time ? date('H:i', strtotime($record->end_time)) : '') }}">
+          <div class="time-picker-wrapper" id="end-time-picker"></div>
+          <input type="hidden" id="end_time" name="end_time" value="{{ old('end_time', $record->end_time ? date('H:i', strtotime($record->end_time)) : '') }}">
         </div>
 
         <!-- 施術内容 -->

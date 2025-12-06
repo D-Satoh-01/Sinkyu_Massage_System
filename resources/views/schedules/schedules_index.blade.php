@@ -2,20 +2,24 @@
 
 
 <x-app-layout>
-  <x-page-header :title="$page_header_title" />
+  <x-page-header
+    :title="$page_header_title"
+    :breadcrumbs="App\Support\Breadcrumbs::generate('schedules.index')"
+  />
 
-  <div class="container-fluid p-3">
+  <div class="container-fluid">
     <!-- 施術者セレクトボックス -->
-    <div class="row mb-3">
-      <div class="col-md-4">
+    <div class="mb-3">
+      <div>
         <label for="therapist-select" class="form-label fw-bold">施術者</label>
+        <div class="vr ms-2 me-2" style="height: 1.4rem; position: relative; top: 0.3rem;"></div>
         <select id="therapist-select">
-          <option value="">╌╌╌</option>
           @foreach($therapists as $therapist)
             <option value="{{ $therapist->id }}" {{ $selectedTherapistId == $therapist->id ? 'selected' : '' }}>
               {{ $therapist->therapist_name }}
             </option>
           @endforeach
+          <option value="all" {{ $selectedTherapistId === 'all' ? 'selected' : '' }}>[ 全ての施術データを表示 ]</option>
         </select>
       </div>
     </div>
@@ -26,21 +30,22 @@
         <div class="d-flex justify-content-between align-items-center">
           <!-- 左：スクロールボタン -->
           <div class="btn-group" role="group">
-            <button type="button" id="prev-btn" class="btn btn-outline-primary">◀</button>
-            <button type="button" id="current-btn" class="btn btn-outline-primary fw-semibold">［現在］</button>
-            <button type="button" id="next-btn" class="btn btn-outline-primary">▶</button>
+            <button type="button" id="prev-btn" class="btn btn-outline-dark border-2 px-3 py-1" style="font-size: 0.9rem">◀</button>
+            <button type="button" id="current-btn" class="btn btn-outline-dark border-2 border-start-0 border-end-0 fw-semibold px-0 py-1" style="font-size: 0.9rem">［ 現在 ］</button>
+            <button type="button" id="next-btn" class="btn btn-outline-dark border-2 px-3 py-1" style="font-size: 0.9rem">▶</button>
           </div>
 
           <!-- 中央：表示中の年月日 -->
-          <div class="text-center">
-            <div id="current-year" class="fs-5 fw-bold"></div>
-            <div id="current-month-day" class="fs-6"></div>
+          <div class="text-center d-flex">
+            <div id="current-year" class="fs-5 fw-semibold"></div>
+            <div class="vr ms-2 me-2" style="height: 1.4rem; position: relative; top: 0.3rem;"></div>
+            <div id="current-month-day" class="fs-5 fw-semibold"></div>
           </div>
 
           <!-- 右：表示切り替えボタン -->
           <div class="btn-group" role="group">
-            <button type="button" id="week-view-btn" class="btn btn-primary fw-semibold">週表示</button>
-            <button type="button" id="month-view-btn" class="btn btn-outline-primary fw-semibold">月表示</button>
+            <button type="button" id="week-view-btn" class="btn btn-dark border-2 fw-medium px-2 py-1" style="font-size: 0.9rem">週表示</button>
+            <button type="button" id="month-view-btn" class="btn btn-outline-dark border-2 fw-medium px-2 py-1" style="font-size: 0.9rem">月表示</button>
           </div>
         </div>
       </div>
@@ -50,7 +55,7 @@
     <!-- スケジュール表 -->
     <div class="row">
       <div class="col-12">
-        <div id="schedule-container" class="border rounded bg-white" style="overflow: auto; max-height: calc(100vh - 250px); position: relative; z-index: 1;">
+        <div id="schedule-container" class="border rounded bg-white" style="overflow: auto; position: relative;">
           <!-- 週表示 -->
           <div id="week-view" style="display: block;">
             <table class="table table-bordered mb-0" id="week-schedule-table">
@@ -91,28 +96,28 @@
   </div>
 
   <!-- 施術詳細モーダル -->
-  <div class="modal fade" id="event-detail-modal" tabindex="-1">
-    <div class="modal-dialog">
+  <div class="modal fade" id="event-detail-modal" tabindex="-1" aria-labelledby="event-detail-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">施術詳細</h5>
+          <h5 class="modal-title" id="event-detail-modal-label">施術詳細</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <div class="mb-2">
-            <strong>利用者氏名：</strong>
+          <div class="mb-2 d-flex align-items-start">
+            <strong class="me-2">利用者氏名：</strong>
             <span id="detail-user-name"></span>
           </div>
-          <div class="mb-2">
-            <strong>開始日時：</strong>
+          <div class="mb-2 d-flex align-items-start">
+            <strong class="me-2">開始日時：</strong>
             <span id="detail-start-datetime"></span>
           </div>
-          <div class="mb-2">
-            <strong>終了日時：</strong>
+          <div class="mb-2 d-flex align-items-start">
+            <strong class="me-2">終了日時：</strong>
             <span id="detail-end-datetime"></span>
           </div>
-          <div class="mb-2">
-            <strong>施術内容：</strong>
+          <div class="mb-2 d-flex align-items-start">
+            <strong class="me-2">施術内容：</strong>
             <span id="detail-therapy-type"></span>
           </div>
         </div>
@@ -125,24 +130,24 @@
   </div>
 
   <!-- 新規登録モーダル -->
-  <div class="modal fade" id="new-event-modal" tabindex="-1">
-    <div class="modal-dialog">
+  <div class="modal fade" id="new-event-modal" tabindex="-1" aria-labelledby="new-event-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">新規登録</h5>
+          <h5 class="modal-title" id="new-event-modal-label">新規登録</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <div class="mb-2">
-            <strong>開始日時：</strong>
+          <div class="mb-2 d-flex align-items-start">
+            <strong class="me-2">開始日時：</strong>
             <span id="new-start-datetime"></span>
           </div>
           <div class="mb-2">
-            <strong>利用者氏名：</strong>
+            <strong class="me-2">利用者氏名：</strong>
             <input type="text" class="form-control" id="new-user-name" readonly placeholder="未選択">
           </div>
           <div class="mb-2">
-            <strong>施術者：</strong>
+            <strong class="me-2">施術者：</strong>
             <input type="text" class="form-control" id="new-therapist-name" readonly placeholder="未選択">
           </div>
         </div>
@@ -155,12 +160,21 @@
   </div>
 
   @push('scripts')
+    @push('styles')
+      <style>
+        /* ensure modals sit above page content */
+        .modal { z-index: 2000; }
+        .modal-backdrop { z-index: 1990; }
+        .modal .modal-content { background-color: #fff; }
+      </style>
+    @endpush
     <script>
       // PHP変数をJavaScriptに渡す
       window.scheduleConfig = {
         therapistId: '{{ $selectedTherapistId ?? "" }}',
         businessHoursStart: '{{ $businessHoursStart }}',
         businessHoursEnd: '{{ $businessHoursEnd }}',
+        timeSlots: @json($timeSlots),
         dataUrl: '{{ route("schedules.data") }}',
         recordsIndexUrl: '{{ route("records.index") }}'
       };

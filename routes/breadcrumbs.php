@@ -115,6 +115,14 @@ function getReportsBreadcrumbs() {
     ['url' => route('reports.index'), 'label' => '報告書データ'],
   ];
 }
+
+// スケジュール
+function getSchedulesBreadcrumbs() {
+  return [
+    ...getIndexBreadcrumbs(),
+    ['url' => route('schedules.index'), 'label' => 'スケジュール'],
+  ];
+}
 //---------------------------------------------------------------//
 
 
@@ -234,6 +242,11 @@ Breadcrumbs::define('reports.duplicate', function() {
     ...getReportsBreadcrumbs(),
     ['url' => null, 'label' => '登録 (複製)'],
   ];
+});
+
+// スケジュール
+Breadcrumbs::define('schedules.index', function() {
+  return getSchedulesBreadcrumbs();
 });
 
 // 利用者情報 ｰ トップ

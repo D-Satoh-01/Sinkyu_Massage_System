@@ -10,13 +10,53 @@ let selectedRecordId = null;
 document.addEventListener('DOMContentLoaded', function() {
   initializeEventListeners();
   loadScheduleData();
+  adjustScheduleContainerHeight();
+
+  // ウィンドウリサイズ時に高さを再調整
+  window.addEventListener('resize', adjustScheduleContainerHeight);
 });
+
+// schedule-containerの高さを動的に調整
+function adjustScheduleContainerHeight() {
+  const container = document.getElementById('schedule-container');
+  if (!container) return;
+
+  // .main-contentを取得
+  const mainContent = document.querySelector('.main-content');
+  if (!mainContent) return;
+
+  // containerFluidとcontainerの位置を取得
+  const containerFluid = container.closest('.container-fluid');
+  const mainContentRect = mainContent.getBoundingClientRect();
+  const containerRect = container.getBoundingClientRect();
+
+  // .main-contentの下端からcontainerの上端までの距離
+  const spaceFromTop = containerRect.top - mainContentRect.top;
+
+  // フッターの高さとマージンを取得
+  const footer = mainContent.querySelector('footer');
+  let footerTotalHeight = 0;
+  if (footer) {
+    const footerStyle = window.getComputedStyle(footer);
+    footerTotalHeight = footer.offsetHeight + parseFloat(footerStyle.marginTop);
+  }
+
+  // .container-fluidのpadding-bottom
+  const containerFluidStyle = window.getComputedStyle(containerFluid);
+  const paddingBottom = parseFloat(containerFluidStyle.paddingBottom);
+
+  // 利用可能な高さ = .main-contentの高さ - container上端までの距離 - padding-bottom - フッター高さ(マージン含む)
+  const availableHeight = mainContentRect.height - spaceFromTop - paddingBottom - footerTotalHeight;
+
+  container.style.maxHeight = `${availableHeight}px`;
+}
 
 // イベントリスナーの初期化
 function initializeEventListeners() {
-  // 施術者選択
+  // 施術者選択（選択変更時はページをリロードしてセッションに保存）
   document.getElementById('therapist-select').addEventListener('change', function() {
-    loadScheduleData();
+    const therapistId = this.value;
+    window.location.href = window.location.pathname + '?therapist_id=' + therapistId;
   });
 
   // スクロールボタン
@@ -84,17 +124,17 @@ function switchViewMode(mode) {
   if (mode === 'week') {
     document.getElementById('week-view').style.display = 'block';
     document.getElementById('month-view').style.display = 'none';
-    document.getElementById('week-view-btn').classList.add('btn-primary');
-    document.getElementById('week-view-btn').classList.remove('btn-outline-primary');
-    document.getElementById('month-view-btn').classList.remove('btn-primary');
-    document.getElementById('month-view-btn').classList.add('btn-outline-primary');
+    document.getElementById('week-view-btn').classList.add('btn-dark');
+    document.getElementById('week-view-btn').classList.remove('btn-outline-dark');
+    document.getElementById('month-view-btn').classList.remove('btn-dark');
+    document.getElementById('month-view-btn').classList.add('btn-outline-dark');
   } else {
     document.getElementById('week-view').style.display = 'none';
     document.getElementById('month-view').style.display = 'block';
-    document.getElementById('week-view-btn').classList.remove('btn-primary');
-    document.getElementById('week-view-btn').classList.add('btn-outline-primary');
-    document.getElementById('month-view-btn').classList.add('btn-primary');
-    document.getElementById('month-view-btn').classList.remove('btn-outline-primary');
+    document.getElementById('week-view-btn').classList.remove('btn-dark');
+    document.getElementById('week-view-btn').classList.add('btn-outline-dark');
+    document.getElementById('month-view-btn').classList.add('btn-dark');
+    document.getElementById('month-view-btn').classList.remove('btn-outline-dark');
   }
 
   loadScheduleData();
@@ -215,10 +255,19 @@ function renderWeekView() {
   const tbody = document.getElementById('week-schedule-body');
   tbody.innerHTML = '';
 
-  const startHour = parseInt(window.scheduleConfig.businessHoursStart.split(':')[0]);
-  const endHour = parseInt(window.scheduleConfig.businessHoursEnd.split(':')[0]);
+  // timeSlotsがない場合はデフォルト値を使用
+  const timeSlots = window.scheduleConfig.timeSlots || [];
+  if (timeSlots.length === 0) {
+    const startHour = parseInt(window.scheduleConfig.businessHoursStart.split(':')[0]);
+    const endHour = parseInt(window.scheduleConfig.businessHoursEnd.split(':')[0]);
+    for (let h = startHour; h <= endHour; h++) {
+      timeSlots.push(`${String(h).padStart(2, '0')}:00`);
+    }
+  }
 
-  for (let hour = startHour; hour <= endHour; hour++) {
+  timeSlots.forEach((timeSlot) => {
+    const [hour] = timeSlot.split(':').map(Number);
+
     // 1時間おきの主線 (00分)
     const tr = createWeekTimeRow(hour, 0, weekStart, true, weekNumber);
     tbody.appendChild(tr);
@@ -228,14 +277,14 @@ function renderWeekView() {
       const subTr = createWeekTimeRow(hour, min, weekStart, false, weekNumber);
       tbody.appendChild(subTr);
     }
-  }
+  });
 }
 
 // 週表示の時間行を作成
 function createWeekTimeRow(hour, minute, weekStart, isMainLine, weekNumber) {
   const tr = document.createElement('tr');
   tr.style.height = '20px';
-  tr.style.borderTop = isMainLine ? '2px solid #000' : '1px dashed #ccc';
+  tr.style.borderTop = isMainLine ? '2px solid #ccc' : '1px dashed #ccc';
 
   // 時刻セル（30分刻みで表示）
   const timeTd = document.createElement('td');
@@ -244,7 +293,7 @@ function createWeekTimeRow(hour, minute, weekStart, isMainLine, weekNumber) {
   // 00分または30分の場合のみ時刻を表示
   if (minute === 0 || minute === 30) {
     timeTd.textContent = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-    timeTd.className = 'text-center fw-bold p-0';
+    timeTd.className = 'text-center fw-semibold p-0';
     timeTd.style.fontSize = '11px';
   }
 
@@ -329,7 +378,7 @@ function createEventElement(event) {
     color: white;
     padding: 2px 4px;
     border-radius: 4px;
-    font-size: 11px;
+    font-size: 0.8rem;
     cursor: pointer;
     overflow: hidden;
     z-index: 10;
@@ -338,7 +387,7 @@ function createEventElement(event) {
 
   const startTime = event.start_time.substring(0, 5);
   const endTime = event.end_time.substring(0, 5);
-  div.innerHTML = `<div class="fw-bold">${startTime} ~ ${endTime}</div><div>${event.user_name}</div>`;
+  div.innerHTML = `<div class="fw-medium">${startTime} ~ ${endTime}</div><div class="fw-medium">${event.user_name}</div>`;
 
   return div;
 }
@@ -356,24 +405,11 @@ function showEventDetail(recordId) {
   document.getElementById('detail-therapy-type').textContent = event.therapy_type || '未設定';
 
   const modalElement = document.getElementById('event-detail-modal');
-  const modalDialog = modalElement.querySelector('.modal-dialog');
-  const modalContent = modalDialog.querySelector('.modal-content');
-
-  // backdrop作成
-  const backdrop = document.createElement('div');
-  backdrop.className = 'modal-backdrop fade show';
-  backdrop.style.cssText = 'z-index: 1040 !important; pointer-events: none;';
-  document.body.appendChild(backdrop);
-
-  // モーダル表示
-  modalElement.classList.add('show');
-  modalElement.style.display = 'block';
-  modalElement.style.cssText = 'display: block; z-index: 1060 !important; background-color: transparent !important; --bs-modal-bg: transparent;';
-  modalDialog.style.cssText = 'position: relative; z-index: 1070;';
-  modalContent.style.cssText = 'position: relative; z-index: 1080; background-color: white !important;';
-
-  // body にモーダル表示クラスを追加
-  document.body.classList.add('modal-open');
+  if (modalElement.parentElement !== document.body) {
+    document.body.appendChild(modalElement);
+  }
+  const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+  modalInstance.show();
 }
 
 // 新規イベントモーダルを表示
@@ -384,41 +420,24 @@ function showNewEventModal(date, hour, minute) {
   document.getElementById('new-start-datetime').textContent = `${dateStr} ${timeStr}`;
 
   const modalElement = document.getElementById('new-event-modal');
-  const modalDialog = modalElement.querySelector('.modal-dialog');
-  const modalContent = modalDialog.querySelector('.modal-content');
-
-  // backdrop作成
-  const backdrop = document.createElement('div');
-  backdrop.className = 'modal-backdrop fade show';
-  backdrop.style.cssText = 'z-index: 1040 !important; pointer-events: none;';
-  document.body.appendChild(backdrop);
-
-  // モーダル表示
-  modalElement.classList.add('show');
-  modalElement.style.display = 'block';
-  modalElement.style.cssText = 'display: block; z-index: 1060 !important; background-color: transparent !important; --bs-modal-bg: transparent;';
-  modalDialog.style.cssText = 'position: relative; z-index: 1070;';
-  modalContent.style.cssText = 'position: relative; z-index: 1080; background-color: white !important;';
-
-  // body にモーダル表示クラスを追加
-  document.body.classList.add('modal-open');
+  if (modalElement.parentElement !== document.body) {
+    document.body.appendChild(modalElement);
+  }
+  const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+  modalInstance.show();
 }
 
 // モーダルを閉じる
 function closeModal() {
-  // すべてのモーダルを閉じる
   document.querySelectorAll('.modal').forEach(modal => {
-    modal.classList.remove('show');
-    modal.style.display = 'none';
+    const instance = bootstrap.Modal.getInstance(modal);
+    if (instance) {
+      instance.hide();
+    } else {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }
   });
-
-  // すべてのbackdropを削除
-  document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
-    backdrop.remove();
-  });
-
-  // bodyからモーダル表示クラスを削除
-  document.body.classList.remove('modal-open');
 }
 
 // 週番号を取得（年内の第N週）
@@ -514,11 +533,11 @@ function getDayEvents(date) {
 function createMonthEventElement(event) {
   const div = document.createElement('div');
   div.className = 'schedule-event text-truncate';
-  div.style.cssText = 'background-color: #007bff; color: white; padding: 1px 3px; border-radius: 2px; margin-bottom: 1px; font-size: 10px; cursor: pointer; line-height: 1.2; height: 14px;';
+  div.style.cssText = 'background-color: #007bff; color: white; padding: 1px 3px; border-radius: 2px; margin-bottom: 1px; font-size: 0.8rem; cursor: pointer; line-height: 1.2;';
   div.dataset.recordId = event.id;
 
   const startTime = event.start_time.substring(0, 5);
-  div.textContent = `${startTime} ${event.user_name}`;
+  div.textContent = `${startTime}｜${event.user_name}`;
 
   return div;
 }

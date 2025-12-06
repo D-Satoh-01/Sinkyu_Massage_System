@@ -352,6 +352,18 @@ function updateRecordFieldsState() {
       input.style.cursor = 'default';
     }
   });
+
+  // 時刻選択パネルのinputも制御
+  const timePickerInputs = recordFields.querySelectorAll('.time-picker-input');
+  timePickerInputs.forEach(input => {
+    if (hasSelectedDates) {
+      input.disabled = false;
+      input.style.cursor = 'pointer';
+    } else {
+      input.disabled = true;
+      input.style.cursor = 'default';
+    }
+  });
   
   console.log('[Records] disabled属性の設定完了、ツールチップ再初期化を呼び出し');
   // disabled属性の変更後にツールチップを再初期化
@@ -394,6 +406,190 @@ function setupFormEventListeners() {
       input.value = bulkDistance;
     });
   });
+
+  // 時刻選択パネルの初期化
+  initializeTimePickers();
+}
+
+
+//━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
+// 時刻選択パネル
+//━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━//
+
+// 時刻選択パネルの初期化
+function initializeTimePickers() {
+  console.log('[TimePicker] 初期化開始');
+  const startTimePicker = document.getElementById('start-time-picker');
+  const endTimePicker = document.getElementById('end-time-picker');
+  const startTimeInput = document.getElementById('start_time');
+  const endTimeInput = document.getElementById('end_time');
+
+  console.log('[TimePicker] 要素チェック:', {
+    startTimePicker: !!startTimePicker,
+    endTimePicker: !!endTimePicker,
+    startTimeInput: !!startTimeInput,
+    endTimeInput: !!endTimeInput
+  });
+
+  if (startTimePicker) {
+    console.log('[TimePicker] 開始時刻ピッカー作成');
+    createTimePicker(startTimePicker, startTimeInput);
+  }
+
+  if (endTimePicker) {
+    console.log('[TimePicker] 終了時刻ピッカー作成');
+    createTimePicker(endTimePicker, endTimeInput);
+  }
+
+  console.log('[TimePicker] 初期化完了');
+}
+
+// 時刻選択パネルの作成
+function createTimePicker(wrapper, hiddenInput) {
+  console.log('[TimePicker] createTimePicker開始', wrapper.id);
+
+  // 初期値の設定
+  let hour = 0;
+  let minute = 0;
+  let hasInitialValue = false;
+
+  if (hiddenInput.value) {
+    const parts = hiddenInput.value.split(':');
+    hour = parseInt(parts[0]) || 0;
+    minute = parseInt(parts[1]) || 0;
+    hasInitialValue = true;
+  }
+
+  console.log('[TimePicker] 初期値:', { hour, minute, hasInitialValue, hiddenValue: hiddenInput.value });
+
+  // 表示用input
+  const displayInput = document.createElement('input');
+  displayInput.type = 'text';
+  displayInput.className = 'time-picker-input';
+  displayInput.readOnly = true;
+  displayInput.value = hasInitialValue ? formatTime(hour, minute) : '--:--';
+  displayInput.placeholder = '--:--';
+
+  console.log('[TimePicker] displayInput作成:', displayInput.value);
+
+  // パネル
+  const panel = document.createElement('div');
+  panel.className = 'time-picker-panel';
+
+  console.log('[TimePicker] パネルCSS:', panel.className);
+
+  // 時間カラム
+  const hourColumn = document.createElement('div');
+  hourColumn.className = 'time-column';
+  hourColumn.innerHTML = `
+    <div class="time-arrow hour-up">▲</div>
+    <div class="time-value hour-value">${String(hour).padStart(2, '0')}</div>
+    <div class="time-arrow hour-down">▼</div>
+  `;
+
+  // セパレーター
+  const separator = document.createElement('div');
+  separator.className = 'time-separator';
+  separator.textContent = ':';
+
+  // 分カラム
+  const minuteColumn = document.createElement('div');
+  minuteColumn.className = 'time-column';
+  minuteColumn.innerHTML = `
+    <div class="time-arrow minute-up">▲</div>
+    <div class="time-value minute-value">${String(minute).padStart(2, '0')}</div>
+    <div class="time-arrow minute-down">▼</div>
+  `;
+
+  panel.appendChild(hourColumn);
+  panel.appendChild(separator);
+  panel.appendChild(minuteColumn);
+  wrapper.appendChild(displayInput);
+  wrapper.appendChild(panel);
+
+  // 強制的に非表示
+  panel.style.display = 'none';
+
+  console.log('[TimePicker] DOM追加完了');
+  console.log('[TimePicker] パネル表示状態:', window.getComputedStyle(panel).display);
+  console.log('[TimePicker] パネルクラス:', panel.classList.toString());
+
+  // 時刻の更新関数
+  function updateTime() {
+    const hourValue = panel.querySelector('.hour-value');
+    const minuteValue = panel.querySelector('.minute-value');
+    hourValue.textContent = String(hour).padStart(2, '0');
+    minuteValue.textContent = String(minute).padStart(2, '0');
+    displayInput.value = formatTime(hour, minute);
+    hiddenInput.value = formatTime(hour, minute);
+    console.log('[TimePicker] 時刻更新:', formatTime(hour, minute));
+  }
+
+  // 時間の増減イベント
+  panel.querySelector('.hour-up').addEventListener('click', () => {
+    hour = (hour + 1) % 24;
+    updateTime();
+  });
+
+  panel.querySelector('.hour-down').addEventListener('click', () => {
+    hour = (hour - 1 + 24) % 24;
+    updateTime();
+  });
+
+  panel.querySelector('.minute-up').addEventListener('click', () => {
+    minute = (minute + 5) % 60;
+    updateTime();
+  });
+
+  panel.querySelector('.minute-down').addEventListener('click', () => {
+    minute = (minute - 5 + 60) % 60;
+    updateTime();
+  });
+
+  // パネルの表示/非表示
+  displayInput.addEventListener('click', (e) => {
+    console.log('[TimePicker] displayInputクリック', wrapper.id);
+    e.stopPropagation();
+    // disabledの場合は何もしない
+    if (displayInput.disabled) {
+      console.log('[TimePicker] disabled状態のためパネル表示しない');
+      return;
+    }
+    // 他のパネルを閉じる
+    document.querySelectorAll('.time-picker-panel').forEach(p => {
+      if (p !== panel) {
+        console.log('[TimePicker] 他のパネルを閉じる');
+        p.classList.remove('active');
+        p.style.display = 'none';
+      }
+    });
+    // 現在のパネルの表示を切り替え
+    const isActive = panel.classList.contains('active');
+    if (isActive) {
+      panel.classList.remove('active');
+      panel.style.display = 'none';
+      console.log('[TimePicker] パネル非表示');
+    } else {
+      panel.classList.add('active');
+      panel.style.display = 'flex';
+      console.log('[TimePicker] パネル表示');
+    }
+    console.log('[TimePicker] パネル表示状態:', window.getComputedStyle(panel).display);
+  });
+
+  // 外側クリックで閉じる
+  document.addEventListener('click', (e) => {
+    if (!wrapper.contains(e.target)) {
+      console.log('[TimePicker] 外側クリック - パネル閉じる');
+      panel.classList.remove('active');
+      panel.style.display = 'none';
+    }
+  });
+}
+
+// 時刻のフォーマット
+function formatTime(hour, minute) {
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
 }
 
 // 古い入力値を復元
