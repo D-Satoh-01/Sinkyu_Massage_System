@@ -146,7 +146,7 @@
           <select id="therapist_id" name="therapist_id">
             <option value="">選択してください</option>
             @foreach($therapists as $therapist)
-              <option value="{{ $therapist->id }}" {{ old('therapist_id', $record->therapist_id) == $therapist->id ? 'selected' : '' }}>{{ $therapist->therapist_name }} @if($therapist->furigana)({{ $therapist->furigana }})@endif</option>
+              <option value="{{ $therapist->id }}" {{ old('therapist_id', $record->therapist_id) == $therapist->id ? 'selected' : '' }}>{{ $therapist->last_name }} {{ $therapist->first_name }} @if($therapist->last_name_kana)({{ $therapist->last_name_kana }} {{ $therapist->first_name_kana }})@endif</option>
             @endforeach
           </select>
         </div>

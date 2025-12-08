@@ -22,8 +22,10 @@ class DoctorRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'doctor_name' => 'required|max:255',
-      'furigana' => 'nullable|max:255',
+      'last_name' => 'required|max:255',
+      'first_name' => 'nullable|max:255',
+      'last_name_kana' => 'nullable|max:255',
+      'first_name_kana' => 'nullable|max:255',
       'medical_institutions_id' => 'nullable|exists:medical_institutions,id',
       'new_medical_institution_name' => 'nullable|max:255',
       'postal_code' => 'nullable|max:8',
@@ -44,8 +46,11 @@ class DoctorRequest extends FormRequest
   public function messages(): array
   {
     return [
-      'doctor_name.required' => '医師名は必須です。',
-      'doctor_name.max' => '医師名は255文字以内で入力してください。',
+      'last_name.required' => '姓は必須です。',
+      'last_name.max' => '姓は255文字以内で入力してください。',
+      'first_name.max' => '名は255文字以内で入力してください。',
+      'last_name_kana.max' => 'セイは255文字以内で入力してください。',
+      'first_name_kana.max' => 'メイは255文字以内で入力してください。',
       'medical_institutions_id.exists' => '選択された医療機関が存在しません。',
       'email.email' => '正しいメールアドレス形式で入力してください。',
     ];

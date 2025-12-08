@@ -30,8 +30,8 @@
       @foreach($therapists as $therapist)
       <tr>
         <td>
-          <a href="{{ route('therapists.edit', $therapist->id) }}">{{ $therapist->therapist_name }} [編集]</a><br>
-          {{ $therapist->furigana }}
+          <a href="{{ route('therapists.edit', $therapist->id) }}">{{ $therapist->last_name }} {{ $therapist->first_name }} [編集]</a><br>
+          {{ $therapist->last_name_kana }} {{ $therapist->first_name_kana }}
         </td>
         <td>
           @if(!empty($therapist->license_hari_id) || !empty($therapist->license_hari_number) || !empty($therapist->license_hari_issued_date))

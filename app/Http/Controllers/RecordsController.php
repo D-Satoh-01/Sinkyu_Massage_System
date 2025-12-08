@@ -106,7 +106,7 @@ class RecordsController extends Controller
         ->select(
           'records.*',
           'therapy_contents.therapy_content',
-          'therapists.therapist_name'
+          DB::raw("CONCAT(therapists.last_name, ' ', therapists.first_name) as therapist_name")
         )
         ->orderBy('records.created_at', 'desc')
         ->get()
@@ -132,8 +132,8 @@ class RecordsController extends Controller
 
     // 施術者リストを取得
     $therapists = DB::table('therapists')
-      ->select('id', 'therapist_name', 'furigana')
-      ->orderBy('furigana')
+      ->select('id', 'last_name', 'first_name', 'last_name_kana', 'first_name_kana')
+      ->orderBy('last_name_kana')
       ->get();
 
     // 施術内容リストを取得
@@ -362,8 +362,8 @@ class RecordsController extends Controller
 
     // 施術者リストを取得
     $therapists = DB::table('therapists')
-      ->select('id', 'therapist_name', 'furigana')
-      ->orderBy('furigana')
+      ->select('id', 'last_name', 'first_name', 'last_name_kana', 'first_name_kana')
+      ->orderBy('last_name_kana')
       ->get();
 
     // 施術内容リストを取得
@@ -677,8 +677,8 @@ class RecordsController extends Controller
 
     // 施術者リストを取得
     $therapists = DB::table('therapists')
-      ->select('id', 'therapist_name', 'furigana')
-      ->orderBy('furigana')
+      ->select('id', 'last_name', 'first_name', 'last_name_kana', 'first_name_kana')
+      ->orderBy('last_name_kana')
       ->get();
 
     // 施術内容リストを取得

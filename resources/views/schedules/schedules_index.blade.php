@@ -16,7 +16,7 @@
         <select id="therapist-select">
           @foreach($therapists as $therapist)
             <option value="{{ $therapist->id }}" {{ $selectedTherapistId == $therapist->id ? 'selected' : '' }}>
-              {{ $therapist->therapist_name }}
+              {{ $therapist->last_name }} {{ $therapist->first_name }}
             </option>
           @endforeach
           <option value="all" {{ $selectedTherapistId === 'all' ? 'selected' : '' }}>[ 全ての施術データを表示 ]</option>
@@ -55,7 +55,7 @@
     <!-- スケジュール表 -->
     <div class="row">
       <div class="col-12">
-        <div id="schedule-container" class="border rounded bg-white" style="overflow: auto; position: relative;">
+        <div id="schedule-container" class="border rounded bg-white" style="overflow-x: auto; overflow-y: auto; position: relative;">
           <!-- 週表示 -->
           <div id="week-view" style="display: block;">
             <table class="table table-bordered mb-0" id="week-schedule-table">
@@ -166,6 +166,24 @@
         .modal { z-index: 2000; }
         .modal-backdrop { z-index: 1990; }
         .modal .modal-content { background-color: #fff; }
+
+        /* 週表示テーブルの時刻列を固定 */
+        #week-schedule-table thead th:first-child,
+        #week-schedule-table tbody td:first-child {
+          position: sticky;
+          left: 0;
+          z-index: 20;
+          background-color: #f8f9fa;
+          background-clip: padding-box;
+        }
+
+        #week-schedule-table thead th:first-child {
+          z-index: 21;
+          background-color: #f8f9fa;
+          background-clip: padding-box;
+        }
+
+
       </style>
     @endpush
     <script>
@@ -176,7 +194,10 @@
         businessHoursEnd: '{{ $businessHoursEnd }}',
         timeSlots: @json($timeSlots),
         dataUrl: '{{ route("schedules.data") }}',
-        recordsIndexUrl: '{{ route("records.index") }}'
+        recordsIndexUrl: '{{ route("records.index") }}',
+        recordsStartYear: {{ $recordsStartYear }},
+        recordsStartMonth: {{ $recordsStartMonth }},
+        futureMonths: {{ $futureMonths }}
       };
     </script>
     <script src="{{ asset('js/schedules.js') }}"></script>

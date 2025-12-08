@@ -76,8 +76,10 @@ class TherapistsController extends Controller
 
     // データ挿入
     DB::table('therapists')->insert([
-      'therapist_name' => $data['therapist_name'],
-      'furigana' => $data['furigana'] ?? null,
+      'last_name' => $data['last_name'],
+      'first_name' => $data['first_name'],
+      'last_name_kana' => $data['last_name_kana'] ?? null,
+      'first_name_kana' => $data['first_name_kana'] ?? null,
       'postal_code' => $data['postal_code'] ?? null,
       'address_1' => $data['address_1'] ?? null,
       'address_2' => $data['address_2'] ?? null,
@@ -169,8 +171,10 @@ class TherapistsController extends Controller
 
     // データ更新
     DB::table('therapists')->where('id', $id)->update([
-      'therapist_name' => $data['therapist_name'],
-      'furigana' => $data['furigana'] ?? null,
+      'last_name' => $data['last_name'],
+      'first_name' => $data['first_name'],
+      'last_name_kana' => $data['last_name_kana'] ?? null,
+      'first_name_kana' => $data['first_name_kana'] ?? null,
       'postal_code' => $data['postal_code'] ?? null,
       'address_1' => $data['address_1'] ?? null,
       'address_2' => $data['address_2'] ?? null,
@@ -204,8 +208,10 @@ class TherapistsController extends Controller
   private function getTherapistLabels()
   {
     return [
-      'therapist_name' => '施術者名',
-      'furigana' => 'フリガナ',
+      'last_name' => '姓',
+      'first_name' => '名',
+      'last_name_kana' => 'セイ',
+      'first_name_kana' => 'メイ',
       'postal_code' => '郵便番号',
       'address_1' => '都道府県',
       'address_2' => '市区町村番地以下',

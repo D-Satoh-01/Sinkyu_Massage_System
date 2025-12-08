@@ -103,8 +103,10 @@ class CareManagersController extends Controller
 
     // データ挿入
     DB::table('caremanagers')->insert([
-      'caremanager_name' => $data['caremanager_name'],
-      'furigana' => $data['furigana'] ?? null,
+      'last_name' => $data['last_name'],
+      'first_name' => $data['first_name'],
+      'last_name_kana' => $data['last_name_kana'] ?? null,
+      'first_name_kana' => $data['first_name_kana'] ?? null,
       'service_providers_id' => $serviceProviderId,
       'postal_code' => $data['postal_code'] ?? null,
       'address_1' => $data['address_1'] ?? null,
@@ -208,8 +210,10 @@ class CareManagersController extends Controller
 
     // データ更新
     DB::table('caremanagers')->where('id', $id)->update([
-      'caremanager_name' => $data['caremanager_name'],
-      'furigana' => $data['furigana'] ?? null,
+      'last_name' => $data['last_name'],
+      'first_name' => $data['first_name'],
+      'last_name_kana' => $data['last_name_kana'] ?? null,
+      'first_name_kana' => $data['first_name_kana'] ?? null,
       'service_providers_id' => $serviceProviderId,
       'postal_code' => $data['postal_code'] ?? null,
       'address_1' => $data['address_1'] ?? null,
@@ -234,8 +238,10 @@ class CareManagersController extends Controller
   private function getCareManagerLabels()
   {
     return [
-      'caremanager_name' => 'ケアマネ氏名',
-      'furigana' => 'フリガナ',
+      'last_name' => '姓',
+      'first_name' => '名',
+      'last_name_kana' => 'セイ',
+      'first_name_kana' => 'メイ',
       'service_providers_id' => 'サービス事業者名',
       'service_provider_name_display' => 'サービス事業者名',
       'postal_code' => '郵便番号',

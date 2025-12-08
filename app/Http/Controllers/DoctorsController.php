@@ -96,8 +96,10 @@ class DoctorsController extends Controller
 
     // データ挿入
     DB::table('doctors')->insert([
-      'doctor_name' => $data['doctor_name'],
-      'furigana' => $data['furigana'] ?? null,
+      'last_name' => $data['last_name'],
+      'first_name' => $data['first_name'] ?? null,
+      'last_name_kana' => $data['last_name_kana'] ?? null,
+      'first_name_kana' => $data['first_name_kana'] ?? null,
       'medical_institutions_id' => $medicalInstitutionId,
       'postal_code' => $data['postal_code'] ?? null,
       'address_1' => $data['address_1'] ?? null,
@@ -197,8 +199,10 @@ class DoctorsController extends Controller
 
     // データ更新
     DB::table('doctors')->where('id', $id)->update([
-      'doctor_name' => $data['doctor_name'],
-      'furigana' => $data['furigana'] ?? null,
+      'last_name' => $data['last_name'],
+      'first_name' => $data['first_name'] ?? null,
+      'last_name_kana' => $data['last_name_kana'] ?? null,
+      'first_name_kana' => $data['first_name_kana'] ?? null,
       'medical_institutions_id' => $medicalInstitutionId,
       'postal_code' => $data['postal_code'] ?? null,
       'address_1' => $data['address_1'] ?? null,
@@ -295,8 +299,10 @@ class DoctorsController extends Controller
 
     // データ挿入
     DB::table('doctors')->insert([
-      'doctor_name' => $data['doctor_name'],
-      'furigana' => $data['furigana'] ?? null,
+      'last_name' => $data['last_name'],
+      'first_name' => $data['first_name'] ?? null,
+      'last_name_kana' => $data['last_name_kana'] ?? null,
+      'first_name_kana' => $data['first_name_kana'] ?? null,
       'medical_institutions_id' => $medicalInstitutionId,
       'postal_code' => $data['postal_code'] ?? null,
       'address_1' => $data['address_1'] ?? null,
@@ -321,8 +327,10 @@ class DoctorsController extends Controller
   private function getDoctorLabels()
   {
     return [
-      'doctor_name' => '医師名',
-      'furigana' => 'フリガナ',
+      'last_name' => '姓',
+      'first_name' => '名',
+      'last_name_kana' => 'セイ',
+      'first_name_kana' => 'メイ',
       'new_medical_institution_name' => '新規医療機関名',
       'postal_code' => '郵便番号',
       'address_1' => '都道府県',

@@ -14,9 +14,11 @@ class CareManager extends Model
   protected $table = 'caremanagers';
 
   protected $fillable = [
-    'care_manager_name',
-    'furigana',
-    'service_provider_name',
+    'last_name',
+    'first_name',
+    'last_name_kana',
+    'first_name_kana',
+    'service_providers_id',
     'postal_code',
     'address_1',
     'address_2',

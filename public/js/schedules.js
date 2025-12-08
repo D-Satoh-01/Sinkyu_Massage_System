@@ -6,14 +6,111 @@ let viewMode = 'week'; // 'week' or 'month'
 let scheduleData = [];
 let selectedRecordId = null;
 
+// 週ビューの仮想化設定
+const WEEK_RENDER_BUFFER = 3; // 表示中週の前後に何週分描画するか
+const WEEK_FETCH_PAST_BUFFER = 8; // データ取得時に現在週から遡る週数
+const WEEK_FETCH_FUTURE_BUFFER = 12; // データ取得時に現在週から進む週数
+
+// 週表示の全体範囲を計算（実績データの登録可能範囲と同期）
+function calculateTotalWeeks() {
+  // PHP側から渡された設定値を使用
+  const startYear = window.scheduleConfig?.recordsStartYear || 2020;
+  const startMonth = window.scheduleConfig?.recordsStartMonth || 1;
+  const futureMonths = window.scheduleConfig?.futureMonths || 2;
+
+  const startDate = new Date(startYear, startMonth - 1, 1); // 開始日
+  const endDate = new Date();
+  endDate.setMonth(endDate.getMonth() + futureMonths); // 現在から指定月数後
+
+  const startWeek = getWeekStart(startDate);
+  const endWeek = getWeekStart(endDate);
+
+  const diffTime = endWeek - startWeek;
+  const diffWeeks = Math.ceil(diffTime / (7 * 24 * 60 * 60 * 1000));
+
+  return diffWeeks + 1; // 開始週も含める
+}
+
+// 表示開始週を取得
+function getDisplayStartWeek() {
+  const startYear = window.scheduleConfig?.recordsStartYear || 2020;
+  const startMonth = window.scheduleConfig?.recordsStartMonth || 1;
+  return getWeekStart(new Date(startYear, startMonth - 1, 1));
+}
+
+// 表示終了日を取得
+function getDisplayEndDate() {
+  const futureMonths = window.scheduleConfig?.futureMonths || 2;
+  const endDate = new Date();
+  endDate.setMonth(endDate.getMonth() + futureMonths);
+  return endDate;
+}
+
+// 現在週を中心に描画する週範囲を計算
+function getRenderRange(currentWeekIndex, dayColumnWidth) {
+  const container = document.getElementById('schedule-container');
+  const containerWidth = container ? container.offsetWidth : 1200;
+  const weekWidth = dayColumnWidth * 7;
+  const visibleWeeks = Math.max(1, Math.ceil((containerWidth - 40) / weekWidth));
+  const windowWeeks = visibleWeeks + WEEK_RENDER_BUFFER * 2;
+
+  let startWeekIndex = Math.max(0, currentWeekIndex - WEEK_RENDER_BUFFER);
+  let endWeekIndex = Math.min(weekViewConfig.weeksToShow - 1, startWeekIndex + windowWeeks - 1);
+
+  // 末尾で切り詰めた場合は開始位置を再調整
+  startWeekIndex = Math.max(0, endWeekIndex - windowWeeks + 1);
+
+  return { startWeekIndex, endWeekIndex };
+}
+
+let weekViewConfig = {
+  weeksToShow: 0, // 初期化時に計算
+  currentWeekOffset: 0, // 現在の週のオフセット
+  isLoading: false,
+  renderedWeeks: new Set(), // レンダリング済み週のインデックス
+  displayStartWeek: null, // 表示開始週（Date）
+  currentWeekStart: null, // 現在週開始日（Date）
+  timeSlots: [], // 時間スロット配列
+  renderStartWeekIndex: 0,
+  renderEndWeekIndex: 0
+};
+
 // 初期化
 document.addEventListener('DOMContentLoaded', function() {
+  // 週数を計算
+  weekViewConfig.weeksToShow = calculateTotalWeeks();
+
   initializeEventListeners();
   loadScheduleData();
   adjustScheduleContainerHeight();
 
-  // ウィンドウリサイズ時に高さを再調整
-  window.addEventListener('resize', adjustScheduleContainerHeight);
+  // ウィンドウリサイズ時に高さを再調整と週表示を再レンダリング
+  let resizeTimeout;
+  window.addEventListener('resize', function() {
+    adjustScheduleContainerHeight();
+
+    // リサイズ完了後に週表示を再レンダリング（スクロール位置を保持）
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      if (viewMode === 'week') {
+        renderWeekView(true);
+      }
+    }, 300);
+  });
+
+  // スクロールイベントで表示中の週を検出し、必要に応じて追加レンダリング
+  const container = document.getElementById('schedule-container');
+  if (container) {
+    let scrollTimeout;
+    container.addEventListener('scroll', function() {
+      if (viewMode !== 'week') return;
+
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        updateVisibleWeekDisplay();
+      }, 100);
+    });
+  }
 });
 
 // schedule-containerの高さを動的に調整
@@ -110,11 +207,14 @@ function initializeEventListeners() {
 // スケジュール遷移
 function navigateSchedule(direction) {
   if (viewMode === 'week') {
+    const container = document.getElementById('schedule-container');
+    const preservedScrollLeft = container ? container.scrollLeft : 0;
     currentDate.setDate(currentDate.getDate() + (direction * 7));
+    loadScheduleData(true, preservedScrollLeft);
   } else {
     currentDate.setMonth(currentDate.getMonth() + direction);
+    loadScheduleData();
   }
-  loadScheduleData();
 }
 
 // 表示モード切り替え
@@ -141,7 +241,7 @@ function switchViewMode(mode) {
 }
 
 // スケジュールデータ読み込み
-function loadScheduleData() {
+function loadScheduleData(preserveScroll = false, preservedScrollLeft = 0) {
   const therapistId = document.getElementById('therapist-select').value;
   const dateRange = getDateRange();
 
@@ -149,7 +249,7 @@ function loadScheduleData() {
     .then(response => response.json())
     .then(data => {
       scheduleData = data;
-      renderSchedule();
+      renderSchedule(preserveScroll, preservedScrollLeft);
       updateHeaderDisplay();
     })
     .catch(error => {
@@ -162,11 +262,18 @@ function getDateRange() {
   let start, end;
 
   if (viewMode === 'week') {
-    const weekStart = getWeekStart(currentDate);
-    start = formatDate(weekStart);
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekEnd.getDate() + 6);
-    end = formatDate(weekEnd);
+    const displayStartWeek = getDisplayStartWeek();
+    const currentWeekStart = getWeekStart(currentDate);
+
+    const fetchStart = new Date(currentWeekStart);
+    fetchStart.setDate(fetchStart.getDate() - WEEK_FETCH_PAST_BUFFER * 7);
+    const clampedStart = fetchStart < displayStartWeek ? displayStartWeek : fetchStart;
+
+    const fetchEnd = new Date(currentWeekStart);
+    fetchEnd.setDate(fetchEnd.getDate() + WEEK_FETCH_FUTURE_BUFFER * 7 + 6);
+
+    start = formatDate(clampedStart);
+    end = formatDate(fetchEnd);
   } else {
     const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
     start = formatDate(monthStart);
@@ -198,16 +305,13 @@ function updateHeaderDisplay() {
   let year, startMonth, startDay, endMonth, endDay;
 
   if (viewMode === 'week') {
-    // 週表示：週の開始日〜終了日
-    const weekStart = getWeekStart(currentDate);
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekEnd.getDate() + 6);
-
-    year = weekStart.getFullYear();
-    startMonth = weekStart.getMonth() + 1;
-    startDay = weekStart.getDate();
-    endMonth = weekEnd.getMonth() + 1;
-    endDay = weekEnd.getDate();
+    // 週表示：スクロール位置に応じて表示（updateVisibleWeekDisplay()で更新されるのでここでは初期化のみ）
+    const currentWeekStart = getWeekStart(currentDate);
+    year = currentWeekStart.getFullYear();
+    startMonth = currentWeekStart.getMonth() + 1;
+    startDay = currentWeekStart.getDate();
+    endMonth = currentWeekStart.getMonth() + 1;
+    endDay = currentWeekStart.getDate() + 6;
   } else {
     // 月表示：月の1日〜最終日
     const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
@@ -225,37 +329,58 @@ function updateHeaderDisplay() {
 }
 
 // スケジュール表示
-function renderSchedule() {
+function renderSchedule(preserveScroll = false, preservedScrollLeft = 0) {
   if (viewMode === 'week') {
-    renderWeekView();
+    renderWeekView(preserveScroll, preservedScrollLeft);
   } else {
     renderMonthView();
   }
 }
 
-// 週表示レンダリング
-function renderWeekView() {
-  const weekStart = getWeekStart(currentDate);
-  const weekNumber = getWeekNumber(weekStart);
+// 週表示レンダリング（スクロールベース遅延読み込み）
+function renderWeekView(preserveScrollPosition = false, preservedScrollLeft = 0) {
+  const currentWeekStart = getWeekStart(currentDate);
+  const displayStartWeek = getDisplayStartWeek();
 
-  // ヘッダー行を生成
-  const headerRow = document.getElementById('week-header-row');
-  headerRow.innerHTML = `<th class="text-center align-middle p-0" style="width: 60px;">第${weekNumber}週</th>`;
-
-  const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
-  for (let i = 0; i < 7; i++) {
-    const date = new Date(weekStart);
-    date.setDate(date.getDate() + i);
-    const th = document.createElement('th');
-    th.innerHTML = `<div>（${dayNames[i]}）${date.getMonth() + 1}/${date.getDate()}</div>`;
-    headerRow.appendChild(th);
+  // スクロール位置を保存
+  const container = document.getElementById('schedule-container');
+  let savedScrollLeft = 0;
+  if (preserveScrollPosition && container) {
+    savedScrollLeft = preservedScrollLeft || container.scrollLeft;
   }
 
-  // 時間帯ごとの行を生成
+  // 各曜日セルの幅を計算
+  const containerWidth = container ? container.offsetWidth : 1200;
+  const timeColumnWidth = 40;
+  const scrollbarWidth = 20;
+  const availableWidth = containerWidth - timeColumnWidth - scrollbarWidth;
+  const dayColumnWidth = Math.floor(availableWidth / 7);
+
+  // 計算した幅をグローバル設定に保存
+  weekViewConfig.dayColumnWidth = dayColumnWidth;
+  weekViewConfig.displayStartWeek = displayStartWeek;
+  weekViewConfig.currentWeekStart = currentWeekStart;
+
+  // 現在週のインデックスを計算
+  const diffTime = currentWeekStart - displayStartWeek;
+  const currentWeekIndex = Math.floor(diffTime / (7 * 24 * 60 * 60 * 1000));
+
+  // 描画対象の週範囲を計算
+  const { startWeekIndex, endWeekIndex } = getRenderRange(currentWeekIndex, dayColumnWidth);
+  weekViewConfig.renderStartWeekIndex = startWeekIndex;
+  weekViewConfig.renderEndWeekIndex = endWeekIndex;
+
+  // レンダリング済み週をクリア
+  weekViewConfig.renderedWeeks.clear();
+
+  // ヘッダーを必要範囲のみ生成
+  renderWeekHeaders(displayStartWeek, currentWeekStart, dayColumnWidth, startWeekIndex, endWeekIndex);
+
+  // ボディを初期化
   const tbody = document.getElementById('week-schedule-body');
   tbody.innerHTML = '';
 
-  // timeSlotsがない場合はデフォルト値を使用
+  // timeSlotsを取得して保存
   const timeSlots = window.scheduleConfig.timeSlots || [];
   if (timeSlots.length === 0) {
     const startHour = parseInt(window.scheduleConfig.businessHoursStart.split(':')[0]);
@@ -264,33 +389,181 @@ function renderWeekView() {
       timeSlots.push(`${String(h).padStart(2, '0')}:00`);
     }
   }
+  weekViewConfig.timeSlots = timeSlots;
 
-  timeSlots.forEach((timeSlot) => {
-    const [hour] = timeSlot.split(':').map(Number);
+  // 描画対象範囲のみセルを生成
+  renderWeekRangeWithCells(startWeekIndex, endWeekIndex, displayStartWeek, currentWeekStart, timeSlots, tbody);
 
-    // 1時間おきの主線 (00分)
-    const tr = createWeekTimeRow(hour, 0, weekStart, true, weekNumber);
-    tbody.appendChild(tr);
-
-    // 10分おきの破線
-    for (let min = 10; min < 60; min += 10) {
-      const subTr = createWeekTimeRow(hour, min, weekStart, false, weekNumber);
-      tbody.appendChild(subTr);
+  // スクロール位置をDOM反映後に設定
+  requestAnimationFrame(() => {
+    if (preserveScrollPosition && container) {
+      container.scrollLeft = savedScrollLeft;
+    } else {
+      const headerRow = document.getElementById('week-header-row');
+      if (headerRow && container) {
+        const dayColumns = headerRow.querySelectorAll('th:not(:first-child)');
+        if (dayColumns.length > 0) {
+          const dayColumnWidth = dayColumns[0].offsetWidth;
+          const weekWidth = dayColumnWidth * 7;
+          const relativeWeekIndex = currentWeekIndex - startWeekIndex;
+          const scrollPosition = weekWidth * relativeWeekIndex;
+          container.scrollLeft = scrollPosition;
+        }
+      }
     }
+
+    setTimeout(() => {
+      updateVisibleWeekDisplay();
+    }, 100);
   });
 }
 
-// 週表示の時間行を作成
-function createWeekTimeRow(hour, minute, weekStart, isMainLine, weekNumber) {
+// ヘッダー行を生成
+function renderWeekHeaders(displayStartWeek, currentWeekStart, dayColumnWidth, startWeekIndex, endWeekIndex) {
+  const headerRow = document.getElementById('week-header-row');
+  headerRow.innerHTML = `<th class="text-center align-middle p-0" style="width: 40px; min-width: 40px; max-width: 40px;">時刻</th>`;
+
+  const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
+
+  for (let weekIndex = startWeekIndex; weekIndex <= endWeekIndex; weekIndex++) {
+    const weekStart = new Date(displayStartWeek);
+    weekStart.setDate(weekStart.getDate() + (weekIndex * 7));
+    const weekNumber = getWeekNumber(weekStart);
+
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(weekStart);
+      date.setDate(date.getDate() + i);
+      const th = document.createElement('th');
+      th.style.width = `${dayColumnWidth}px`;
+      th.style.minWidth = `${dayColumnWidth}px`;
+      th.style.maxWidth = `${dayColumnWidth}px`;
+      th.className = 'text-center';
+
+      // 現在の週の場合は背景色を変更
+      const isCurrentWeek = weekStart.getTime() === currentWeekStart.getTime();
+      if (isCurrentWeek) {
+        th.style.backgroundColor = '#e3f2fd';
+      }
+
+      // 週番号は各週の最初の日（日曜日）のみ表示
+      if (i === 0) {
+        th.innerHTML = `<div class="fw-bold" style="font-size: 0.75rem.">第${weekNumber}週</div><div>（${dayNames[i]}）${date.getMonth() + 1}/${date.getDate()}</div>`;
+      } else {
+        th.innerHTML = `<div>（${dayNames[i]}）${date.getMonth() + 1}/${date.getDate()}</div>`;
+      }
+
+      headerRow.appendChild(th);
+    }
+  }
+}
+
+// 指定範囲の週のセルを生成してイベントをレンダリング
+function renderWeekRangeWithCells(startWeekIndex, endWeekIndex, displayStartWeek, currentWeekStart, timeSlots, tbody) {
+  const dayColumnWidth = weekViewConfig.dayColumnWidth || 150;
+  const baseWeekIndex = weekViewConfig.renderStartWeekIndex || 0;
+
+  // tbodyの行が存在しない場合は作成
+  if (tbody.children.length === 0) {
+    // 初回：全ての時間行を作成
+    timeSlots.forEach((timeSlot) => {
+      const [hour] = timeSlot.split(':').map(Number);
+
+      // 1時間おきの主線 (00分)
+      const tr = createTimeRow(hour, 0, true);
+      tbody.appendChild(tr);
+
+      // 10分おきの破線
+      for (let min = 10; min < 60; min += 10) {
+        const subTr = createTimeRow(hour, min, false);
+        tbody.appendChild(subTr);
+      }
+    });
+  }
+
+  // 各行のセルを一括作成
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  
+  for (let weekIndex = startWeekIndex; weekIndex <= endWeekIndex; weekIndex++) {
+    // すでにレンダリング済みならスキップ
+    if (weekViewConfig.renderedWeeks.has(weekIndex)) continue;
+
+    const weekStart = new Date(displayStartWeek);
+    weekStart.setDate(weekStart.getDate() + (weekIndex * 7));
+    const isCurrentWeek = weekStart.getTime() === currentWeekStart.getTime();
+
+    // 週ごとに全行のセルをバッチ作成
+    rows.forEach((row, rowIndex) => {
+      const hour = parseInt(row.dataset.hour);
+      const minute = parseInt(row.dataset.minute);
+      const fragment = document.createDocumentFragment();
+
+      // 該当週の7日分のセルを作成
+      for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
+        const date = new Date(weekStart);
+        date.setDate(date.getDate() + dayIndex);
+
+        const td = document.createElement('td');
+        td.className = 'position-relative';
+        td.style.cssText = `width: ${dayColumnWidth}px; min-width: ${dayColumnWidth}px; max-width: ${dayColumnWidth}px; padding: 0; vertical-align: top; overflow: visible;`;
+        td.dataset.date = formatDate(date);
+        td.dataset.hour = hour;
+        td.dataset.minute = minute;
+
+        if (isCurrentWeek) {
+          td.style.backgroundColor = '#f0f8ff';
+        }
+
+        // イベントを追加（00分の行のみ）
+        if (minute === 0) {
+          const events = getEventsForDateTime(date, hour, minute);
+          events.forEach(event => {
+            const eventDiv = createEventElement(event);
+            td.appendChild(eventDiv);
+          });
+        }
+
+        // クリックイベント
+        td.addEventListener('click', function(e) {
+          if (e.target.classList.contains('schedule-event') || e.target.closest('.schedule-event')) {
+            const eventElement = e.target.classList.contains('schedule-event') ? e.target : e.target.closest('.schedule-event');
+            showEventDetail(parseInt(eventElement.dataset.recordId));
+          } else {
+            showNewEventModal(date, hour, minute);
+          }
+        });
+
+        fragment.appendChild(td);
+      }
+
+      // フラグメントを一括挿入
+      const relativeWeekIndex = weekIndex - baseWeekIndex;
+      const insertIndex = 1 + (relativeWeekIndex * 7);
+      if (row.cells.length <= insertIndex) {
+        row.appendChild(fragment);
+      } else {
+        row.insertBefore(fragment, row.cells[insertIndex]);
+      }
+    });
+
+    weekViewConfig.renderedWeeks.add(weekIndex);
+  }
+}
+
+// 時間行を作成（セルなし）
+function createTimeRow(hour, minute, isMainLine) {
   const tr = document.createElement('tr');
   tr.style.height = '20px';
   tr.style.borderTop = isMainLine ? '2px solid #ccc' : '1px dashed #ccc';
+  tr.dataset.hour = hour;
+  tr.dataset.minute = minute;
 
-  // 時刻セル（30分刻みで表示）
+  // 時刻セルのみ
   const timeTd = document.createElement('td');
   timeTd.className = 'text-center';
+  timeTd.style.width = '40px';
+  timeTd.style.minWidth = '40px';
+  timeTd.style.maxWidth = '40px';
 
-  // 00分または30分の場合のみ時刻を表示
   if (minute === 0 || minute === 30) {
     timeTd.textContent = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
     timeTd.className = 'text-center fw-semibold p-0';
@@ -299,43 +572,106 @@ function createWeekTimeRow(hour, minute, weekStart, isMainLine, weekNumber) {
 
   tr.appendChild(timeTd);
 
-  // 各曜日のセル
-  for (let i = 0; i < 7; i++) {
-    const date = new Date(weekStart);
-    date.setDate(date.getDate() + i);
-    const td = document.createElement('td');
-    td.className = 'position-relative';
-    td.style.cssText = 'padding: 0; vertical-align: top; overflow: visible;';
-    td.dataset.date = formatDate(date);
-    td.dataset.hour = hour;
-    td.dataset.minute = minute;
+  return tr;
+}
 
-    // 施術時間帯の表示（各イベントの開始時刻の行にのみ追加）
-    if (minute === 0) {
-      const events = getEventsForDateTime(date, hour, minute);
-      events.forEach(event => {
-        const eventDiv = createEventElement(event);
-        td.appendChild(eventDiv);
-      });
-    }
 
-    // クリックイベント
-    td.addEventListener('click', function(e) {
-      console.log('Cell clicked!', e.target);
-      if (e.target.classList.contains('schedule-event') || e.target.closest('.schedule-event')) {
-        const eventElement = e.target.classList.contains('schedule-event') ? e.target : e.target.closest('.schedule-event');
-        console.log('Schedule event clicked, recordId:', eventElement.dataset.recordId);
-        showEventDetail(parseInt(eventElement.dataset.recordId));
-      } else {
-        console.log('Empty cell clicked, showing new event modal');
-        showNewEventModal(date, hour, minute);
-      }
-    });
 
-    tr.appendChild(td);
+// 現在の週にスクロール
+function scrollToCurrentWeek() {
+  const container = document.getElementById('schedule-container');
+  if (!container) return;
+
+  const headerRow = document.getElementById('week-header-row');
+  if (!headerRow) return;
+
+  // 1週間分の幅（7日 × 各列の幅）
+  const dayColumns = headerRow.querySelectorAll('th:not(:first-child)');
+  if (dayColumns.length === 0) return;
+
+  const dayColumnWidth = dayColumns[0].offsetWidth;
+  const weekWidth = dayColumnWidth * 7;
+
+  // 表示開始週から現在週までの週数を計算
+  const displayStartWeek = getDisplayStartWeek();
+  const currentWeekStart = getWeekStart(currentDate);
+  const diffTime = currentWeekStart - displayStartWeek;
+  const currentWeekIndex = Math.floor(diffTime / (7 * 24 * 60 * 60 * 1000));
+  const renderStartWeekIndex = weekViewConfig.renderStartWeekIndex || 0;
+  const relativeWeekIndex = Math.max(0, currentWeekIndex - renderStartWeekIndex);
+
+  // 現在週の開始位置にスクロール
+  const scrollPosition = weekWidth * relativeWeekIndex;
+
+  container.scrollLeft = scrollPosition;
+}
+
+// 表示中の週の情報を更新
+function updateVisibleWeekDisplay() {
+  const container = document.getElementById('schedule-container');
+  if (!container) return;
+
+  const headerRow = document.getElementById('week-header-row');
+  if (!headerRow) return;
+
+  const dayColumns = headerRow.querySelectorAll('th:not(:first-child)');
+  if (dayColumns.length === 0) return;
+
+  const dayColumnWidth = dayColumns[0].offsetWidth;
+  const scrollLeft = container.scrollLeft;
+  const containerWidth = container.offsetWidth;
+  const timeColumnWidth = 40;
+
+  // 実際に表示されている範囲を計算
+  // 左端に70%以上表示されている日のインデックス（時刻列を除く）
+  const leftCellStart = Math.floor(scrollLeft / dayColumnWidth) * dayColumnWidth;
+  const leftVisibleIndex = scrollLeft > leftCellStart + (dayColumnWidth * 0.3)
+    ? Math.ceil(scrollLeft / dayColumnWidth)
+    : Math.floor(scrollLeft / dayColumnWidth);
+
+  // 右端に70%以上表示されている日のインデックス
+  const rightScrollEdge = scrollLeft + containerWidth - timeColumnWidth;
+  const rightCellEnd = Math.ceil(rightScrollEdge / dayColumnWidth) * dayColumnWidth;
+  const rightVisibleIndex = rightScrollEdge < rightCellEnd - (dayColumnWidth * 0.3)
+    ? Math.floor(rightScrollEdge / dayColumnWidth) - 1
+    : Math.ceil(rightScrollEdge / dayColumnWidth) - 1;
+
+  // 表示中の7日分の開始・終了インデックスを決定
+  // （完全に見える日のみを選択）
+  let startDayIndex, endDayIndex;
+
+  const visibleDayCount = rightVisibleIndex - leftVisibleIndex + 1;
+
+  if (visibleDayCount >= 7) {
+    // 7日以上完全に表示されている場合、左端から7日分
+    startDayIndex = leftVisibleIndex;
+    endDayIndex = leftVisibleIndex + 6;
+  } else {
+    // 7日未満の場合は表示されている範囲をそのまま使用
+    startDayIndex = leftVisibleIndex;
+    endDayIndex = rightVisibleIndex;
   }
 
-  return tr;
+  // 表示開始週の日曜日を基準日として取得（実績データ登録可能範囲の開始週から）
+  const displayStartWeek = getDisplayStartWeek();
+  const baseWeekIndex = weekViewConfig.renderStartWeekIndex || 0;
+
+  // 表示中の開始日と終了日を計算
+  const visibleStart = new Date(displayStartWeek);
+  visibleStart.setDate(visibleStart.getDate() + (baseWeekIndex * 7) + startDayIndex);
+
+  const visibleEnd = new Date(displayStartWeek);
+  visibleEnd.setDate(visibleEnd.getDate() + (baseWeekIndex * 7) + endDayIndex);
+
+  // 年月日テキストを更新
+  const year = visibleStart.getFullYear();
+  const startMonth = visibleStart.getMonth() + 1;
+  const startDay = visibleStart.getDate();
+  const endMonth = visibleEnd.getMonth() + 1;
+  const endDay = visibleEnd.getDate();
+
+  document.getElementById('current-year').textContent = `${year}年`;
+  document.getElementById('current-month-day').textContent = `${startMonth}月 ${startDay}日 ~ ${endMonth}月 ${endDay}日`;
 }
 
 // 指定日時のイベントを取得
@@ -381,7 +717,7 @@ function createEventElement(event) {
     font-size: 0.8rem;
     cursor: pointer;
     overflow: hidden;
-    z-index: 10;
+    z-index: 5;
   `;
   div.dataset.recordId = event.id;
 
@@ -540,4 +876,10 @@ function createMonthEventElement(event) {
   div.textContent = `${startTime}｜${event.user_name}`;
 
   return div;
+}
+
+// スクロール位置に応じて未レンダリングの週を追加読み込み
+function loadWeeksNearViewport() {
+  // 仮想化後は常に描画済みの範囲のみを表示するため、追加ロードは不要
+  return;
 }

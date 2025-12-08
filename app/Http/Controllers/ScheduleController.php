@@ -27,7 +27,7 @@ class ScheduleController extends Controller
   {
     // 施術者リストを取得（ID昇順）
     $therapists = DB::table('therapists')
-      ->select('id', 'therapist_name', 'furigana')
+      ->select('id', 'last_name', 'first_name', 'last_name_kana', 'first_name_kana')
       ->orderBy('id')
       ->get();
 
@@ -52,6 +52,11 @@ class ScheduleController extends Controller
     // 時刻行を生成（営業時間に基づく）
     $timeSlots = $this->generateTimeSlots($businessHoursStart, $businessHoursEnd);
 
+    // 実績データの登録可能範囲を取得（records.jsの設定と同期）
+    $recordsStartYear = 2020; // records.jsのstartYearと一致
+    $recordsStartMonth = 1;   // records.jsのstartMonth + 1と一致
+    $futureMonths = 2;        // records.jsの現在+2ヶ月と一致
+
     // ビューを生成してCookieを付与（365日間保持）
     return response()
       ->view('schedules.schedules_index', [
@@ -60,6 +65,9 @@ class ScheduleController extends Controller
         'businessHoursStart' => $businessHoursStart,
         'businessHoursEnd' => $businessHoursEnd,
         'timeSlots' => $timeSlots,
+        'recordsStartYear' => $recordsStartYear,
+        'recordsStartMonth' => $recordsStartMonth,
+        'futureMonths' => $futureMonths,
         'page_header_title' => 'スケジュール',
       ])
       ->cookie('schedule_therapist_id', $selectedTherapistId, 60 * 24 * 365);

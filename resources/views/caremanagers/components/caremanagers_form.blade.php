@@ -4,12 +4,45 @@
   @csrf
 
   <div class="mb-3">
-    <label class="fw-semibold" for="caremanager_name">ケアマネ氏名</label>
-    @error('caremanager_name')
-      <span class="text-danger ms-2">{{ $message }}</span>
-    @enderror
+    <label class="fw-semibold">氏名 <span class="text-danger">*</span></label>
     <br>
-    <input type="text" id="caremanager_name" name="caremanager_name" value="{{ old('caremanager_name', $careManager->caremanager_name ?? '') }}">
+    <div class="d-flex gap-2 align-items-center">
+      <div>
+        <label for="last_name" class="form-label small mb-1">姓</label>
+        @error('last_name')
+          <span class="text-danger ms-2">{{ $message }}</span>
+        @enderror
+        <input type="text" id="last_name" name="last_name" value="{{ old('last_name', $careManager->last_name ?? '') }}">
+      </div>
+      <div>
+        <label for="first_name" class="form-label small mb-1">名</label>
+        @error('first_name')
+          <span class="text-danger ms-2">{{ $message }}</span>
+        @enderror
+        <input type="text" id="first_name" name="first_name" value="{{ old('first_name', $careManager->first_name ?? '') }}">
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label class="fw-semibold">フリガナ</label>
+    <br>
+    <div class="d-flex gap-2 align-items-center">
+      <div>
+        <label for="last_name_kana" class="form-label small mb-1">セイ</label>
+        @error('last_name_kana')
+          <span class="text-danger ms-2">{{ $message }}</span>
+        @enderror
+        <input type="text" id="last_name_kana" name="last_name_kana" value="{{ old('last_name_kana', $careManager->last_name_kana ?? '') }}">
+      </div>
+      <div>
+        <label for="first_name_kana" class="form-label small mb-1">メイ</label>
+        @error('first_name_kana')
+          <span class="text-danger ms-2">{{ $message }}</span>
+        @enderror
+        <input type="text" id="first_name_kana" name="first_name_kana" value="{{ old('first_name_kana', $careManager->first_name_kana ?? '') }}">
+      </div>
+    </div>
   </div>
 
   <div class="mb-3">
@@ -31,15 +64,6 @@
     <span class="small">もしくは<a href="#">こちらから</a>登録してください。</span>
     <br>
     <input type="text" id="service_provider_name_custom" name="service_provider_name_custom" placeholder="入力されたデータをマスターとして新規登録。" value="{{ old('service_provider_name_custom') }}">
-  </div>
-
-  <div class="mb-3">
-    <label class="fw-semibold" for="furigana">フリガナ</label>
-    @error('furigana')
-      <span class="text-danger ms-2">{{ $message }}</span>
-    @enderror
-    <br>
-    <input type="text" id="furigana" name="furigana" value="{{ old('furigana', $careManager->furigana ?? '') }}">
   </div>
 
   <br>

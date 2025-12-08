@@ -29,8 +29,8 @@
     @forelse($doctors as $doctor)
     <tr>
       <td>
-      <a href="{{ route('doctors.edit', $doctor->id) }}">{{ $doctor->doctor_name }} [編集]</a><br>
-      {{ $doctor->furigana }}
+      <a href="{{ route('doctors.edit', $doctor->id) }}">{{ $doctor->last_name }} {{ $doctor->first_name }} [編集]</a><br>
+      {{ $doctor->last_name_kana }} {{ $doctor->first_name_kana }}
       </td>
       <td>
       {{ $doctor->medical_institution_name }}
