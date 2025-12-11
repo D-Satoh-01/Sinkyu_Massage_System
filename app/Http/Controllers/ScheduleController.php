@@ -31,6 +31,13 @@ class ScheduleController extends Controller
       ->orderBy('id')
       ->get();
 
+    // 利用者リストを取得（カナ昇順）
+    $clinicUsers = DB::table('clinic_users')
+      ->select('id', 'last_name', 'first_name', 'last_kana', 'first_kana')
+      ->orderBy('last_kana')
+      ->orderBy('first_kana')
+      ->get();
+
     // 選択された施術者ID（優先順位：リクエスト > Cookie > デフォルト）
     $selectedTherapistId = $request->input('therapist_id');
 
@@ -44,10 +51,21 @@ class ScheduleController extends Controller
       }
     }
 
-    // 営業時間を取得
+    // 営業時間と定休日を取得
     $clinicInfo = DB::table('clinic_info')->first();
     $businessHoursStart = $clinicInfo->business_hours_start ?? '09:00:00';
     $businessHoursEnd = $clinicInfo->business_hours_end ?? '18:00:00';
+
+    // 定休日情報を取得
+    $closedDays = [
+      'monday' => $clinicInfo->closed_day_monday ?? 0,
+      'tuesday' => $clinicInfo->closed_day_tuesday ?? 0,
+      'wednesday' => $clinicInfo->closed_day_wednesday ?? 0,
+      'thursday' => $clinicInfo->closed_day_thursday ?? 0,
+      'friday' => $clinicInfo->closed_day_friday ?? 0,
+      'saturday' => $clinicInfo->closed_day_saturday ?? 0,
+      'sunday' => $clinicInfo->closed_day_sunday ?? 0,
+    ];
 
     // 時刻行を生成（営業時間に基づく）
     $timeSlots = $this->generateTimeSlots($businessHoursStart, $businessHoursEnd);
@@ -61,10 +79,12 @@ class ScheduleController extends Controller
     return response()
       ->view('schedules.schedules_index', [
         'therapists' => $therapists,
+        'clinicUsers' => $clinicUsers,
         'selectedTherapistId' => $selectedTherapistId,
         'businessHoursStart' => $businessHoursStart,
         'businessHoursEnd' => $businessHoursEnd,
         'timeSlots' => $timeSlots,
+        'closedDays' => $closedDays,
         'recordsStartYear' => $recordsStartYear,
         'recordsStartMonth' => $recordsStartMonth,
         'futureMonths' => $futureMonths,

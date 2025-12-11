@@ -15,7 +15,7 @@
 
   <br><br>
 
-  <!-- ケアマネ情報一覧テーブル -->
+  <!-- ケアマネ一覧テーブル -->
   <table id="careManagerTable" class="table table-bordered table-striped">
     <thead>
       <tr>

@@ -22,6 +22,7 @@ use App\Http\Controllers\RecordsController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\UserSearchController;
+use App\Http\Controllers\TherapyPeriodController;
 
 Route::get('/', fn() => redirect()->route('login'));
 
@@ -243,6 +244,9 @@ Route::middleware('auth')->group(function () {
 
   // 利用者検索（共通）
   Route::get('/user-search', [UserSearchController::class, 'index'])->name('user.search');
+
+  // 要加療期間リスト
+  Route::get('/therapy-periods/index', [TherapyPeriodController::class, 'index'])->name('therapy-periods.index');
 });
 
 require __DIR__.'/auth.php';

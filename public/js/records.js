@@ -14,8 +14,8 @@ window.selectedDates = new Set();
 
 // カレンダーを初期化
 function initializeCalendar(initialYear, initialMonth) {
-  currentYear = initialYear || new Date().getFullYear();
-  currentMonth = initialMonth ? initialMonth - 1 : new Date().getMonth(); // 0-11
+  currentYear = initialYear ? parseInt(initialYear) : new Date().getFullYear();
+  currentMonth = initialMonth ? parseInt(initialMonth) - 1 : new Date().getMonth(); // 0-11
 
   initializeMonthSelect();
   renderCalendar(currentYear, currentMonth);
@@ -277,18 +277,27 @@ function updateTherapyDaysDisplay() {
 
 // 往療距離入力欄を更新
 function updateHousecallDistanceInputs() {
+  console.log('[DEBUG updateHousecallDistanceInputs] 開始');
+  console.log('[DEBUG updateHousecallDistanceInputs] selectedDates:', Array.from(window.selectedDates));
+
   const container = document.getElementById('housecall-distance-inputs');
-  if (!container) return;
+  if (!container) {
+    console.log('[DEBUG updateHousecallDistanceInputs] container not found');
+    return;
+  }
 
   container.innerHTML = '';
 
   if (window.selectedDates.size === 0) {
+    console.log('[DEBUG updateHousecallDistanceInputs] selectedDates is empty');
     return;
   }
 
   // 日付順にソート
   const sortedDates = [...window.selectedDates].sort();
   const oldInput = window.recordsConfig.oldInput || {};
+
+  console.log('[DEBUG updateHousecallDistanceInputs] sortedDates:', sortedDates);
 
   sortedDates.forEach(date => {
     const dateObj = new Date(date);
@@ -322,24 +331,28 @@ function updateHousecallDistanceInputs() {
     inputGroup.appendChild(input);
     inputGroup.appendChild(unit);
     container.appendChild(inputGroup);
+
+    console.log('[DEBUG updateHousecallDistanceInputs] input作成:', {
+      date: date,
+      name: input.name,
+      value: input.value
+    });
   });
+
+  console.log('[DEBUG updateHousecallDistanceInputs] 完了');
 }
 
 // 実績フィールドの状態を更新（日付選択に応じて入力可/不可を切り替え）
 function updateRecordFieldsState() {
-  console.log('[Records] updateRecordFieldsState() 実行開始');
   const recordFields = document.getElementById('record-fields');
   if (!recordFields) {
-    console.log('[Records] record-fields要素が見つかりません');
     return;
   }
 
   const hasSelectedDates = window.selectedDates.size > 0;
-  console.log('[Records] 選択された日付数:', window.selectedDates.size);
 
   // すべての入力要素を取得
   const inputs = recordFields.querySelectorAll('input, select, textarea, button[type="submit"]');
-  console.log('[Records] 対象入力要素数:', inputs.length);
 
   inputs.forEach(input => {
     if (hasSelectedDates) {
@@ -364,18 +377,40 @@ function updateRecordFieldsState() {
       input.style.cursor = 'default';
     }
   });
-  
-  console.log('[Records] disabled属性の設定完了、ツールチップ再初期化を呼び出し');
+
   // disabled属性の変更後にツールチップを再初期化
   if (typeof initializeReadonlyTooltips === 'function') {
     initializeReadonlyTooltips();
-  } else {
-    console.log('[Records] initializeReadonlyTooltips関数が見つかりません');
   }
 }
 
 // フォーム関連のイベントリスナーを設定
 function setupFormEventListeners() {
+  // フォーム送信時のデバッグログ
+  const recordForm = document.getElementById('recordForm');
+  if (recordForm) {
+    recordForm.addEventListener('submit', function(e) {
+      console.log('[DEBUG records.js] フォーム送信開始');
+      console.log('[DEBUG records.js] selectedDates:', Array.from(window.selectedDates));
+
+      // フォームデータを確認
+      const formData = new FormData(recordForm);
+      const formDataObj = {};
+      for (let [key, value] of formData.entries()) {
+        if (formDataObj[key]) {
+          if (Array.isArray(formDataObj[key])) {
+            formDataObj[key].push(value);
+          } else {
+            formDataObj[key] = [formDataObj[key], value];
+          }
+        } else {
+          formDataObj[key] = value;
+        }
+      }
+      console.log('[DEBUG records.js] フォームデータ:', formDataObj);
+    });
+  }
+
   // 施術種類の変更イベント
   const therapyTypeRadios = document.querySelectorAll('input[name="therapy_type"]');
   therapyTypeRadios.forEach(radio => {
@@ -418,36 +453,22 @@ function setupFormEventListeners() {
 
 // 時刻選択パネルの初期化
 function initializeTimePickers() {
-  console.log('[TimePicker] 初期化開始');
   const startTimePicker = document.getElementById('start-time-picker');
   const endTimePicker = document.getElementById('end-time-picker');
   const startTimeInput = document.getElementById('start_time');
   const endTimeInput = document.getElementById('end_time');
 
-  console.log('[TimePicker] 要素チェック:', {
-    startTimePicker: !!startTimePicker,
-    endTimePicker: !!endTimePicker,
-    startTimeInput: !!startTimeInput,
-    endTimeInput: !!endTimeInput
-  });
-
   if (startTimePicker) {
-    console.log('[TimePicker] 開始時刻ピッカー作成');
     createTimePicker(startTimePicker, startTimeInput);
   }
 
   if (endTimePicker) {
-    console.log('[TimePicker] 終了時刻ピッカー作成');
     createTimePicker(endTimePicker, endTimeInput);
   }
-
-  console.log('[TimePicker] 初期化完了');
 }
 
 // 時刻選択パネルの作成
 function createTimePicker(wrapper, hiddenInput) {
-  console.log('[TimePicker] createTimePicker開始', wrapper.id);
-
   // 初期値の設定
   let hour = 0;
   let minute = 0;
@@ -460,8 +481,6 @@ function createTimePicker(wrapper, hiddenInput) {
     hasInitialValue = true;
   }
 
-  console.log('[TimePicker] 初期値:', { hour, minute, hasInitialValue, hiddenValue: hiddenInput.value });
-
   // 表示用input
   const displayInput = document.createElement('input');
   displayInput.type = 'text';
@@ -470,20 +489,16 @@ function createTimePicker(wrapper, hiddenInput) {
   displayInput.value = hasInitialValue ? formatTime(hour, minute) : '--:--';
   displayInput.placeholder = '--:--';
 
-  console.log('[TimePicker] displayInput作成:', displayInput.value);
-
   // パネル
   const panel = document.createElement('div');
   panel.className = 'time-picker-panel';
-
-  console.log('[TimePicker] パネルCSS:', panel.className);
 
   // 時間カラム
   const hourColumn = document.createElement('div');
   hourColumn.className = 'time-column';
   hourColumn.innerHTML = `
     <div class="time-arrow hour-up">▲</div>
-    <div class="time-value hour-value">${String(hour).padStart(2, '0')}</div>
+    <div class="time-value hour-value">${hour}</div>
     <div class="time-arrow hour-down">▼</div>
   `;
 
@@ -510,19 +525,14 @@ function createTimePicker(wrapper, hiddenInput) {
   // 強制的に非表示
   panel.style.display = 'none';
 
-  console.log('[TimePicker] DOM追加完了');
-  console.log('[TimePicker] パネル表示状態:', window.getComputedStyle(panel).display);
-  console.log('[TimePicker] パネルクラス:', panel.classList.toString());
-
   // 時刻の更新関数
   function updateTime() {
     const hourValue = panel.querySelector('.hour-value');
     const minuteValue = panel.querySelector('.minute-value');
-    hourValue.textContent = String(hour).padStart(2, '0');
+    hourValue.textContent = hour;
     minuteValue.textContent = String(minute).padStart(2, '0');
     displayInput.value = formatTime(hour, minute);
     hiddenInput.value = formatTime(hour, minute);
-    console.log('[TimePicker] 時刻更新:', formatTime(hour, minute));
   }
 
   // 時間の増減イベント
@@ -537,28 +547,25 @@ function createTimePicker(wrapper, hiddenInput) {
   });
 
   panel.querySelector('.minute-up').addEventListener('click', () => {
-    minute = (minute + 5) % 60;
+    minute = (minute + 10) % 60;
     updateTime();
   });
 
   panel.querySelector('.minute-down').addEventListener('click', () => {
-    minute = (minute - 5 + 60) % 60;
+    minute = (minute - 10 + 60) % 60;
     updateTime();
   });
 
   // パネルの表示/非表示
   displayInput.addEventListener('click', (e) => {
-    console.log('[TimePicker] displayInputクリック', wrapper.id);
     e.stopPropagation();
     // disabledの場合は何もしない
     if (displayInput.disabled) {
-      console.log('[TimePicker] disabled状態のためパネル表示しない');
       return;
     }
     // 他のパネルを閉じる
     document.querySelectorAll('.time-picker-panel').forEach(p => {
       if (p !== panel) {
-        console.log('[TimePicker] 他のパネルを閉じる');
         p.classList.remove('active');
         p.style.display = 'none';
       }
@@ -568,19 +575,15 @@ function createTimePicker(wrapper, hiddenInput) {
     if (isActive) {
       panel.classList.remove('active');
       panel.style.display = 'none';
-      console.log('[TimePicker] パネル非表示');
     } else {
       panel.classList.add('active');
       panel.style.display = 'flex';
-      console.log('[TimePicker] パネル表示');
     }
-    console.log('[TimePicker] パネル表示状態:', window.getComputedStyle(panel).display);
   });
 
   // 外側クリックで閉じる
   document.addEventListener('click', (e) => {
     if (!wrapper.contains(e.target)) {
-      console.log('[TimePicker] 外側クリック - パネル閉じる');
       panel.classList.remove('active');
       panel.style.display = 'none';
     }
@@ -589,7 +592,7 @@ function createTimePicker(wrapper, hiddenInput) {
 
 // 時刻のフォーマット
 function formatTime(hour, minute) {
-  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+  return `${hour}:${String(minute).padStart(2, '0')}`;
 }
 
 // 古い入力値を復元
@@ -640,16 +643,131 @@ function openUserSearchPopup() {
   );
 }
 
+// スケジュール画面から渡された開始日時を適用
+function applyScheduleDateTime(dateStr, timeStr) {
+  console.log('[DEBUG applyScheduleDateTime] dateStr:', dateStr, 'timeStr:', timeStr);
+  console.log('[DEBUG applyScheduleDateTime] current calendar state:', { currentYear, currentMonth });
+
+  // 日付をカレンダーで選択
+  if (dateStr) {
+    // YYYY-MM-DD形式の文字列を分解してDateオブジェクトを作成（タイムゾーンの影響を回避）
+    const [year, month, day] = dateStr.split('-').map(Number);
+    console.log('[DEBUG applyScheduleDateTime] parsed:', { year, month, day });
+
+    // カレンダーを該当月に移動（monthは0-based）
+    console.log('[DEBUG applyScheduleDateTime] 条件チェック:', {
+      yearMatch: year === currentYear,
+      monthMatch: (month - 1) === currentMonth,
+      willRerender: year !== currentYear || (month - 1) !== currentMonth
+    });
+
+    if (year !== currentYear || (month - 1) !== currentMonth) {
+      console.log('[DEBUG applyScheduleDateTime] カレンダーを再レンダリング');
+      currentYear = year;
+      currentMonth = month - 1;
+      renderCalendar(year, month - 1);
+      updateCalendarTitleDisplay();
+
+      // カレンダーのDOM更新完了を待つ
+      setTimeout(() => {
+        selectDate(dateStr);
+      }, 0);
+    } else {
+      console.log('[DEBUG applyScheduleDateTime] カレンダー再レンダリング不要（既に正しい月）');
+      selectDate(dateStr);
+    }
+  }
+
+  // 日付選択のヘルパー関数
+  function selectDate(dateStr) {
+    // カレンダー要素の存在確認
+    const allDayElements = document.querySelectorAll('.calendar-day[data-date]');
+    console.log('[DEBUG applyScheduleDateTime] 全カレンダー日付要素数:', allDayElements.length);
+    if (allDayElements.length > 0) {
+      const allDates = Array.from(allDayElements).map(el => el.getAttribute('data-date'));
+      console.log('[DEBUG applyScheduleDateTime] 全data-date一覧:', allDates);
+      console.log('[DEBUG applyScheduleDateTime] 検索対象日付が含まれているか:', allDates.includes(dateStr));
+    }
+    console.log('[DEBUG applyScheduleDateTime] 検索対象日付:', dateStr);
+
+    const dayElement = document.querySelector(`.calendar-day[data-date="${dateStr}"]`);
+    console.log('[DEBUG applyScheduleDateTime] dayElement:', dayElement);
+    console.log('[DEBUG applyScheduleDateTime] dayElement.classList:', dayElement ? dayElement.classList.toString() : 'null');
+    if (dayElement && !dayElement.classList.contains('closed-day')) {
+      dayElement.classList.add('selected');
+      window.selectedDates.add(dateStr);
+      console.log('[DEBUG applyScheduleDateTime] 日付選択完了:', dateStr);
+      console.log('[DEBUG applyScheduleDateTime] selectedDates:', Array.from(window.selectedDates));
+      console.log('[DEBUG applyScheduleDateTime] 施術実日数更新前');
+      updateTherapyDaysDisplay();
+      console.log('[DEBUG applyScheduleDateTime] 往療距離入力欄更新前');
+      updateHousecallDistanceInputs();
+      console.log('[DEBUG applyScheduleDateTime] 実績フィールド状態更新前');
+      updateRecordFieldsState();
+      console.log('[DEBUG applyScheduleDateTime] すべての更新完了');
+    } else {
+      console.log('[DEBUG applyScheduleDateTime] 日付選択失敗: dayElement not found or closed');
+    }
+  }
+
+  // 開始時刻を設定
+  if (timeStr) {
+    const startTimeInput = document.getElementById('start_time');
+    console.log('[DEBUG applyScheduleDateTime] startTimeInput:', startTimeInput);
+    if (startTimeInput) {
+      startTimeInput.value = timeStr;
+      console.log('[DEBUG applyScheduleDateTime] 時刻設定完了:', timeStr);
+
+      // タイムピッカーの表示を更新
+      const startTimePicker = document.getElementById('start-time-picker');
+      if (startTimePicker) {
+        const displayInput = startTimePicker.querySelector('.time-picker-input');
+        const panel = startTimePicker.querySelector('.time-picker-panel');
+
+        if (displayInput && panel) {
+          const [hour, minute] = timeStr.split(':').map(Number);
+          displayInput.value = timeStr;
+
+          const hourValue = panel.querySelector('.hour-value');
+          const minuteValue = panel.querySelector('.minute-value');
+          if (hourValue && minuteValue) {
+            hourValue.textContent = hour;
+            minuteValue.textContent = String(minute).padStart(2, '0');
+          }
+          console.log('[DEBUG applyScheduleDateTime] タイムピッカー表示更新完了');
+        }
+      }
+    }
+  }
+}
+
 // 新規登録画面の初期化
 function initializeIndexPage() {
+  console.log('[DEBUG records.js] initializeIndexPage 開始');
+  console.log('[DEBUG records.js] recordsConfig:', window.recordsConfig);
+
   if (window.recordsConfig.selectedUserId) {
+    console.log('[DEBUG records.js] selectedUserId:', window.recordsConfig.selectedUserId);
+
     initializeCalendar(window.recordsConfig.initialYear, window.recordsConfig.initialMonth);
     setupCalendarEventListeners();
     setupFormEventListeners();
     restoreOldInput();
     updateConsentExpiryDisplay(); // 初期状態で同意有効期限を表示
     updateRecordFieldsState(); // 初期状態で実績フィールドの状態を更新
-    
+
+    // スケジュール画面から開始日時が渡された場合、カレンダーと時刻を設定
+    console.log('[DEBUG records.js] startDate:', window.recordsConfig.startDate);
+    console.log('[DEBUG records.js] startTime:', window.recordsConfig.startTime);
+
+    if (window.recordsConfig.startDate && window.recordsConfig.startTime) {
+      console.log('[DEBUG records.js] スケジュール画面からの日時適用を開始');
+      // DOM構築完了後に実行
+      setTimeout(() => {
+        applyScheduleDateTime(window.recordsConfig.startDate, window.recordsConfig.startTime);
+      }, 0);
+    }
+
     // disabled属性が設定された後にツールチップを初期化
     if (typeof initializeReadonlyTooltips === 'function') {
       initializeReadonlyTooltips();

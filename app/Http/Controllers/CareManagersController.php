@@ -10,7 +10,7 @@ use App\Http\Requests\CareManagerRequest;
 
 class CareManagersController extends Controller
 {
-  // ケアマネ情報一覧表示
+  // ケアマネ一覧表示
   public function index()
   {
     // DataTablesを使用するため、全件取得
@@ -26,11 +26,11 @@ class CareManagersController extends Controller
 
     return view('caremanagers.caremanagers_index', [
       'careManagers' => $careManagers,
-      'page_header_title' => 'ケアマネ情報',
+      'page_header_title' => 'ケアマネ',
     ]);
   }
 
-  // ケアマネ情報新規登録画面表示
+  // ケアマネ新規登録画面表示
   public function create()
   {
     // セッションに保存されたデータがあれば、それをフラッシュデータとして設定
@@ -49,13 +49,13 @@ class CareManagersController extends Controller
 
     return view('caremanagers.caremanagers_registration', [
       'mode' => 'create',
-      'page_header_title' => 'ケアマネ情報新規登録',
+      'page_header_title' => 'ケアマネ新規登録',
       'careManager' => null,
       'serviceProviders' => $serviceProviders
     ]);
   }
 
-  // ケアマネ情報新規登録：確認画面の表示
+  // ケアマネ新規登録：確認画面の表示
   public function confirm(CareManagerRequest $request)
   {
     $validated = $request->validated();
@@ -76,12 +76,12 @@ class CareManagersController extends Controller
       'labels' => $labels,
       'back_route' => 'caremanagers.create',
       'store_route' => 'caremanagers.store',
-      'page_header_title' => 'ケアマネ情報登録内容確認',
-      'registration_message' => 'ケアマネ情報の登録を行います。',
+      'page_header_title' => 'ケアマネ登録内容確認',
+      'registration_message' => 'ケアマネの登録を行います。',
     ]);
   }
 
-  // ケアマネ情報新規登録処理
+  // ケアマネ新規登録処理
   public function store(Request $request)
   {
     // セッションからデータを取得
@@ -124,10 +124,10 @@ class CareManagersController extends Controller
     // セッションから登録データを削除
     $request->session()->forget('caremanagers_registration_data');
 
-    return redirect()->route('caremanagers.index')->with('success', 'ケアマネ情報を登録しました。');
+    return redirect()->route('caremanagers.index')->with('success', 'ケアマネを登録しました。');
   }
 
-  // ケアマネ情報編集画面表示
+  // ケアマネ編集画面表示
   public function edit($id)
   {
     // セッションに保存されたデータがあれば、それをフラッシュデータとして設定
@@ -144,7 +144,7 @@ class CareManagersController extends Controller
     $careManager = DB::table('caremanagers')->where('id', $id)->first();
 
     if (!$careManager) {
-      return redirect()->route('caremanagers.index')->with('error', 'ケアマネ情報が見つかりません。');
+      return redirect()->route('caremanagers.index')->with('error', 'ケアマネが見つかりません。');
     }
 
     // サービス事業者一覧を取得
@@ -154,13 +154,13 @@ class CareManagersController extends Controller
 
     return view('caremanagers.caremanagers_registration', [
       'mode' => 'edit',
-      'page_header_title' => 'ケアマネ情報編集',
+      'page_header_title' => 'ケアマネ編集',
       'careManager' => $careManager,
       'serviceProviders' => $serviceProviders
     ]);
   }
 
-  // ケアマネ情報編集：確認画面の表示
+  // ケアマネ編集：確認画面の表示
   public function editConfirm(CareManagerRequest $request, $id)
   {
     $validated = $request->validated();
@@ -183,12 +183,12 @@ class CareManagersController extends Controller
       'back_route' => 'caremanagers.edit',
       'back_id' => $id,
       'store_route' => 'caremanagers.update',
-      'page_header_title' => 'ケアマネ情報編集内容確認',
-      'registration_message' => 'ケアマネ情報の更新を行います。',
+      'page_header_title' => 'ケアマネ編集内容確認',
+      'registration_message' => 'ケアマネの更新を行います。',
     ]);
   }
 
-  // ケアマネ情報更新処理
+  // ケアマネ更新処理
   public function update(Request $request, $id)
   {
     $data = $request->session()->get('caremanagers_edit_data');
@@ -231,10 +231,10 @@ class CareManagersController extends Controller
     $request->session()->forget('caremanagers_edit_data');
     $request->session()->forget('caremanagers_edit_id');
 
-    return redirect()->route('caremanagers.index')->with('success', 'ケアマネ情報を更新しました。');
+    return redirect()->route('caremanagers.index')->with('success', 'ケアマネを更新しました。');
   }
 
-  // ケアマネ情報のラベル取得
+  // ケアマネのラベル取得
   private function getCareManagerLabels()
   {
     return [
@@ -256,10 +256,10 @@ class CareManagersController extends Controller
     ];
   }
 
-  // ケアマネ情報削除
+  // ケアマネ削除
   public function destroy($id)
   {
     DB::table('caremanagers')->where('id', $id)->delete();
-    return redirect()->route('caremanagers.index')->with('success', 'ケアマネ情報を削除しました。');
+    return redirect()->route('caremanagers.index')->with('success', 'ケアマネを削除しました。');
   }
 }

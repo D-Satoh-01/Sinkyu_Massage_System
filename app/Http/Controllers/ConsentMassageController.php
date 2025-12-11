@@ -372,7 +372,7 @@ class ConsentMassageController extends Controller
     private function getMasterData()
     {
         return [
-            'doctors' => Doctor::orderBy('doctor_name')->get(),
+            'doctors' => Doctor::orderBy('last_name')->orderBy('first_name')->get(),
             'diseaseNames' => Illness::orderBy('illness_name')->get(),
             'billingCategories' => BillCategory::orderBy('bill_category')->get(),
             'outcomes' => Outcome::orderBy('outcome')->get(),

@@ -3,7 +3,7 @@
 
 <x-app-layout>
   <x-page-header
-    title="医師情報"
+    title="医師"
     :breadcrumbs="App\Support\Breadcrumbs::generate('doctors.index')"
   />
 
@@ -13,7 +13,7 @@
 
   <br><br>
 
-  <!-- 医師情報一覧テーブル -->
+  <!-- 医師一覧テーブル -->
   <table id="doctorTable" class="table table-bordered table-striped">
   <thead>
     <tr>

@@ -17,7 +17,9 @@
       "Bash(del temp_get_tables.php temp_check_tables.php temp_check_data.php)",
       "Bash(del:*)",
       "Bash(cat:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

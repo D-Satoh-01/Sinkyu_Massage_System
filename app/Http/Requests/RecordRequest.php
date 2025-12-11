@@ -5,6 +5,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\DB;
 
 class RecordRequest extends FormRequest
 {
@@ -34,18 +35,35 @@ class RecordRequest extends FormRequest
    */
   public function rules(): array
   {
+    // 営業時間を取得
+    $clinicInfo = DB::table('clinic_info')->first();
+    $businessHoursStart = $clinicInfo->business_hours_start ?? null;
+    $businessHoursEnd = $clinicInfo->business_hours_end ?? null;
+
     return [
       'clinic_user_id' => 'required|integer|exists:clinic_users,id',
-      'start_time' => ['required', 'date_format:H:i', function ($_, $value, $fail) {
+      'start_time' => ['required', 'date_format:H:i', function ($_, $value, $fail) use ($businessHoursStart, $businessHoursEnd) {
         $minutes = (int) substr($value, 3, 2);
         if ($minutes % 10 !== 0) {
           $fail('開始時刻は10分刻みで入力してください。');
         }
+        // 営業時間チェック
+        if ($businessHoursStart && $businessHoursEnd) {
+          if ($value < $businessHoursStart || $value >= $businessHoursEnd) {
+            $fail('開始時刻は営業時間 (' . substr($businessHoursStart, 0, 5) . '～' . substr($businessHoursEnd, 0, 5) . ') の範囲内で入力してください。');
+          }
+        }
       }],
-      'end_time' => ['required', 'date_format:H:i', 'after:start_time', function ($_, $value, $fail) {
+      'end_time' => ['required', 'date_format:H:i', 'after:start_time', function ($_, $value, $fail) use ($businessHoursStart, $businessHoursEnd) {
         $minutes = (int) substr($value, 3, 2);
         if ($minutes % 10 !== 0) {
           $fail('終了時刻は10分刻みで入力してください。');
+        }
+        // 営業時間チェック
+        if ($businessHoursStart && $businessHoursEnd) {
+          if ($value < $businessHoursStart || $value > $businessHoursEnd) {
+            $fail('終了時刻は営業時間 (' . substr($businessHoursStart, 0, 5) . '～' . substr($businessHoursEnd, 0, 5) . ') の範囲内で入力してください。');
+          }
         }
       }],
       'therapy_type' => 'required|in:1,2',

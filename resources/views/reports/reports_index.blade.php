@@ -121,7 +121,7 @@
               @else
                 <!-- 報告書データなし -->
                 <div class="d-flex align-items-center">
-                  <div class="fw-bold fs-5 mb-0">{{ $item['year'] }}年 {{ sprintf('%02d', $item['month']) }}月</div>
+                  <div class="fw-bold fs-5 mb-0">{{ $item['year'] }}年 {{ $item['month'] }}月</div>
                   <div class="vr ms-3 me-5" style="height: 1.4rem; position: relative; top: 0.3rem;"></div>
                   <span class="text-secondary me-3">該当データなし</span>
                   <a href="{{ route('reports.create', ['clinic_user_id' => $selectedUserId, 'year' => $item['year'], 'month' => $item['month']]) }}">

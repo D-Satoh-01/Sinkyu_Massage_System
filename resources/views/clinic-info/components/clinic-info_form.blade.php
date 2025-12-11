@@ -266,7 +266,7 @@
   <br>
 
   <div class="mb-3">
-    <label class="fw-semibold">はり師免許情報</label><br>
+    <label class="fw-semibold">はり師免許</label><br>
     <label for="license_hari_number">はり師免許番号</label>
     @error('license_hari_number')
       <span class="text-danger ms-2">{{ $message }}</span>
@@ -287,7 +287,7 @@
   <br>
 
   <div class="mb-3">
-    <label class="fw-semibold">きゅう師免許情報</label><br>
+    <label class="fw-semibold">きゅう師免許</label><br>
     <label for="license_kyu_number">きゅう師免許番号</label>
     @error('license_kyu_number')
       <span class="text-danger ms-2">{{ $message }}</span>
@@ -308,7 +308,7 @@
   <br>
 
   <div class="mb-3">
-    <label class="fw-semibold">あん摩・マッサージ師免許情報</label><br>
+    <label class="fw-semibold">あん摩・マッサージ師免許</label><br>
     <label for="license_massage_number">あん摩・マッサージ師免許番号</label>
     @error('license_massage_number')
       <span class="text-danger ms-2">{{ $message }}</span>

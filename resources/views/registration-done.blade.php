@@ -14,7 +14,7 @@
   <p>{{ $message }}</p><br>
 
   <a href="{{ route($index_route, $index_id) }}">
-  <button>◀ 利用者情報一覧に戻る</button>
+  <button>◀ 利用者一覧に戻る</button>
   </a>
 
   @if($list_route)

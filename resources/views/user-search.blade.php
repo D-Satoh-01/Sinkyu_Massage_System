@@ -10,7 +10,7 @@
 </head>
 <body>
   <div class="d-flex gap-3">
-    <!-- 左側: 利用者情報表示ボックス -->
+    <!-- 左側: 利用者表示ボックス -->
     <div class="flex-shrink-0" style="width: 20rem;">
       <fieldset id="selected-user-box">
         <legend><button type="button" id="select-user-btn">この利用者を選択</button></legend>
@@ -203,7 +203,7 @@
       let selectedKatakanaChars = [];
       let currentSelectedUserId = null;
 
-      // 選択利用者情報を表示
+      // 選択利用者を表示
       function displayUserInfo(option) {
         if (!option) {
           selectedUserInfo.innerHTML = '<p>利用者が選択されていません</p>';
@@ -244,7 +244,7 @@
         resizeToContent();
       }
 
-      // 利用者一覧クリックで選択利用者情報を表示
+      // 利用者一覧クリックで選択利用者を表示
       userList.addEventListener('click', function() {
         const selected = userList.options[userList.selectedIndex];
         displayUserInfo(selected);

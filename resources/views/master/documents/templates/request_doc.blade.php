@@ -14,29 +14,27 @@
   </style>
 </head>
 <body class="pdf-request-doc">
-  <div class="title">御 依 頼 書</div>
+  <div class="title">御 侁E頼 書</div>
 
   <div class="date">
-    {{ date('Y年 m月 d日', strtotime($document->created_at)) }}
+    {{ date('Y年 m朁Ed日', strtotime($document->created_at)) }}
   </div>
 
   <div class="recipient">
-    御担当医 御机下
-  </div>
+    御拁E��医 御机丁E  </div>
 
   <div class="content-area">{{ $document->content ?? '' }}</div>
 
   <div class="handwrite-area">
-    記<br>
-    氏名：<br>
-    発病：
-  </div>
+    訁Ebr>
+    氏名�E�Ebr>
+    発痁E��E  </div>
 
   <div class="clinic-info">
-    〒 {{ $clinicInfo->postal_code ?? '郵便番号' }}{{ $clinicInfo->address_1 ?? '住所' }}{{ $clinicInfo->address_2 ?? '' }}{{ $clinicInfo->address_3 ?? '' }}<br>
-    TEL：{{ $clinicInfo->phone ?? '電話番号' }}<br>
-    {{ $clinicInfo->clinic_name ?? '事業所名' }}<br>
-    {{ $clinicInfo->owner_name ?? '代表者名' }}
+    、E{{ $clinicInfo->postal_code ?? '郵便番号' }}{{ $clinicInfo->address_1 ?? '住所' }}{{ $clinicInfo->address_2 ?? '' }}{{ $clinicInfo->address_3 ?? '' }}<br>
+    TEL�E�{{ $clinicInfo->phone ?? '電話番号' }}<br>
+    {{ $clinicInfo->clinic_name ?? '事業所吁E }}<br>
+    {{ $clinicInfo->owner_name ?? '代表老E��' }}
   </div>
 </body>
 </html>

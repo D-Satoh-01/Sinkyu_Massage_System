@@ -25,6 +25,9 @@ class RecordsController extends Controller
    */
   public function index(Request $request)
   {
+    // デバッグログ：リクエストパラメータ確認
+    \Log::info('[DEBUG RecordsController::index] リクエストパラメータ:', $request->all());
+
     // clinic_infoテーブルから定休日情報を取得
     $clinicInfo = DB::table('clinic_info')->first();
     $closedDays = [
@@ -47,6 +50,22 @@ class RecordsController extends Controller
     // 選択された利用者ID
     $selectedUserId = $request->input('clinic_user_id');
 
+    // 選択された施術者ID（スケジュール画面から遷移時に使用）
+    $selectedTherapistId = $request->input('therapist_id');
+
+    // 開始日時（スケジュール画面から遷移時に使用）
+    $scheduleStartDate = $request->input('start_date');
+    $scheduleStartTime = $request->input('start_time');
+
+    // デバッグログ：スケジュール関連パラメータ確認
+    \Log::info('[DEBUG RecordsController::index] スケジュール関連パラメータ:', [
+      'selectedUserId' => $selectedUserId,
+      'selectedTherapistId' => $selectedTherapistId,
+      'scheduleStartDate' => $scheduleStartDate,
+      'scheduleStartTime' => $scheduleStartTime,
+      'from' => $request->input('from'),
+    ]);
+
     // 利用者が選択されている場合、関連データを取得
     $insurances = null;
     $latestInsuranceId = null;
@@ -54,8 +73,16 @@ class RecordsController extends Controller
     $consentsMassage = null;
     $hasRecentRecords = false;
     $records = collect();
-    $selectedYear = null;
-    $selectedMonth = null;
+
+    // 選択された年月を取得（デフォルトは開始日の年月、なければ現在の年月）
+    if ($scheduleStartDate) {
+      $startDateObj = new \DateTime($scheduleStartDate);
+      $selectedYear = $request->input('year', $startDateObj->format('Y'));
+      $selectedMonth = $request->input('month', $startDateObj->format('m'));
+    } else {
+      $selectedYear = $request->input('year', date('Y'));
+      $selectedMonth = $request->input('month', date('m'));
+    }
 
     if ($selectedUserId) {
       // 保険情報を取得（有効期限の降順）
@@ -89,10 +116,6 @@ class RecordsController extends Controller
         ->where('clinic_user_id', $selectedUserId)
         ->where('date', '>=', $oneMonthAgo)
         ->exists();
-
-      // 選択された年月を取得（デフォルトは現在の年月）
-      $selectedYear = $request->input('year', date('Y'));
-      $selectedMonth = $request->input('month', date('m'));
 
       // 選択された年月の実績データを取得
       $startDate = sprintf('%04d-%02d-01', $selectedYear, $selectedMonth);
@@ -151,6 +174,9 @@ class RecordsController extends Controller
       'closedDays' => $closedDays,
       'clinicUsers' => $clinicUsers,
       'selectedUserId' => $selectedUserId,
+      'selectedTherapistId' => $selectedTherapistId,
+      'startDate' => $scheduleStartDate,
+      'startTime' => $scheduleStartTime,
       'insurances' => $insurances,
       'latestInsuranceId' => $latestInsuranceId,
       'consentsAcupuncture' => $consentsAcupuncture,
@@ -174,7 +200,13 @@ class RecordsController extends Controller
    */
   public function store(RecordRequest $request)
   {
+    // デバッグログ：リクエストデータ確認
+    \Log::info('[DEBUG RecordsController::store] リクエストデータ:', $request->all());
+
     $validated = $request->validated();
+
+    // デバッグログ：バリデーション済みデータ確認
+    \Log::info('[DEBUG RecordsController::store] バリデーション済みデータ:', $validated);
 
     try {
       DB::beginTransaction();
@@ -182,8 +214,18 @@ class RecordsController extends Controller
       // 往療距離の配列を取得
       $housecallDistances = $request->input('housecall_distance', []);
 
+      // デバッグログ：往療距離配列確認
+      \Log::info('[DEBUG RecordsController::store] 往療距離配列:', $housecallDistances);
+      \Log::info('[DEBUG RecordsController::store] 往療距離配列の要素数:', ['count' => count($housecallDistances)]);
+
       // 選択された日付ごとにレコードを作成
       foreach ($housecallDistances as $date => $distance) {
+        // デバッグログ：各日付のレコード作成前
+        \Log::info('[DEBUG RecordsController::store] レコード作成中:', [
+          'date' => $date,
+          'distance' => $distance,
+        ]);
+
         // recordsテーブルにデータを挿入
         $recordId = DB::table('records')->insertGetId([
           'clinic_user_id' => $validated['clinic_user_id'],
@@ -203,6 +245,9 @@ class RecordsController extends Controller
           'created_at' => now(),
           'updated_at' => now(),
         ]);
+
+        // デバッグログ：レコード作成完了
+        \Log::info('[DEBUG RecordsController::store] レコード作成完了: recordId=' . $recordId);
 
         // あんま･マッサージの場合、bodyparts-recordsテーブルに身体部位を保存
         if ($validated['therapy_type'] == 2 && isset($validated['bodyparts'])) {
@@ -270,9 +315,22 @@ class RecordsController extends Controller
 
       DB::commit();
 
-      return redirect()
-        ->route('records.index', ['clinic_user_id' => $validated['clinic_user_id']])
-        ->with('success', '実績データを登録しました。');
+      // デバッグログ：コミット完了
+      \Log::info('[DEBUG RecordsController::store] トランザクションコミット完了');
+      \Log::info('[DEBUG RecordsController::store] fromパラメータ: ' . $request->input('from'));
+
+      // fromパラメータがscheduleの場合はスケジュール画面に、それ以外は実績データ画面にリダイレクト
+      if ($request->input('from') === 'schedule') {
+        \Log::info('[DEBUG RecordsController::store] スケジュール画面へリダイレクト');
+        return redirect()
+          ->route('schedules.index')
+          ->with('success', '実績データを登録しました。');
+      } else {
+        \Log::info('[DEBUG RecordsController::store] 実績データ画面へリダイレクト');
+        return redirect()
+          ->route('records.index', ['clinic_user_id' => $validated['clinic_user_id']])
+          ->with('success', '実績データを登録しました。');
+      }
 
     } catch (\Exception $e) {
       DB::rollBack();
@@ -286,10 +344,11 @@ class RecordsController extends Controller
   /**
    * 実績データ編集画面を表示
    *
+   * @param Request $request
    * @param int $id
    * @return \Illuminate\View\View
    */
-  public function edit($id)
+  public function edit(Request $request, $id)
   {
     // 同一グループの実績データを取得（最初のレコードを代表として取得）
     $record = DB::table('records')
@@ -396,6 +455,7 @@ class RecordsController extends Controller
       'therapists' => $therapists,
       'therapyContents' => $therapyContents,
       'selectedBodyparts' => $selectedBodyparts,
+      'from' => $request->input('from'),
       'page_header_title' => '実績データ編集',
     ]);
   }
@@ -536,9 +596,16 @@ class RecordsController extends Controller
 
       DB::commit();
 
-      return redirect()
-        ->route('records.index', ['clinic_user_id' => $validated['clinic_user_id']])
-        ->with('success', '実績データを更新しました。');
+      // fromパラメータがscheduleの場合はスケジュール画面に、それ以外は実績データ画面にリダイレクト
+      if ($request->input('from') === 'schedule') {
+        return redirect()
+          ->route('schedules.index')
+          ->with('success', '実績データを更新しました。');
+      } else {
+        return redirect()
+          ->route('records.index', ['clinic_user_id' => $validated['clinic_user_id']])
+          ->with('success', '実績データを更新しました。');
+      }
 
     } catch (\Exception $e) {
       DB::rollBack();

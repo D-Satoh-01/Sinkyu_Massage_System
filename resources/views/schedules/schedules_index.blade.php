@@ -19,7 +19,7 @@
               {{ $therapist->last_name }} {{ $therapist->first_name }}
             </option>
           @endforeach
-          <option value="all" {{ $selectedTherapistId === 'all' ? 'selected' : '' }}>[ 全ての施術データを表示 ]</option>
+          <option value="all" {{ $selectedTherapistId === 'all' ? 'selected' : '' }}>［ 全表示 ］</option>
         </select>
       </div>
     </div>
@@ -122,7 +122,6 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
           <button type="button" class="btn btn-primary" id="edit-record-btn">編集</button>
         </div>
       </div>
@@ -138,21 +137,30 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <div class="mb-2 d-flex align-items-start">
+          <div class="mb-3 d-flex align-items-start">
             <strong class="me-2">開始日時：</strong>
             <span id="new-start-datetime"></span>
           </div>
-          <div class="mb-2">
-            <strong class="me-2">利用者氏名：</strong>
-            <input type="text" class="form-control" id="new-user-name" readonly placeholder="未選択">
+          <div class="mb-3">
+            <label for="new-user-select" class="form-label fw-bold">利用者</label>
+            <select class="form-select" id="new-user-select">
+              <option value="">╌╌╌</option>
+              @foreach($clinicUsers as $user)
+                <option value="{{ $user->id }}">{{ $user->last_name }} {{ $user->first_name }}</option>
+              @endforeach
+            </select>
           </div>
-          <div class="mb-2">
-            <strong class="me-2">施術者：</strong>
-            <input type="text" class="form-control" id="new-therapist-name" readonly placeholder="未選択">
+          <div class="mb-3">
+            <label for="new-therapist-select" class="form-label fw-bold">施術者</label>
+            <select class="form-select" id="new-therapist-select">
+              <option value="">╌╌╌</option>
+              @foreach($therapists as $therapist)
+                <option value="{{ $therapist->id }}">{{ $therapist->last_name }} {{ $therapist->first_name }}</option>
+              @endforeach
+            </select>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
           <button type="button" class="btn btn-primary" id="go-to-registration-btn">登録画面へ</button>
         </div>
       </div>
@@ -193,8 +201,10 @@
         businessHoursStart: '{{ $businessHoursStart }}',
         businessHoursEnd: '{{ $businessHoursEnd }}',
         timeSlots: @json($timeSlots),
+        closedDays: @json($closedDays),
         dataUrl: '{{ route("schedules.data") }}',
         recordsIndexUrl: '{{ route("records.index") }}',
+        recordsEditUrlBase: '{{ url("records") }}',
         recordsStartYear: {{ $recordsStartYear }},
         recordsStartMonth: {{ $recordsStartMonth }},
         futureMonths: {{ $futureMonths }}

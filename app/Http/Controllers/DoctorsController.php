@@ -10,7 +10,7 @@ use App\Http\Requests\DoctorRequest;
 
 class DoctorsController extends Controller
 {
-  // 医師情報一覧表示
+  // 医師一覧表示
   public function index()
   {
     // DataTablesを使用するため、全件取得
@@ -26,7 +26,7 @@ class DoctorsController extends Controller
     return view('doctors.doctors_index', compact('doctors'));
   }
 
-  // 医師情報新規登録画面表示
+  // 医師新規登録画面表示
   public function create()
   {
     // セッションに保存されたデータがあれば、それをフラッシュデータとして設定
@@ -45,13 +45,13 @@ class DoctorsController extends Controller
 
     return view('doctors.doctors_registration', [
       'mode' => 'create',
-      'page_header_title' => '医師情報‐登録 (新規)',
+      'page_header_title' => '医師‐登録 (新規)',
       'doctor' => null,
       'medicalInstitutions' => $medicalInstitutions
     ]);
   }
 
-  // 医師情報新規登録：確認画面の表示
+  // 医師新規登録：確認画面の表示
   public function confirm(DoctorRequest $request)
   {
     $validated = $request->validated();
@@ -67,13 +67,13 @@ class DoctorsController extends Controller
       'labels' => $labels,
       'back_route' => 'doctors.create',
       'store_route' => 'doctors.store',
-      'registration_message' => '医師情報の登録を行います。',
+      'registration_message' => '医師の登録を行います。',
       'breadcrumb_name' => 'doctors.confirm',
-      'page_header_title' => '医師情報‐登録 (新規)',
+      'page_header_title' => '医師‐登録 (新規)',
     ]);
   }
 
-  // 医師情報新規登録処理
+  // 医師新規登録処理
   public function store(Request $request)
   {
     // セッションからデータを取得
@@ -117,10 +117,10 @@ class DoctorsController extends Controller
     // セッションから登録データを削除
     $request->session()->forget('doctor_registration_data');
 
-    return redirect()->route('doctors.index')->with('success', '医師情報を登録しました。');
+    return redirect()->route('doctors.index')->with('success', '医師を登録しました。');
   }
 
-  // 医師情報編集画面表示
+  // 医師編集画面表示
   public function edit($id)
   {
     // セッションに保存されたデータがあれば、それをフラッシュデータとして設定
@@ -137,7 +137,7 @@ class DoctorsController extends Controller
     $doctor = DB::table('doctors')->where('id', $id)->first();
 
     if (!$doctor) {
-      return redirect()->route('doctors.index')->with('error', '医師情報が見つかりません。');
+      return redirect()->route('doctors.index')->with('error', '医師が見つかりません。');
     }
 
     $medicalInstitutions = DB::table('medical_institutions')
@@ -146,13 +146,13 @@ class DoctorsController extends Controller
 
     return view('doctors.doctors_registration', [
       'mode' => 'edit',
-      'page_header_title' => '医師情報‐登録 (編集)',
+      'page_header_title' => '医師‐登録 (編集)',
       'doctor' => $doctor,
       'medicalInstitutions' => $medicalInstitutions
     ]);
   }
 
-  // 医師情報編集：確認画面の表示
+  // 医師編集：確認画面の表示
   public function editConfirm(DoctorRequest $request, $id)
   {
     $validated = $request->validated();
@@ -172,11 +172,11 @@ class DoctorsController extends Controller
       'store_route' => 'doctors.update',
       'registration_message' => '',
       'breadcrumb_name' => 'doctors.edit.confirm',
-      'page_header_title' => '医師情報‐登録 (編集)',
+      'page_header_title' => '医師‐登録 (編集)',
     ]);
   }
 
-  // 医師情報更新処理
+  // 医師更新処理
   public function update(Request $request, $id)
   {
     $data = $request->session()->get('doctors_edit_data');
@@ -220,10 +220,10 @@ class DoctorsController extends Controller
     $request->session()->forget('doctors_edit_data');
     $request->session()->forget('doctors_edit_id');
 
-    return redirect()->route('doctors.index')->with('success', '医師情報を更新しました。');
+    return redirect()->route('doctors.index')->with('success', '医師を更新しました。');
   }
 
-  // 医師情報複製画面表示
+  // 医師複製画面表示
   public function duplicate($id)
   {
     // セッションに保存されたデータがあれば、それをフラッシュデータとして設定
@@ -238,7 +238,7 @@ class DoctorsController extends Controller
     $doctor = DB::table('doctors')->where('id', $id)->first();
 
     if (!$doctor) {
-      return redirect()->route('doctors.index')->with('error', '医師情報が見つかりません。');
+      return redirect()->route('doctors.index')->with('error', '医師が見つかりません。');
     }
 
     $medicalInstitutions = DB::table('medical_institutions')
@@ -247,13 +247,13 @@ class DoctorsController extends Controller
 
     return view('doctors.doctors_registration', [
       'mode' => 'duplicate',
-      'page_header_title' => '医師情報‐登録 (複製)',
+      'page_header_title' => '医師‐登録 (複製)',
       'doctor' => $doctor,
       'medicalInstitutions' => $medicalInstitutions
     ]);
   }
 
-  // 医師情報複製：確認画面の表示
+  // 医師複製：確認画面の表示
   public function duplicateConfirm(DoctorRequest $request)
   {
     $validated = $request->validated();
@@ -271,13 +271,13 @@ class DoctorsController extends Controller
       'back_route' => 'doctors.duplicate',
       'back_id' => $validated['source_doctor_id'],
       'store_route' => 'doctors.duplicate.store',
-      'registration_message' => '医師情報の複製登録を行います。',
+      'registration_message' => '医師の複製登録を行います。',
       'breadcrumb_name' => 'doctors.duplicate.confirm',
-      'page_header_title' => '医師情報‐登録 (複製)',
+      'page_header_title' => '医師‐登録 (複製)',
     ]);
   }
 
-  // 医師情報複製登録処理
+  // 医師複製登録処理
   public function duplicateStore(Request $request)
   {
     $data = $request->session()->get('doctors_duplicate_data');
@@ -320,10 +320,10 @@ class DoctorsController extends Controller
     // セッションから複製データを削除
     $request->session()->forget('doctors_duplicate_data');
 
-    return redirect()->route('doctors.index')->with('success', '医師情報を複製登録しました。');
+    return redirect()->route('doctors.index')->with('success', '医師を複製登録しました。');
   }
 
-  // 医師情報のラベル取得
+  // 医師のラベル取得
   private function getDoctorLabels()
   {
     return [
@@ -344,10 +344,10 @@ class DoctorsController extends Controller
     ];
   }
 
-  // 医師情報削除
+  // 医師削除
   public function destroy($id)
   {
     DB::table('doctors')->where('id', $id)->delete();
-    return redirect()->route('doctors.index')->with('success', '医師情報を削除しました。');
+    return redirect()->route('doctors.index')->with('success', '医師を削除しました。');
   }
 }

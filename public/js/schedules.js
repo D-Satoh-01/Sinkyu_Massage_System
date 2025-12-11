@@ -5,6 +5,9 @@ let currentDate = new Date();
 let viewMode = 'week'; // 'week' or 'month'
 let scheduleData = [];
 let selectedRecordId = null;
+let newEventDate = null;
+let newEventHour = null;
+let newEventMinute = null;
 
 // 週ビューの仮想化設定
 const WEEK_RENDER_BUFFER = 3; // 表示中週の前後に何週分描画するか
@@ -182,13 +185,57 @@ function initializeEventListeners() {
   // 編集ボタン
   document.getElementById('edit-record-btn').addEventListener('click', function() {
     if (selectedRecordId) {
-      window.location.href = window.scheduleConfig.recordsIndexUrl + '?edit=' + selectedRecordId;
+      window.location.href = window.scheduleConfig.recordsEditUrlBase + '/' + selectedRecordId + '/edit?from=schedule';
     }
   });
 
   // 登録画面へボタン
-  document.getElementById('go-to-registration-btn').addEventListener('click', function() {
-    window.location.href = window.scheduleConfig.recordsIndexUrl;
+  const registrationBtn = document.getElementById('go-to-registration-btn');
+  registrationBtn.addEventListener('click', function(e) {
+    const userId = document.getElementById('new-user-select').value;
+    const therapistId = document.getElementById('new-therapist-select').value;
+
+    console.log('[DEBUG schedules.js] 登録画面へボタンクリック');
+    console.log('[DEBUG schedules.js] userId:', userId);
+    console.log('[DEBUG schedules.js] therapistId:', therapistId);
+
+    if (!userId) {
+      showCursorWarning(e, '利用者を選択してください');
+      return;
+    }
+    if (!therapistId) {
+      showCursorWarning(e, '施術者を選択してください');
+      return;
+    }
+
+    // 開始日時をURLパラメータに追加
+    const startDate = formatDate(newEventDate);
+    const startTime = `${newEventHour}:${String(newEventMinute).padStart(2, '0')}`;
+
+    console.log('[DEBUG schedules.js] startDate:', startDate);
+    console.log('[DEBUG schedules.js] startTime:', startTime);
+    console.log('[DEBUG schedules.js] from:', 'schedule');
+
+    const targetUrl = window.scheduleConfig.recordsIndexUrl +
+      '?clinic_user_id=' + userId +
+      '&therapist_id=' + therapistId +
+      '&start_date=' + startDate +
+      '&start_time=' + startTime +
+      '&from=schedule';
+
+    console.log('[DEBUG schedules.js] 遷移先URL:', targetUrl);
+
+    window.location.href = targetUrl;
+  });
+
+  // 利用者選択変更時に警告を非表示
+  document.getElementById('new-user-select').addEventListener('change', function() {
+    hideCursorWarning();
+  });
+
+  // 施術者選択変更時に警告を非表示
+  document.getElementById('new-therapist-select').addEventListener('change', function() {
+    hideCursorWarning();
   });
 
   // モーダルを閉じる処理
@@ -208,6 +255,29 @@ function initializeEventListeners() {
 function navigateSchedule(direction) {
   if (viewMode === 'week') {
     const container = document.getElementById('schedule-container');
+    if (container) {
+      const headerRow = document.getElementById('week-header-row');
+      if (headerRow) {
+        const dayColumns = headerRow.querySelectorAll('th:not(:first-child)');
+        if (dayColumns.length > 0) {
+          const dayColumnWidth = dayColumns[0].offsetWidth;
+          const currentScrollLeft = container.scrollLeft;
+
+          // 現在のスクロール位置から1週間分（7列）移動
+          const weekWidth = dayColumnWidth * 7;
+          const newScrollLeft = currentScrollLeft + (direction * weekWidth);
+
+          // 列境界に調整
+          const adjustedScrollLeft = Math.round(newScrollLeft / dayColumnWidth) * dayColumnWidth;
+
+          currentDate.setDate(currentDate.getDate() + (direction * 7));
+          loadScheduleData(true, adjustedScrollLeft);
+          return;
+        }
+      }
+    }
+
+    // フォールバック：列幅が取得できない場合
     const preservedScrollLeft = container ? container.scrollLeft : 0;
     currentDate.setDate(currentDate.getDate() + (direction * 7));
     loadScheduleData(true, preservedScrollLeft);
@@ -245,15 +315,20 @@ function loadScheduleData(preserveScroll = false, preservedScrollLeft = 0) {
   const therapistId = document.getElementById('therapist-select').value;
   const dateRange = getDateRange();
 
-  fetch(`${window.scheduleConfig.dataUrl}?therapist_id=${therapistId}&start_date=${dateRange.start}&end_date=${dateRange.end}`)
+  const url = `${window.scheduleConfig.dataUrl}?therapist_id=${therapistId}&start_date=${dateRange.start}&end_date=${dateRange.end}`;
+  console.log('[DEBUG schedules.js] データ読み込み開始:', url);
+
+  fetch(url)
     .then(response => response.json())
     .then(data => {
+      console.log('[DEBUG schedules.js] データ取得完了:', data.length, '件');
+      console.log('[DEBUG schedules.js] データ詳細:', data);
       scheduleData = data;
       renderSchedule(preserveScroll, preservedScrollLeft);
       updateHeaderDisplay();
     })
     .catch(error => {
-      console.error('スケジュールデータの読み込みエラー:', error);
+      console.error('[DEBUG schedules.js] スケジュールデータの読み込みエラー:', error);
     });
 }
 
@@ -298,6 +373,16 @@ function formatDate(date) {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
+}
+
+// 休診日判定
+function isClosedDay(date) {
+  const closedDays = window.scheduleConfig?.closedDays;
+  if (!closedDays) return false;
+
+  const dayOfWeek = date.getDay(); // 0=日曜, 1=月曜, ..., 6=土曜
+  const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  return closedDays[dayNames[dayOfWeek]] === 1;
 }
 
 // ヘッダー表示を更新
@@ -386,7 +471,7 @@ function renderWeekView(preserveScrollPosition = false, preservedScrollLeft = 0)
     const startHour = parseInt(window.scheduleConfig.businessHoursStart.split(':')[0]);
     const endHour = parseInt(window.scheduleConfig.businessHoursEnd.split(':')[0]);
     for (let h = startHour; h <= endHour; h++) {
-      timeSlots.push(`${String(h).padStart(2, '0')}:00`);
+      timeSlots.push(`${h}:00`);
     }
   }
   weekViewConfig.timeSlots = timeSlots;
@@ -399,15 +484,32 @@ function renderWeekView(preserveScrollPosition = false, preservedScrollLeft = 0)
     if (preserveScrollPosition && container) {
       container.scrollLeft = savedScrollLeft;
     } else {
+      // 初回読み込み時は現在日が表示されるように列境界に合わせてスクロール
       const headerRow = document.getElementById('week-header-row');
       if (headerRow && container) {
         const dayColumns = headerRow.querySelectorAll('th:not(:first-child)');
         if (dayColumns.length > 0) {
           const dayColumnWidth = dayColumns[0].offsetWidth;
-          const weekWidth = dayColumnWidth * 7;
+
+          // 現在日（今日）を計算
+          const today = new Date();
+          const todayDayOfWeek = today.getDay(); // 0(日)〜6(土)
+
+          // 描画範囲内での現在週の位置を計算
+          // currentWeekIndexは全体での週番号、startWeekIndexは描画開始位置
           const relativeWeekIndex = currentWeekIndex - startWeekIndex;
-          const scrollPosition = weekWidth * relativeWeekIndex;
-          container.scrollLeft = scrollPosition;
+
+          // 現在週の開始位置 + 今日の曜日分のオフセット
+          const currentDayPosition = (relativeWeekIndex * 7 + todayDayOfWeek) * dayColumnWidth;
+
+          // 画面中央付近に表示されるようにスクロール位置を計算
+          const containerWidth = container.clientWidth;
+          const targetScrollPosition = currentDayPosition - (containerWidth / 2) + (dayColumnWidth / 2);
+
+          // 列の境界に合わせて調整（最も近い列の左端にスナップ）
+          const scrollPosition = Math.round(targetScrollPosition / dayColumnWidth) * dayColumnWidth;
+
+          container.scrollLeft = Math.max(0, scrollPosition);
         }
       }
     }
@@ -415,6 +517,13 @@ function renderWeekView(preserveScrollPosition = false, preservedScrollLeft = 0)
     setTimeout(() => {
       updateVisibleWeekDisplay();
     }, 100);
+
+    // 全ての処理完了後、1秒後に現在時刻の行へ垂直スクロール（初回読み込み時のみ）
+    if (!preserveScrollPosition) {
+      setTimeout(() => {
+        scrollToCurrentTime();
+      }, 1000);
+    }
   });
 }
 
@@ -460,7 +569,6 @@ function renderWeekHeaders(displayStartWeek, currentWeekStart, dayColumnWidth, s
 // 指定範囲の週のセルを生成してイベントをレンダリング
 function renderWeekRangeWithCells(startWeekIndex, endWeekIndex, displayStartWeek, currentWeekStart, timeSlots, tbody) {
   const dayColumnWidth = weekViewConfig.dayColumnWidth || 150;
-  const baseWeekIndex = weekViewConfig.renderStartWeekIndex || 0;
 
   // tbodyの行が存在しない場合は作成
   if (tbody.children.length === 0) {
@@ -482,17 +590,19 @@ function renderWeekRangeWithCells(startWeekIndex, endWeekIndex, displayStartWeek
 
   // 各行のセルを一括作成
   const rows = Array.from(tbody.querySelectorAll('tr'));
-  
+
   for (let weekIndex = startWeekIndex; weekIndex <= endWeekIndex; weekIndex++) {
     // すでにレンダリング済みならスキップ
-    if (weekViewConfig.renderedWeeks.has(weekIndex)) continue;
+    if (weekViewConfig.renderedWeeks.has(weekIndex)) {
+      continue;
+    }
 
     const weekStart = new Date(displayStartWeek);
     weekStart.setDate(weekStart.getDate() + (weekIndex * 7));
     const isCurrentWeek = weekStart.getTime() === currentWeekStart.getTime();
 
     // 週ごとに全行のセルをバッチ作成
-    rows.forEach((row, rowIndex) => {
+    rows.forEach((row) => {
       const hour = parseInt(row.dataset.hour);
       const minute = parseInt(row.dataset.minute);
       const fragment = document.createDocumentFragment();
@@ -509,35 +619,74 @@ function renderWeekRangeWithCells(startWeekIndex, endWeekIndex, displayStartWeek
         td.dataset.hour = hour;
         td.dataset.minute = minute;
 
-        if (isCurrentWeek) {
-          td.style.backgroundColor = '#f0f8ff';
+        // 休診日判定
+        const isClosed = isClosedDay(date);
+        if (isClosed) {
+          td.style.backgroundColor = '#e0e0e0';
+          td.style.cursor = 'default';
+        } else {
+          td.style.cursor = 'pointer';
+          if (isCurrentWeek) {
+            td.style.backgroundColor = '#f0f8ff';
+          }
         }
 
-        // イベントを追加（00分の行のみ）
-        if (minute === 0) {
-          const events = getEventsForDateTime(date, hour, minute);
+        // イベントを追加（全ての時刻行でチェック）
+        const events = getEventsForDateTime(date, hour, minute);
+        if (events.length > 0) {
           events.forEach(event => {
-            const eventDiv = createEventElement(event);
+            // このイベントの全期間で重複する全イベントを取得
+            const overlappingEvents = getOverlappingEventsForEvent(event);
+            const totalColumns = overlappingEvents.length;
+
+            // 重複イベントをID順にソートして一貫した順序を保証
+            overlappingEvents.sort((a, b) => a.id - b.id);
+
+            // 重複イベントの中でこのイベントのインデックスを取得
+            const columnIndex = overlappingEvents.findIndex(e => e.id === event.id);
+
+            if (totalColumns > 1) {
+              console.log('[DEBUG イベント追加] 複数カラム配置:', {
+                date: formatDate(date),
+                hour,
+                minute,
+                eventId: event.id,
+                user_name: event.user_name,
+                start_time: event.start_time,
+                end_time: event.end_time,
+                columnIndex,
+                totalColumns,
+                widthPercent: (100 / totalColumns),
+                leftPercent: (100 / totalColumns) * columnIndex,
+                overlappingEventIds: overlappingEvents.map(e => e.id)
+              });
+            }
+
+            const eventDiv = createEventElement(event, columnIndex, totalColumns);
             td.appendChild(eventDiv);
           });
         }
 
-        // クリックイベント
-        td.addEventListener('click', function(e) {
-          if (e.target.classList.contains('schedule-event') || e.target.closest('.schedule-event')) {
-            const eventElement = e.target.classList.contains('schedule-event') ? e.target : e.target.closest('.schedule-event');
-            showEventDetail(parseInt(eventElement.dataset.recordId));
-          } else {
-            showNewEventModal(date, hour, minute);
-          }
-        });
+        // クリックイベント（休診日以外）
+        if (!isClosed) {
+          td.addEventListener('click', function(e) {
+            if (e.target.classList.contains('schedule-event') || e.target.closest('.schedule-event')) {
+              const eventElement = e.target.classList.contains('schedule-event') ? e.target : e.target.closest('.schedule-event');
+              showEventDetail(parseInt(eventElement.dataset.recordId));
+            } else {
+              showNewEventModal(date, hour, minute);
+            }
+          });
+        }
 
         fragment.appendChild(td);
       }
 
       // フラグメントを一括挿入
-      const relativeWeekIndex = weekIndex - baseWeekIndex;
+      // startWeekIndexからの相対位置を計算
+      const relativeWeekIndex = weekIndex - startWeekIndex;
       const insertIndex = 1 + (relativeWeekIndex * 7);
+
       if (row.cells.length <= insertIndex) {
         row.appendChild(fragment);
       } else {
@@ -553,7 +702,7 @@ function renderWeekRangeWithCells(startWeekIndex, endWeekIndex, displayStartWeek
 function createTimeRow(hour, minute, isMainLine) {
   const tr = document.createElement('tr');
   tr.style.height = '20px';
-  tr.style.borderTop = isMainLine ? '2px solid #ccc' : '1px dashed #ccc';
+  tr.style.borderTop = isMainLine ? '2px solid #ccc' : '1px solid #ccc';
   tr.dataset.hour = hour;
   tr.dataset.minute = minute;
 
@@ -565,7 +714,7 @@ function createTimeRow(hour, minute, isMainLine) {
   timeTd.style.maxWidth = '40px';
 
   if (minute === 0 || minute === 30) {
-    timeTd.textContent = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+    timeTd.textContent = `${hour}:${String(minute).padStart(2, '0')}`;
     timeTd.className = 'text-center fw-semibold p-0';
     timeTd.style.fontSize = '11px';
   }
@@ -604,6 +753,67 @@ function scrollToCurrentWeek() {
   const scrollPosition = weekWidth * relativeWeekIndex;
 
   container.scrollLeft = scrollPosition;
+}
+
+// 現在時刻の行を中央に表示
+function scrollToCurrentTime() {
+  const container = document.getElementById('schedule-container');
+  if (!container) return;
+
+  const tbody = document.getElementById('week-schedule-body');
+  if (!tbody) return;
+
+  // 現在時刻を取得
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+
+  // 10分単位に丸める
+  const roundedMinute = Math.floor(currentMinute / 10) * 10;
+
+  // 該当する時刻の行を検索
+  const rows = tbody.querySelectorAll('tr');
+  let targetRow = null;
+
+  for (const row of rows) {
+    const rowHour = parseInt(row.dataset.hour);
+    const rowMinute = parseInt(row.dataset.minute);
+
+    if (rowHour === currentHour && rowMinute === roundedMinute) {
+      targetRow = row;
+      break;
+    }
+  }
+
+  // 該当行が見つからない場合は最も近い行を探す
+  if (!targetRow && rows.length > 0) {
+    let minDiff = Infinity;
+    const currentTotalMinutes = currentHour * 60 + roundedMinute;
+
+    for (const row of rows) {
+      const rowHour = parseInt(row.dataset.hour);
+      const rowMinute = parseInt(row.dataset.minute);
+      const rowTotalMinutes = rowHour * 60 + rowMinute;
+      const diff = Math.abs(currentTotalMinutes - rowTotalMinutes);
+
+      if (diff < minDiff) {
+        minDiff = diff;
+        targetRow = row;
+      }
+    }
+  }
+
+  if (targetRow) {
+    // 行の位置を取得
+    const rowTop = targetRow.offsetTop;
+    const rowHeight = targetRow.offsetHeight;
+    const containerHeight = container.clientHeight;
+
+    // 行が中央に来るようにスクロール位置を計算
+    const scrollPosition = rowTop - (containerHeight / 2) + (rowHeight / 2);
+
+    container.scrollTop = Math.max(0, scrollPosition);
+  }
 }
 
 // 表示中の週の情報を更新
@@ -674,11 +884,11 @@ function updateVisibleWeekDisplay() {
   document.getElementById('current-month-day').textContent = `${startMonth}月 ${startDay}日 ~ ${endMonth}月 ${endDay}日`;
 }
 
-// 指定日時のイベントを取得
+// 指定日時のイベントを取得（開始時刻が一致するもののみ）
 function getEventsForDateTime(date, hour, minute) {
   const dateStr = formatDate(date);
 
-  return scheduleData.filter(event => {
+  const events = scheduleData.filter(event => {
     if (event.date !== dateStr) return false;
 
     const startTime = event.start_time;
@@ -687,10 +897,72 @@ function getEventsForDateTime(date, hour, minute) {
 
     return startHour === hour && startMin === minute;
   });
+
+  if (events.length > 0) {
+    console.log('[DEBUG getEventsForDateTime] イベント発見:', {
+      dateStr,
+      hour,
+      minute,
+      events
+    });
+  }
+
+  return events;
+}
+
+// 指定日時に進行中のすべてのイベントを取得（時間重複を検出）
+function getOverlappingEvents(date, hour, minute) {
+  const dateStr = formatDate(date);
+  const currentMinutes = hour * 60 + minute;
+
+  const overlapping = scheduleData.filter(event => {
+    if (event.date !== dateStr) return false;
+
+    const startParts = event.start_time.split(':');
+    const endParts = event.end_time.split(':');
+    const startMinutes = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
+    const endMinutes = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+
+    // 現在の時刻がイベントの開始時刻以降、終了時刻より前であれば進行中
+    return currentMinutes >= startMinutes && currentMinutes < endMinutes;
+  });
+
+  if (overlapping.length > 1) {
+    console.log('[DEBUG getOverlappingEvents] 重複イベント検出:', {
+      dateStr,
+      hour,
+      minute,
+      count: overlapping.length,
+      events: overlapping
+    });
+  }
+
+  return overlapping;
+}
+
+// 特定のイベントと時間重複する全てのイベントを取得
+function getOverlappingEventsForEvent(event) {
+  const startParts = event.start_time.split(':');
+  const endParts = event.end_time.split(':');
+  const eventStartMinutes = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
+  const eventEndMinutes = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+
+  return scheduleData.filter(otherEvent => {
+    if (otherEvent.date !== event.date) return false;
+    if (otherEvent.id === event.id) return true; // 自分自身は含める
+
+    const otherStartParts = otherEvent.start_time.split(':');
+    const otherEndParts = otherEvent.end_time.split(':');
+    const otherStartMinutes = parseInt(otherStartParts[0]) * 60 + parseInt(otherStartParts[1]);
+    const otherEndMinutes = parseInt(otherEndParts[0]) * 60 + parseInt(otherEndParts[1]);
+
+    // 時間範囲が重複しているかチェック
+    return !(eventEndMinutes <= otherStartMinutes || eventStartMinutes >= otherEndMinutes);
+  });
 }
 
 // イベント要素を作成
-function createEventElement(event) {
+function createEventElement(event, columnIndex = 0, totalColumns = 1) {
   const div = document.createElement('div');
   div.className = 'schedule-event';
 
@@ -704,20 +976,26 @@ function createEventElement(event) {
   // 高さを計算（10分 = 20px）
   const height = (duration / 10) * 20;
 
+  // 複数イベントがある場合、横幅を均等分割
+  const widthPercent = 100 / totalColumns;
+  const leftPercent = widthPercent * columnIndex;
+
   div.style.cssText = `
     position: absolute;
     top: 0;
-    left: 2px;
-    right: 2px;
+    left: ${leftPercent}%;
+    width: ${widthPercent}%;
     height: ${height}px;
     background-color: #007bff;
     color: white;
     padding: 2px 4px;
-    border-radius: 4px;
+    border-radius: 3px;
+    border: 1px solid #ffffffff;
     font-size: 0.8rem;
     cursor: pointer;
     overflow: hidden;
     z-index: 5;
+    box-sizing: border-box;
   `;
   div.dataset.recordId = event.id;
 
@@ -750,10 +1028,33 @@ function showEventDetail(recordId) {
 
 // 新規イベントモーダルを表示
 function showNewEventModal(date, hour, minute) {
-  const dateStr = formatDate(date);
-  const timeStr = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const dateTimeStr = `${year}年${month}月${day}日　${hour}時${String(minute).padStart(2, '0')}分`;
 
-  document.getElementById('new-start-datetime').textContent = `${dateStr} ${timeStr}`;
+  document.getElementById('new-start-datetime').textContent = dateTimeStr;
+
+  // 日時情報をグローバル変数に保存
+  newEventDate = date;
+  newEventHour = hour;
+  newEventMinute = minute;
+
+  // 施術者セレクトボックスの初期選択状態を設定
+  const currentTherapistId = document.getElementById('therapist-select').value;
+  const therapistSelect = document.getElementById('new-therapist-select');
+
+  if (currentTherapistId === 'all') {
+    therapistSelect.value = ''; // "╌╌╌" を選択
+  } else {
+    therapistSelect.value = currentTherapistId;
+  }
+
+  // 利用者選択をリセット
+  document.getElementById('new-user-select').value = '';
+
+  // 警告を非表示
+  hideCursorWarning();
 
   const modalElement = document.getElementById('new-event-modal');
   if (modalElement.parentElement !== document.body) {
@@ -763,8 +1064,59 @@ function showNewEventModal(date, hour, minute) {
   modalInstance.show();
 }
 
+// カーソル追従警告メッセージを表示
+let cursorWarningElement = null;
+let cursorWarningTimeout = null;
+
+function showCursorWarning(event, message) {
+  // 既存の警告を削除
+  hideCursorWarning();
+
+  // 警告要素を作成
+  cursorWarningElement = document.createElement('div');
+  cursorWarningElement.className = 'cursor-warning bg-danger text-white fw-medium px-3 py-2 rounded shadow';
+  cursorWarningElement.style.cssText = 'position: fixed; white-space: nowrap; z-index: 10000; pointer-events: none; font-size: 0.9rem;';
+  cursorWarningElement.textContent = message;
+
+  // カーソル位置に表示
+  cursorWarningElement.style.top = (event.clientY + 15) + 'px';
+  cursorWarningElement.style.left = (event.clientX + 10) + 'px';
+
+  document.body.appendChild(cursorWarningElement);
+
+  // 3秒後に自動削除
+  cursorWarningTimeout = setTimeout(() => {
+    hideCursorWarning();
+  }, 3000);
+
+  // マウス移動で警告を追従
+  document.addEventListener('mousemove', updateCursorWarningPosition);
+}
+
+function updateCursorWarningPosition(e) {
+  if (cursorWarningElement) {
+    cursorWarningElement.style.top = (e.clientY + 15) + 'px';
+    cursorWarningElement.style.left = (e.clientX + 10) + 'px';
+  }
+}
+
+function hideCursorWarning() {
+  if (cursorWarningElement) {
+    cursorWarningElement.remove();
+    cursorWarningElement = null;
+  }
+  if (cursorWarningTimeout) {
+    clearTimeout(cursorWarningTimeout);
+    cursorWarningTimeout = null;
+  }
+  document.removeEventListener('mousemove', updateCursorWarningPosition);
+}
+
 // モーダルを閉じる
 function closeModal() {
+  // 警告を非表示
+  hideCursorWarning();
+
   document.querySelectorAll('.modal').forEach(modal => {
     const instance = bootstrap.Modal.getInstance(modal);
     if (instance) {
@@ -821,10 +1173,18 @@ function renderMonthView() {
       dateDiv.style.cssText = 'font-size: 12px; margin-bottom: 2px;';
       dateDiv.textContent = currentCalendarDate.getDate();
 
-      // 当月以外はグレー表示
-      if (currentCalendarDate.getMonth() !== month) {
-        td.style.backgroundColor = '#f0f0f0';
-        dateDiv.style.color = '#999';
+      // 休診日判定
+      const isClosed = isClosedDay(currentCalendarDate);
+      if (isClosed) {
+        td.style.backgroundColor = '#e0e0e0';
+        td.style.cursor = 'default';
+      } else {
+        td.style.cursor = 'pointer';
+        if (currentCalendarDate.getMonth() !== month) {
+          // 当月以外はグレー表示
+          td.style.backgroundColor = '#f0f0f0';
+          dateDiv.style.color = '#999';
+        }
       }
 
       td.appendChild(dateDiv);
@@ -836,16 +1196,18 @@ function renderMonthView() {
         td.appendChild(eventDiv);
       });
 
-      // クリックイベント
+      // クリックイベント（休診日以外）
       const clickDate = new Date(currentCalendarDate);
-      td.addEventListener('click', function(e) {
-        if (e.target.classList.contains('schedule-event') || e.target.closest('.schedule-event')) {
-          const eventElement = e.target.classList.contains('schedule-event') ? e.target : e.target.closest('.schedule-event');
-          showEventDetail(parseInt(eventElement.dataset.recordId));
-        } else {
-          showNewEventModal(clickDate, 9, 0);
-        }
-      });
+      if (!isClosed) {
+        td.addEventListener('click', function(e) {
+          if (e.target.classList.contains('schedule-event') || e.target.closest('.schedule-event')) {
+            const eventElement = e.target.classList.contains('schedule-event') ? e.target : e.target.closest('.schedule-event');
+            showEventDetail(parseInt(eventElement.dataset.recordId));
+          } else {
+            showNewEventModal(clickDate, 9, 0);
+          }
+        });
+      }
 
       tr.appendChild(td);
       currentCalendarDate.setDate(currentCalendarDate.getDate() + 1);

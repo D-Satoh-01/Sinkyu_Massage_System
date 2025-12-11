@@ -10,7 +10,7 @@ use App\Http\Requests\TherapistRequest;
 
 class TherapistsController extends Controller
 {
-  // 施術者情報一覧表示
+  // 施術者一覧表示
   public function index()
   {
     // DataTablesを使用するため、全件取得
@@ -20,11 +20,11 @@ class TherapistsController extends Controller
 
     return view('therapists.therapists_index', [
       'therapists' => $therapists,
-      'page_header_title' => '施術者情報',
+      'page_header_title' => '施術者',
     ]);
   }
 
-  // 施術者情報新規登録画面表示
+  // 施術者新規登録画面表示
   public function create()
   {
     // セッションに保存されたデータがあれば、それをフラッシュデータとして設定
@@ -38,12 +38,12 @@ class TherapistsController extends Controller
 
     return view('therapists.therapists_registration', [
       'mode' => 'create',
-      'page_header_title' => '施術者情報新規登録',
+      'page_header_title' => '施術者新規登録',
       'therapist' => null
     ]);
   }
 
-  // 施術者情報新規登録：確認画面の表示
+  // 施術者新規登録：確認画面の表示
   public function confirm(TherapistRequest $request)
   {
     $validated = $request->validated();
@@ -59,12 +59,12 @@ class TherapistsController extends Controller
       'labels' => $labels,
       'back_route' => 'therapists.create',
       'store_route' => 'therapists.store',
-      'page_header_title' => '施術者情報登録内容確認',
-      'registration_message' => '施術者情報の登録を行います。',
+      'page_header_title' => '施術者登録内容確認',
+      'registration_message' => '施術者の登録を行います。',
     ]);
   }
 
-  // 施術者情報新規登録処理
+  // 施術者新規登録処理
   public function store(Request $request)
   {
     // セッションからデータを取得
@@ -106,10 +106,10 @@ class TherapistsController extends Controller
     // セッションから登録データを削除
     $request->session()->forget('therapists_registration_data');
 
-    return redirect()->route('therapists.index')->with('success', '施術者情報を登録しました。');
+    return redirect()->route('therapists.index')->with('success', '施術者を登録しました。');
   }
 
-  // 施術者情報編集画面表示
+  // 施術者編集画面表示
   public function edit($id)
   {
     // セッションに保存されたデータがあれば、それをフラッシュデータとして設定
@@ -126,17 +126,17 @@ class TherapistsController extends Controller
     $therapist = DB::table('therapists')->where('id', $id)->first();
 
     if (!$therapist) {
-      return redirect()->route('therapists.index')->with('error', '施術者情報が見つかりません。');
+      return redirect()->route('therapists.index')->with('error', '施術者が見つかりません。');
     }
 
     return view('therapists.therapists_registration', [
       'mode' => 'edit',
-      'page_header_title' => '施術者情報編集',
+      'page_header_title' => '施術者編集',
       'therapist' => $therapist
     ]);
   }
 
-  // 施術者情報編集：確認画面の表示
+  // 施術者編集：確認画面の表示
   public function editConfirm(TherapistRequest $request, $id)
   {
     $validated = $request->validated();
@@ -154,12 +154,12 @@ class TherapistsController extends Controller
       'back_route' => 'therapists.edit',
       'back_id' => $id,
       'store_route' => 'therapists.update',
-      'page_header_title' => '施術者情報編集内容確認',
-      'registration_message' => '施術者情報の更新を行います。',
+      'page_header_title' => '施術者編集内容確認',
+      'registration_message' => '施術者の更新を行います。',
     ]);
   }
 
-  // 施術者情報更新処理
+  // 施術者更新処理
   public function update(Request $request, $id)
   {
     $data = $request->session()->get('therapists_edit_data');
@@ -201,10 +201,10 @@ class TherapistsController extends Controller
     $request->session()->forget('therapists_edit_data');
     $request->session()->forget('therapists_edit_id');
 
-    return redirect()->route('therapists.index')->with('success', '施術者情報を更新しました。');
+    return redirect()->route('therapists.index')->with('success', '施術者を更新しました。');
   }
 
-  // 施術者情報のラベル取得
+  // 施術者のラベル取得
   private function getTherapistLabels()
   {
     return [
@@ -234,10 +234,10 @@ class TherapistsController extends Controller
     ];
   }
 
-  // 施術者情報削除
+  // 施術者削除
   public function destroy($id)
   {
     DB::table('therapists')->where('id', $id)->delete();
-    return redirect()->route('therapists.index')->with('success', '施術者情報を削除しました。');
+    return redirect()->route('therapists.index')->with('success', '施術者を削除しました。');
   }
 }

@@ -15,7 +15,7 @@
 
   <br><br>
 
-  <!-- 施術者情報一覧テーブル -->
+  <!-- 施術者一覧テーブル -->
   <table id="therapistTable" class="table table-bordered table-striped">
     <thead>
       <tr>

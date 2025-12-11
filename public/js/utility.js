@@ -378,32 +378,18 @@ function clearSelectOnNewFieldInput(newFieldId, selectId) {
  * data-tooltip属性を持つreadonlyまたはdisabledフィールドに自動的にツールチップを表示
  */
 function initializeReadonlyTooltips() {
-  console.log('[Tooltip] initializeReadonlyTooltips() 実行開始');
-  
   // data-tooltip属性を持つreadonlyまたはdisabledフィールドを全て取得
   const readonlyFields = document.querySelectorAll('[readonly][data-tooltip], [disabled][data-tooltip]');
-  console.log('[Tooltip] 対象フィールド数:', readonlyFields.length);
-  
+
   readonlyFields.forEach((field, index) => {
     const tooltipText = field.getAttribute('data-tooltip');
-    console.log(`[Tooltip] フィールド${index + 1}:`, {
-      id: field.id,
-      name: field.name,
-      tagName: field.tagName,
-      disabled: field.disabled,
-      readOnly: field.readOnly,
-      tooltipText: tooltipText,
-      initialized: field.hasAttribute('data-tooltip-initialized')
-    });
-    
+
     if (!tooltipText) {
-      console.log(`[Tooltip] フィールド${index + 1}: tooltip-textなし、スキップ`);
       return;
     }
 
     // 既にツールチップが設定されているかチェック
     if (field.hasAttribute('data-tooltip-initialized')) {
-      console.log(`[Tooltip] フィールド${index + 1}: 既に初期化済み、スキップ`);
       return;
     }
 
@@ -414,28 +400,19 @@ function initializeReadonlyTooltips() {
     tooltip.className = 'readonly-tooltip bg-white fw-medium px-2 pt-1 pb-2 rounded shadow-sm';
     tooltip.style.cssText = 'display: none; position: fixed; white-space: nowrap; z-index: 1000; pointer-events: none;';
     tooltip.textContent = tooltipText;
-    
+
     // ツールチップをbodyに追加（position: fixedが正しく動作するように）
     document.body.appendChild(tooltip);
     field.setAttribute('data-tooltip-id', tooltipId);
     field.setAttribute('data-tooltip-initialized', 'true');
-    console.log(`[Tooltip] フィールド${index + 1}: ツールチップ作成完了 (ID: ${tooltipId})`);
 
     // マウスイベントリスナーを設定
     field.addEventListener('mouseenter', function(e) {
-      console.log('[Tooltip] mouseenter:', {
-        id: this.id,
-        disabled: this.disabled,
-        readOnly: this.readOnly
-      });
       // disabled属性がある場合のみツールチップを表示
       if (this.disabled || this.readOnly) {
         tooltip.style.display = 'block';
         tooltip.style.top = (e.clientY + 15) + 'px';
         tooltip.style.left = (e.clientX + 10) + 'px';
-        console.log('[Tooltip] ツールチップ表示:', tooltipText);
-      } else {
-        console.log('[Tooltip] disabled/readOnlyでないため非表示');
       }
     });
 
@@ -447,12 +424,9 @@ function initializeReadonlyTooltips() {
     });
 
     field.addEventListener('mouseleave', function() {
-      console.log('[Tooltip] mouseleave: ツールチップ非表示');
       tooltip.style.display = 'none';
     });
   });
-  
-  console.log('[Tooltip] initializeReadonlyTooltips() 実行完了');
 }
 
 /**

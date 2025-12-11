@@ -13,10 +13,10 @@
 
   <br>
 
-  ・<a href="{{ route('clinic-users.index') }}">利用者情報</a><br>
-  ・<a href="{{ route('doctors.index') }}">医師情報</a><br>
-  ・<a href="{{ route('therapists.index') }}">施術者情報</a><br>
-  ・<a href="{{ route('caremanagers.index') }}">ケアマネ情報</a><br>
+  ・<a href="{{ route('clinic-users.index') }}">利用者</a><br>
+  ・<a href="{{ route('doctors.index') }}">医師</a><br>
+  ・<a href="{{ route('therapists.index') }}">施術者</a><br>
+  ・<a href="{{ route('caremanagers.index') }}">ケアマネ</a><br>
   ・<a href="{{ route('clinic-info.index') }}">自社情報</a><br>
   ・<a href="{{ route('submaster.index') }}">サブマスター登録</a><br>
   ・<a href="{{ route('master.documents.index') }}">文書</a><br>

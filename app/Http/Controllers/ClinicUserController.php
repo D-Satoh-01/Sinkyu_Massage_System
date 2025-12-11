@@ -8,11 +8,11 @@ use App\Models\ClinicUser;
 use App\Http\Requests\ClinicUserRequest;
 
 /**
- * 利用者情報管理コントローラー
- * 
+ * 利用者管理コントローラー
+ *
  * 利用者の基本情報（氏名、住所、連絡先、往診距離等）のCRUD操作を担当する。
- * - 利用者情報の一覧・登録・編集・削除
- * 
+ * - 利用者の一覧・登録・編集・削除
+ *
  * 保険情報、同意医師履歴、計画情報は別コントローラーで管理：
  * @see InsuranceController
  * @see ConsentMassageController
@@ -33,7 +33,7 @@ class ClinicUserController extends Controller
 
         return view('clinic-users.clinic-users_index', [
             'clinicUsers' => $clinicUsers,
-            'page_header_title' => '利用者情報',
+            'page_header_title' => '利用者',
         ]);
     }
 
@@ -46,7 +46,7 @@ class ClinicUserController extends Controller
     {
         return view('clinic-users.clinic-users_registration', [
             'mode' => 'create',
-            'page_header_title' => '利用者情報‐登録 (新規)',
+            'page_header_title' => '利用者‐登録 (新規)',
             'clinicUser' => null
         ]);
     }
@@ -73,7 +73,7 @@ class ClinicUserController extends Controller
             'back_route' => 'clinic-users.create',
             'store_route' => 'clinic-users.store',
             'page_header_title' => '利用者登録内容確認',
-            'registration_message' => '利用者情報の登録を行います。',
+            'registration_message' => '利用者の登録を行います。',
         ]);
     }
 
@@ -102,7 +102,7 @@ class ClinicUserController extends Controller
         $request->session()->forget('registration_data');
 
         return view('registration-done', [
-            'page_header_title' => '利用者情報登録完了',
+            'page_header_title' => '利用者登録完了',
             'message' => '入力された内容を登録しました。',
             'index_route' => 'clinic-users.index',
             'index_id' => null,
@@ -122,7 +122,7 @@ class ClinicUserController extends Controller
         
         return view('clinic-users.clinic-users_registration', [
             'mode' => 'edit',
-            'page_header_title' => '利用者情報‐登録 (編集)',
+            'page_header_title' => '利用者‐登録 (編集)',
             'clinicUser' => $clinicUser
         ]);
     }
@@ -149,8 +149,8 @@ class ClinicUserController extends Controller
             'back_route' => 'clinic-users.edit',
             'back_id' => $validated['id'],
             'store_route' => 'clinic-users.edit.update',
-            'page_header_title' => '利用者情報更新内容確認',
-            'registration_message' => '利用者情報の更新を行います。',
+            'page_header_title' => '利用者更新内容確認',
+            'registration_message' => '利用者の更新を行います。',
         ]);
     }
 
@@ -179,7 +179,7 @@ class ClinicUserController extends Controller
         $request->session()->forget('edit_data');
 
         return view('registration-done', [
-            'page_header_title' => '利用者情報更新完了',
+            'page_header_title' => '利用者更新完了',
             'message' => '入力された内容を更新しました。',
             'index_route' => 'clinic-users.index',
             'index_id' => null,
@@ -199,12 +199,12 @@ class ClinicUserController extends Controller
         $clinicUser->delete();
 
         return redirect()->route('clinic-users.index')
-            ->with('success', '利用者情報を削除しました。');
+            ->with('success', '利用者を削除しました。');
     }
 
     /**
-     * 利用者情報のフィールドラベルを取得
-     * 
+     * 利用者のフィールドラベルを取得
+     *
      * @return array フィールド名 => ラベル名の配列
      */
     private function getLabels()
