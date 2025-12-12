@@ -3,7 +3,8 @@
 
 <x-app-layout>
   @php
-    // モードに応じたパンくずリスト定義名を決宁E    if ($mode === 'create') {
+    // モードに応じたパンくずリスト定義名を決定
+    if ($mode === 'create') {
       $breadcrumbName = 'reports.create';
     } elseif ($mode === 'edit') {
       $breadcrumbName = 'reports.edit';
@@ -40,9 +41,9 @@
 
     <div class="mb-4">
       @if($mode === 'duplicate')
-        <!-- 褁E��モードでは年月を変更可能 -->
+        <!-- 複製モードでは年月を変更可能 -->
         <div class="d-flex gap-3 align-items-center">
-          <label class="fw-bold">褁E��先年朁E/label>
+          <label class="fw-bold">複製先年月</label>
           <div class="vr ms-1 me-2" style="height: 1.4rem; position: relative; top: 0.3rem;"></div>
           <select id="duplicate-date-select" required>
               @php
@@ -61,7 +62,7 @@
                     $value = sprintf('%04d-%02d', $y, $m);
                     $isSelected = old('year', $year) == $y && old('month', $month) == $m;
                   @endphp
-                  <option value="{{ $value }}" {{ $isSelected ? 'selected' : '' }}>{{ $y }} �E� {{ sprintf('%02d', $m) }}</option>
+                  <option value="{{ $value }}" {{ $isSelected ? 'selected' : '' }}>{{ $y }} 年 {{ sprintf('%02d', $m) }}</option>
                 @endfor
               @endfor
             </select>
@@ -69,25 +70,25 @@
           <input type="hidden" name="month" id="month" value="{{ old('month', $month) }}">
         </div>
       @else
-        <!-- 新規登録・編雁E��ードでは年月を固定表示 -->
-        <h5 class="fw-bold mb-3">{{ $year }}年 {{ sprintf('%02d', $month) }}朁Eの報告書チE�Eタ</h5>
+        <!-- 新規登録・編集モードでは年月を固定表示 -->
+        <h5 class="fw-bold mb-3">{{ $year }}年 {{ sprintf('%02d', $month) }}月の報告書データ</h5>
         <input type="hidden" name="year" value="{{ $year }}">
         <input type="hidden" name="month" value="{{ $month }}">
       @endif
     </div>
 
     <div class="mb-3">
-      <label for="subjective_symptom_and_wish" class="form-label fw-bold">主観痁E��</label><br>
+      <label for="subjective_symptom_and_wish" class="form-label fw-bold">主観症状</label><br>
       <textarea id="subjective_symptom_and_wish" name="subjective_symptom_and_wish" class="w-100" rows="5" maxlength="1000">{{ old('subjective_symptom_and_wish', $report->subjective_symptom_and_wish ?? '') }}</textarea>
     </div>
 
     <div class="mb-3">
-      <label for="objective_symptom" class="form-label fw-bold">客観痁E��</label><br>
+      <label for="objective_symptom" class="form-label fw-bold">客観症状</label><br>
       <textarea id="objective_symptom" name="objective_symptom"  class="w-100" rows="5" maxlength="1000">{{ old('objective_symptom', $report->objective_symptom ?? '') }}</textarea>
     </div>
 
     <div class="mb-3">
-      <label for="therapy_content" class="form-label fw-bold">施術�E容</label><br>
+      <label for="therapy_content" class="form-label fw-bold">施術内容</label><br>
       <textarea id="therapy_content" name="therapy_content" class="w-100" rows="5" maxlength="1000">{{ old('therapy_content', $report->therapy_content ?? '') }}</textarea>
     </div>
 

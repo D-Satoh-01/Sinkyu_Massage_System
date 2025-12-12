@@ -51,7 +51,7 @@
       <td data-order="{{ $planInfo->assessment_date ? strtotime($planInfo->assessment_date) : 0 }}">
       <a href="{{ route('clinic-users.plans.edit', ['id' => $id, 'plan_id' => $planInfo->id]) }}">
         @if($planInfo->assessment_date)
-          {{ \Carbon\Carbon::parse($planInfo->assessment_date)->format('Y/m/d') }}
+          {{ \Carbon\Carbon::parse($planInfo->assessment_date)->format('Y/n/j') }}
         @endif
         [編集]
       </a>
@@ -59,11 +59,11 @@
       <td>{{ $planInfo->assessor }}</td>
       <td data-order="{{ $planInfo->user_and_family_consent_date ? strtotime($planInfo->user_and_family_consent_date) : 0 }}">
       @if($planInfo->user_and_family_consent_date)
-        {{ \Carbon\Carbon::parse($planInfo->user_and_family_consent_date)->format('Y/m/d') }}
+        {{ \Carbon\Carbon::parse($planInfo->user_and_family_consent_date)->format('Y/n/j') }}
       @endif
       </td>
       <td data-order="{{ strtotime($planInfo->created_at) }}">
-      {{ \Carbon\Carbon::parse($planInfo->created_at)->format('Y/m/d') }}
+      {{ \Carbon\Carbon::parse($planInfo->created_at)->format('Y/n/j') }}
       </td>
       <td>
       <a href="{{ route('clinic-users.plans.duplicate', ['id' => $id, 'plan_id' => $planInfo->id]) }}">[複製]</a>

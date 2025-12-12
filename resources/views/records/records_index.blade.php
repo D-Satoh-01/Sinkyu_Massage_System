@@ -172,7 +172,7 @@
           <select id="therapist_id" name="therapist_id" data-tooltip="先に日付を選択してください">
             <option value="">╌╌╌</option>
             @foreach($therapists as $therapist)
-              <option value="{{ $therapist->id }}" {{ old('therapist_id') == $therapist->id ? 'selected' : '' }}>{{ $therapist->last_name }} {{ $therapist->first_name }} @if($therapist->last_name_kana)({{ $therapist->last_name_kana }} {{ $therapist->first_name_kana }})@endif</option>
+              <option value="{{ $therapist->id }}" {{ old('therapist_id') == $therapist->id ? 'selected' : '' }}>{{ $therapist->last_name }}{{ "\u{2000}" }}{{ $therapist->first_name }} @if($therapist->last_name_kana)({{ $therapist->last_name_kana }}{{ "\u{2000}" }}{{ $therapist->first_name_kana }})@endif</option>
             @endforeach
           </select>
         </div>

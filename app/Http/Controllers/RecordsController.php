@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\RecordRequest;
+use App\Models\Record;
 
 /**
  * 実績データ管理コントローラー
@@ -129,7 +130,7 @@ class RecordsController extends Controller
         ->select(
           'records.*',
           'therapy_contents.therapy_content',
-          DB::raw("CONCAT(therapists.last_name, ' ', therapists.first_name) as therapist_name")
+          DB::raw("CONCAT(therapists.last_name, '\u{2000}', therapists.first_name) as therapist_name")
         )
         ->orderBy('records.created_at', 'desc')
         ->get()
@@ -227,7 +228,7 @@ class RecordsController extends Controller
         ]);
 
         // recordsテーブルにデータを挿入
-        $recordId = DB::table('records')->insertGetId([
+        $record = Record::create([
           'clinic_user_id' => $validated['clinic_user_id'],
           'date' => $date,
           'start_time' => $validated['start_time'],
@@ -242,9 +243,8 @@ class RecordsController extends Controller
           'bill_category_id' => $validated['bill_category_id'],
           'therapist_id' => $validated['therapist_id'],
           'abstract' => $validated['abstract'] ?? null,
-          'created_at' => now(),
-          'updated_at' => now(),
         ]);
+        $recordId = $record->id;
 
         // デバッグログ：レコード作成完了
         \Log::info('[DEBUG RecordsController::store] レコード作成完了: recordId=' . $recordId);
@@ -279,7 +279,7 @@ class RecordsController extends Controller
           }
 
           foreach ($duplicateContents as $contentId) {
-            $duplicateRecordId = DB::table('records')->insertGetId([
+            $duplicateRecord = Record::create([
               'clinic_user_id' => $validated['clinic_user_id'],
               'date' => $date,
               'start_time' => $validated['start_time'],
@@ -294,9 +294,8 @@ class RecordsController extends Controller
               'bill_category_id' => $validated['bill_category_id'],
               'therapist_id' => $validated['therapist_id'],
               'abstract' => $validated['abstract'] ?? null,
-              'created_at' => now(),
-              'updated_at' => now(),
             ]);
+            $duplicateRecordId = $duplicateRecord->id;
 
             // 複製したレコードにも身体部位を保存
             if (isset($validated['bodyparts'])) {
@@ -501,9 +500,7 @@ class RecordsController extends Controller
         ->delete();
 
       // recordsテーブルから削除
-      DB::table('records')
-        ->whereIn('id', $deletedRecordIds)
-        ->delete();
+      Record::whereIn('id', $deletedRecordIds)->delete();
 
       // 往療距離の配列を取得
       $housecallDistances = $request->input('housecall_distance', []);
@@ -511,7 +508,7 @@ class RecordsController extends Controller
       // 新しいレコードを作成
       foreach ($housecallDistances as $date => $distance) {
         // recordsテーブルにデータを挿入
-        $recordId = DB::table('records')->insertGetId([
+        $record = Record::create([
           'clinic_user_id' => $validated['clinic_user_id'],
           'date' => $date,
           'start_time' => $validated['start_time'],
@@ -526,9 +523,8 @@ class RecordsController extends Controller
           'bill_category_id' => $validated['bill_category_id'],
           'therapist_id' => $validated['therapist_id'],
           'abstract' => $validated['abstract'] ?? null,
-          'created_at' => now(),
-          'updated_at' => now(),
         ]);
+        $recordId = $record->id;
 
         // あんま･マッサージの場合、bodyparts-recordsテーブルに身体部位を保存
         if ($validated['therapy_type'] == 2 && isset($validated['bodyparts'])) {
@@ -560,7 +556,7 @@ class RecordsController extends Controller
           }
 
           foreach ($duplicateContents as $contentId) {
-            $duplicateRecordId = DB::table('records')->insertGetId([
+            $duplicateRecord = Record::create([
               'clinic_user_id' => $validated['clinic_user_id'],
               'date' => $date,
               'start_time' => $validated['start_time'],
@@ -575,9 +571,8 @@ class RecordsController extends Controller
               'bill_category_id' => $validated['bill_category_id'],
               'therapist_id' => $validated['therapist_id'],
               'abstract' => $validated['abstract'] ?? null,
-              'created_at' => now(),
-              'updated_at' => now(),
             ]);
+            $duplicateRecordId = $duplicateRecord->id;
 
             // 複製したレコードにも身体部位を保存
             if (isset($validated['bodyparts'])) {
@@ -802,7 +797,7 @@ class RecordsController extends Controller
       // 新しいレコードを作成
       foreach ($housecallDistances as $date => $distance) {
         // recordsテーブルにデータを挿入
-        $recordId = DB::table('records')->insertGetId([
+        $record = Record::create([
           'clinic_user_id' => $validated['clinic_user_id'],
           'date' => $date,
           'start_time' => $validated['start_time'],
@@ -817,9 +812,8 @@ class RecordsController extends Controller
           'bill_category_id' => $validated['bill_category_id'],
           'therapist_id' => $validated['therapist_id'],
           'abstract' => $validated['abstract'] ?? null,
-          'created_at' => now(),
-          'updated_at' => now(),
         ]);
+        $recordId = $record->id;
 
         // あんま･マッサージの場合、bodyparts-recordsテーブルに身体部位を保存
         if ($validated['therapy_type'] == 2 && isset($validated['bodyparts'])) {
@@ -851,7 +845,7 @@ class RecordsController extends Controller
           }
 
           foreach ($duplicateContents as $contentId) {
-            $duplicateRecordId = DB::table('records')->insertGetId([
+            $duplicateRecord = Record::create([
               'clinic_user_id' => $validated['clinic_user_id'],
               'date' => $date,
               'start_time' => $validated['start_time'],
@@ -866,9 +860,8 @@ class RecordsController extends Controller
               'bill_category_id' => $validated['bill_category_id'],
               'therapist_id' => $validated['therapist_id'],
               'abstract' => $validated['abstract'] ?? null,
-              'created_at' => now(),
-              'updated_at' => now(),
             ]);
+            $duplicateRecordId = $duplicateRecord->id;
 
             // 複製したレコードにも身体部位を保存
             if (isset($validated['bodyparts'])) {
@@ -938,9 +931,7 @@ class RecordsController extends Controller
         ->delete();
 
       // recordsテーブルから削除
-      DB::table('records')
-        ->whereIn('id', $recordIds)
-        ->delete();
+      Record::whereIn('id', $recordIds)->delete();
 
       DB::commit();
 

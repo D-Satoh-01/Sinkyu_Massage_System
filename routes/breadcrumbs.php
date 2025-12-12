@@ -123,6 +123,14 @@ function getSchedulesBreadcrumbs() {
     ['url' => route('schedules.index'), 'label' => 'スケジュール'],
   ];
 }
+
+// 入金管理
+function getDepositsBreadcrumbs() {
+  return [
+    ...getIndexBreadcrumbs(),
+    ['url' => route('deposits.index'), 'label' => '入金管理'],
+  ];
+}
 //---------------------------------------------------------------//
 
 
@@ -247,6 +255,11 @@ Breadcrumbs::define('reports.duplicate', function() {
 // スケジュール
 Breadcrumbs::define('schedules.index', function() {
   return getSchedulesBreadcrumbs();
+});
+
+// 入金管理
+Breadcrumbs::define('deposits.index', function() {
+  return getDepositsBreadcrumbs();
 });
 
 // 利用者情報 ｰ トップ

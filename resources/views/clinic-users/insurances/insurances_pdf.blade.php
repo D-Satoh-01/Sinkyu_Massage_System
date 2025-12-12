@@ -53,17 +53,17 @@
         <td style="width: 8%;">{{ $insurance->insured_number }}</td>
         <td style="width: 7%;">
           @if($insurance->license_acquisition_date)
-            {{ $insurance->license_acquisition_date->format('Y/m/d') }}
+            {{ $insurance->license_acquisition_date->format('Y/n/j') }}
           @endif
         </td>
         <td style="width: 7%;">
           @if($insurance->certification_date)
-            {{ $insurance->certification_date->format('Y/m/d') }}
+            {{ $insurance->certification_date->format('Y/n/j') }}
           @endif
         </td>
         <td style="width: 7%;">
           @if($insurance->issue_date)
-            {{ $insurance->issue_date->format('Y/m/d') }}
+            {{ $insurance->issue_date->format('Y/n/j') }}
           @endif
         </td>
         <td style="width: 5%; text-align: center;">
@@ -71,7 +71,7 @@
         </td>
         <td style="width: 7%;">
           @if($insurance->expiry_date)
-            {{ $insurance->expiry_date->format('Y/m/d') }}
+            {{ $insurance->expiry_date->format('Y/n/j') }}
           @endif
         </td>
         <td style="width: 7%;">

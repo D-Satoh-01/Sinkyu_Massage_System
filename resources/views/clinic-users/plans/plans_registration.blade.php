@@ -2,7 +2,8 @@
 
 <x-app-layout>
   @php
-    // モードに応じたパンくずリスト定義名を決宁E    if ($mode === 'create') {
+    // モードに応じたパンくずリスト定義名を決定
+    if ($mode === 'create') {
       $breadcrumbName = 'clinic-users.plans.create';
     } elseif ($mode === 'edit') {
       $breadcrumbName = 'clinic-users.plans.edit';
@@ -27,7 +28,8 @@
   @endif
 
   @php
-    // モードに応じたフォームの送信先を設宁E    if ($mode === 'create') {
+    // モードに応じたフォームの送信先を設定
+    if ($mode === 'create') {
       $formAction = route('clinic-users.plans.confirm', $id);
     } elseif ($mode === 'edit') {
       $formAction = route('clinic-users.plans.edit.confirm', [$id, $plan_id]);
@@ -38,9 +40,9 @@
 
   @if($mode === 'duplicate')
   <div class="alert alert-warning">
-    <strong>褁E��允E�E計画惁E��:</strong>
-    評価日: {{ $planInfo->assessment_date?->format('Y年m朁E日') ?? '未設宁E }}
-    評価老E {{ $planInfo->assessor ?? '未設宁E }}
+    <strong>複製元の計画書:</strong>
+    評価日: {{ $planInfo->assessment_date?->format('Y年m月d日') ?? '未設定' }}
+    評価者: {{ $planInfo->assessor ?? '未設定' }}
   </div>
   @endif
 

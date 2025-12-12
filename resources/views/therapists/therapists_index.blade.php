@@ -30,8 +30,8 @@
       @foreach($therapists as $therapist)
       <tr>
         <td>
-          <a href="{{ route('therapists.edit', $therapist->id) }}">{{ $therapist->last_name }} {{ $therapist->first_name }} [編集]</a><br>
-          {{ $therapist->last_name_kana }} {{ $therapist->first_name_kana }}
+          <a href="{{ route('therapists.edit', $therapist->id) }}">{{ $therapist->last_name }}{{ "\u{2000}" }}{{ $therapist->first_name }} [編集]</a><br>
+          {{ $therapist->last_name_kana }}{{ "\u{2000}" }}{{ $therapist->first_name_kana }}
         </td>
         <td>
           @if(!empty($therapist->license_hari_id) || !empty($therapist->license_hari_number) || !empty($therapist->license_hari_issued_date))
@@ -41,7 +41,7 @@
             @endif
             {{ $therapist->license_hari_number }}
             @if(!empty($therapist->license_hari_issued_date))
-              （{{ \Carbon\Carbon::parse($therapist->license_hari_issued_date)->format('Y/m/d') }}）
+              （{{ \Carbon\Carbon::parse($therapist->license_hari_issued_date)->format('Y/n/j') }}）
             @endif
             <br>
           @endif
@@ -52,7 +52,7 @@
             @endif
             {{ $therapist->license_kyu_number }}
             @if(!empty($therapist->license_kyu_issued_date))
-              （{{ \Carbon\Carbon::parse($therapist->license_kyu_issued_date)->format('Y/m/d') }}）
+              （{{ \Carbon\Carbon::parse($therapist->license_kyu_issued_date)->format('Y/n/j') }}）
             @endif
             <br>
           @endif
@@ -63,7 +63,7 @@
             @endif
             {{ $therapist->license_massage_number }}
             @if(!empty($therapist->license_massage_issued_date))
-              （{{ \Carbon\Carbon::parse($therapist->license_massage_issued_date)->format('Y/m/d') }}）
+              （{{ \Carbon\Carbon::parse($therapist->license_massage_issued_date)->format('Y/n/j') }}）
             @endif
           @endif
           @if(empty($therapist->license_hari_id) && empty($therapist->license_hari_number) && empty($therapist->license_kyu_id) && empty($therapist->license_kyu_number) && empty($therapist->license_massage_id) && empty($therapist->license_massage_number))
@@ -80,7 +80,7 @@
           @endif
         </td>
         <td data-order="{{ $therapist->created_at ? strtotime($therapist->created_at) : 0 }}">
-          {{ $therapist->created_at ? \Carbon\Carbon::parse($therapist->created_at)->format('Y/m/d') : '' }}<br>
+          {{ $therapist->created_at ? \Carbon\Carbon::parse($therapist->created_at)->format('Y/n/j') : '' }}<br>
           {{ $therapist->created_at ? \Carbon\Carbon::parse($therapist->created_at)->format('H:i') : '' }}
         </td>
         <td>

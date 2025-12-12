@@ -19,7 +19,10 @@
       "Bash(cat:*)",
       "Bash(find:*)",
       "Bash(powershell -Command:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(iconv:*)",
+      "Bash(git show:*)",
+      "Bash(git config:*)"
     ],
     "deny": [],
     "ask": []

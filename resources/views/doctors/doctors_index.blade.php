@@ -26,11 +26,11 @@
     </tr>
   </thead>
   <tbody>
-    @forelse($doctors as $doctor)
+    @foreach($doctors as $doctor)
     <tr>
       <td>
-      <a href="{{ route('doctors.edit', $doctor->id) }}">{{ $doctor->last_name }} {{ $doctor->first_name }} [編集]</a><br>
-      {{ $doctor->last_name_kana }} {{ $doctor->first_name_kana }}
+      <a href="{{ route('doctors.edit', $doctor->id) }}">{{ $doctor->last_name }}{{ "\u{2000}" }}{{ $doctor->first_name }} [編集]</a><br>
+      {{ $doctor->last_name_kana }}{{ "\u{2000}" }}{{ $doctor->first_name_kana }}
       </td>
       <td>
       {{ $doctor->medical_institution_name }}
@@ -45,7 +45,7 @@
       @endif
       </td>
       <td data-order="{{ $doctor->created_at ? strtotime($doctor->created_at) : 0 }}">
-      {{ $doctor->created_at ? \Carbon\Carbon::parse($doctor->created_at)->format('Y/m/d') : '' }}<br>
+      {{ $doctor->created_at ? \Carbon\Carbon::parse($doctor->created_at)->format('Y/n/j') : '' }}<br>
       {{ $doctor->created_at ? \Carbon\Carbon::parse($doctor->created_at)->format('H:i') : '' }}
       </td>
       <td>
@@ -59,11 +59,7 @@
       </form>
       </td>
     </tr>
-    @empty
-    <tr>
-      <td colspan="6" class="text-center">データがありません</td>
-    </tr>
-    @endforelse
+    @endforeach
   </tbody>
   </table>
 

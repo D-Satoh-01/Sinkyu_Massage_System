@@ -38,7 +38,7 @@
       </td>
       <td>
       @if(!empty($user->birthday))
-        {{ optional($user->birthday)->format('Y/m/d') }}
+        {{ optional($user->birthday)->format('Y/n/j') }}
         （{{ $user->birthday ? \Carbon\Carbon::parse($user->birthday)->age : '' }}才）
       @endif
       </td>
@@ -49,7 +49,7 @@
       {{ $user->address_1 }} {{ $user->address_2 }} {{ $user->address_3 }}
       </td>
       <td data-order="{{ $user->created_at ? $user->created_at->timestamp : 0 }}">
-      {{ optional($user->created_at)->format('Y/m/d') }}<br>
+      {{ optional($user->created_at)->format('Y/n/j') }}<br>
       {{ optional($user->created_at)->format('H:i') }}
       </td>
       <td>

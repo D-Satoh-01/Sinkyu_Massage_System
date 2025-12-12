@@ -65,16 +65,16 @@
       <td>{{ $insurance->insured_number }}</td>
       <td data-order="{{ $insurance->license_acquisition_date ? $insurance->license_acquisition_date->timestamp : 0 }}">
       @if($insurance->license_acquisition_date)
-        {{ $insurance->license_acquisition_date->format('Y/m/d') }}
+        {{ $insurance->license_acquisition_date->format('Y/n/j') }}
       @endif
       </td>
       <td data-order="{{ $insurance->expiry_date ? $insurance->expiry_date->timestamp : 0 }}">
       @if($insurance->expiry_date)
-        {{ $insurance->expiry_date->format('Y/m/d') }}
+        {{ $insurance->expiry_date->format('Y/n/j') }}
       @endif
       </td>
       <td data-order="{{ $insurance->created_at->timestamp }}">
-      {{ $insurance->created_at->format('Y/m/d') }}
+      {{ $insurance->created_at->format('Y/n/j') }}
       </td>
       <td>
       <a href="{{ route('clinic-users.insurances.duplicate', ['id' => $id, 'insurance_id' => $insurance->id]) }}">[複製]</a>

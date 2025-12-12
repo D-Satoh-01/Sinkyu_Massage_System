@@ -23,6 +23,7 @@ use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\UserSearchController;
 use App\Http\Controllers\TherapyPeriodController;
+use App\Http\Controllers\DepositsController;
 
 Route::get('/', fn() => redirect()->route('login'));
 
@@ -237,6 +238,11 @@ Route::middleware('auth')->group(function () {
   Route::get('/reports/{id}/duplicate', [ReportsController::class, 'duplicate'])->name('reports.duplicate');
   Route::post('/reports/duplicate/store', [ReportsController::class, 'duplicateStore'])->name('reports.duplicate.store');
   Route::delete('/reports/{id}', [ReportsController::class, 'destroy'])->name('reports.destroy');
+
+  // 入金管理
+  Route::get('/deposits/index', [DepositsController::class, 'index'])->name('deposits.index');
+  Route::get('/deposits/month/{yearMonth}', [DepositsController::class, 'getMonthData'])->name('deposits.getMonthData');
+  Route::put('/deposits/{id}', [DepositsController::class, 'update'])->name('deposits.update');
 
   // スケジュール
   Route::get('/schedules/index', [ScheduleController::class, 'index'])->name('schedules.index');

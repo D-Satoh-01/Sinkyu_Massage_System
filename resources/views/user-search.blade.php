@@ -136,7 +136,7 @@
               data-cell-phone="{{ $user->cell_phone }}"
               data-address="{{ trim(($user->address_1 ?? '') . ' ' . ($user->address_2 ?? '') . ' ' . ($user->address_3 ?? '')) }}"
               data-email="{{ $user->email }}"
-              data-birthday="{{ $user->birthday ? $user->birthday->format('Y/m/d') : '' }}"
+              data-birthday="{{ $user->birthday ? $user->birthday->format('Y/n/j') : '' }}"
               data-age="{{ $user->age }}"
               data-note="{{ $user->note }}"
             >{{ $user->last_name }} {{ $user->first_name }}</option>

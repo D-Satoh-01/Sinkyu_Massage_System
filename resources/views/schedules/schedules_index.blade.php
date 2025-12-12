@@ -16,7 +16,7 @@
         <select id="therapist-select">
           @foreach($therapists as $therapist)
             <option value="{{ $therapist->id }}" {{ $selectedTherapistId == $therapist->id ? 'selected' : '' }}>
-              {{ $therapist->last_name }} {{ $therapist->first_name }}
+              {{ $therapist->last_name }}{{ "\u{2000}" }}{{ $therapist->first_name }}
             </option>
           @endforeach
           <option value="all" {{ $selectedTherapistId === 'all' ? 'selected' : '' }}>［ 全表示 ］</option>
@@ -155,7 +155,7 @@
             <select class="form-select" id="new-therapist-select">
               <option value="">╌╌╌</option>
               @foreach($therapists as $therapist)
-                <option value="{{ $therapist->id }}">{{ $therapist->last_name }} {{ $therapist->first_name }}</option>
+                <option value="{{ $therapist->id }}">{{ $therapist->last_name }}{{ "\u{2000}" }}{{ $therapist->first_name }}</option>
               @endforeach
             </select>
           </div>

@@ -30,8 +30,8 @@
       @foreach($careManagers as $careManager)
       <tr>
         <td>
-          <a href="{{ route('caremanagers.edit', $careManager->id) }}">{{ $careManager->last_name }} {{ $careManager->first_name }} [編集]</a><br>
-          {{ $careManager->last_name_kana }} {{ $careManager->first_name_kana }}
+          <a href="{{ route('caremanagers.edit', $careManager->id) }}">{{ $careManager->last_name }}{{ "\u{2000}" }}{{ $careManager->first_name }} [編集]</a><br>
+          {{ $careManager->last_name_kana }}{{ "\u{2000}" }}{{ $careManager->first_name_kana }}
         </td>
         <td>
           {{ $careManager->service_provider_name ?? '-' }}
@@ -46,7 +46,7 @@
           @endif
         </td>
         <td data-order="{{ $careManager->created_at ? strtotime($careManager->created_at) : 0 }}">
-          {{ $careManager->created_at ? \Carbon\Carbon::parse($careManager->created_at)->format('Y/m/d') : '' }}<br>
+          {{ $careManager->created_at ? \Carbon\Carbon::parse($careManager->created_at)->format('Y/n/j') : '' }}<br>
           {{ $careManager->created_at ? \Carbon\Carbon::parse($careManager->created_at)->format('H:i') : '' }}
         </td>
         <td>

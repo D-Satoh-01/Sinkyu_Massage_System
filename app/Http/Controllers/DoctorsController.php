@@ -77,7 +77,7 @@ class DoctorsController extends Controller
   public function store(Request $request)
   {
     // セッションからデータを取得
-    $data = $request->session()->get('doctor_registration_data');
+    $data = $request->session()->get('doctors_registration_data');
 
     if (!$data) {
       return redirect()->route('doctors.create')->with('error', 'セッションが切れました。もう一度入力してください。');
@@ -115,7 +115,7 @@ class DoctorsController extends Controller
     ]);
 
     // セッションから登録データを削除
-    $request->session()->forget('doctor_registration_data');
+    $request->session()->forget('doctors_registration_data');
 
     return redirect()->route('doctors.index')->with('success', '医師を登録しました。');
   }

@@ -7,17 +7,16 @@
   />
 
   @if(session('success'))
-    <div style="color: green;">{{ session('success') }}</div>
+    <div class="alert alert-success">{{ session('success') }}</div>
   @endif
 
   <table id="selfPayFeesTable" class="table table-bordered table-striped">
     <thead>
       <tr>
-        <th style="width: 10%;">ID</th>
-        <th style="width: 50%;">名称</th>
-        <th style="width: 15%;">金額（円）</th>
-        <th style="width: 12.5%;">更新</th>
-        <th style="width: 12.5%;">削除</th>
+        <th class="text-center" style="width: 10%;">ID</th>
+        <th class="text-center" style="width: 50%;">名称</th>
+        <th class="text-center" style="width: 15%;">金額（円）</th>
+        <th class="text-center" style="width: 25%;">操作</th>
       </tr>
     </thead>
     <tbody>
@@ -25,12 +24,12 @@
       <tr class="new-entry-row">
         <td>新規登録</td>
         <td>
-          <input type="text" name="self_fee_name" value="" required style="width: 95%;" form="form-new">
+          <input type="text" name="self_fee_name" value="" required class="form-control" form="form-new">
         </td>
         <td>
-          <input type="number" name="amount" value="" min="0" step="1" required style="width: 95%;" form="form-new">
+          <input type="number" name="amount" value="" min="0" step="1" required class="form-control" form="form-new">
         </td>
-        <td colspan="2" style="text-align: center;">
+        <td class="text-center">
           <form action="{{ route('master.self-fees.store') }}" method="POST" id="form-new" class="d-inline">
             @csrf
             <button type="submit">新規登録</button>
@@ -45,16 +44,14 @@
         <td>
           <form action="{{ route('master.self-fees.update', $item->id) }}" method="POST" id="form-{{ $item->id }}">
             @csrf
-            <input type="text" name="self_fee_name" value="{{ $item->self_fee_name }}" required style="width: 95%;">
+            <input type="text" name="self_fee_name" value="{{ $item->self_fee_name }}" required class="form-control">
         </td>
         <td>
-            <input type="number" name="amount" value="{{ $item->amount }}" min="0" step="1" required style="width: 95%;">
+            <input type="number" name="amount" value="{{ $item->amount }}" min="0" step="1" required class="form-control">
           </form>
         </td>
-        <td style="text-align: center;">
+        <td class="text-center">
           <button type="submit" form="form-{{ $item->id }}">更新</button>
-        </td>
-        <td style="text-align: center;">
           <form action="{{ route('master.self-fees.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('本当に削除する？');">
             @csrf
             @method('DELETE')
@@ -83,7 +80,7 @@
         pageLength: 10,
         lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
         columnDefs: [
-          { orderable: false, targets: [3, 4] }
+          { orderable: false, targets: [3] }
         ],
         drawCallback: function() {
           $(this.api().table().body()).prepend(newEntryRow);

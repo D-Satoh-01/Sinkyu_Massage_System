@@ -14,9 +14,11 @@ class Doctor extends Model
   protected $table = 'doctors';
 
   protected $fillable = [
-    'doctor_name',
+    'last_name',
+    'first_name',
+    'last_name_kana',
+    'first_name_kana',
     'medical_institutions_id',
-    'furigana',
     'postal_code',
     'address_1',
     'address_2',
@@ -27,4 +29,13 @@ class Doctor extends Model
     'email',
     'note'
   ];
+
+  /**
+   * 医師名（姓名フルネーム）を取得するアクセサー
+   */
+  public function getDoctorNameAttribute()
+  {
+    $name = trim(($this->last_name ?? '') . "\u{2000}" . ($this->first_name ?? ''));
+    return $name ?: null;
+  }
 }

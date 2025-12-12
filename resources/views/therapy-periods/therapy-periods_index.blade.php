@@ -28,7 +28,7 @@
   <table id="therapyPeriodsTable" class="table table-bordered table-striped">
   <thead>
     <tr>
-    <th>利用者氏名</th>
+    <th>利用者名</th>
     <th>区分</th>
     <th>要加療期間</th>
     <th>同意期間</th>
@@ -48,12 +48,12 @@
       <td>{{ $period->category }}</td>
       <td data-order="{{ $period->therapy_period_start_date ? strtotime($period->therapy_period_start_date) : 0 }}">
       @if($period->therapy_period_start_date && $period->therapy_period_end_date)
-        {{ \Carbon\Carbon::parse($period->therapy_period_start_date)->format('Y/m/d') }}～{{ \Carbon\Carbon::parse($period->therapy_period_end_date)->format('Y/m/d') }}
+        {{ \Carbon\Carbon::parse($period->therapy_period_start_date)->format('Y/n/j') }} ~ {{ \Carbon\Carbon::parse($period->therapy_period_end_date)->format('Y/n/j') }}
       @endif
       </td>
       <td>
       @if($period->consenting_start_date && $period->consenting_end_date)
-        {{ \Carbon\Carbon::parse($period->consenting_start_date)->format('Y/m/d') }}～{{ \Carbon\Carbon::parse($period->consenting_end_date)->format('Y/m/d') }}
+        {{ \Carbon\Carbon::parse($period->consenting_start_date)->format('Y/n/j') }} ~ {{ \Carbon\Carbon::parse($period->consenting_end_date)->format('Y/n/j') }}
       @endif
       </td>
       <td>

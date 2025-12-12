@@ -36,7 +36,7 @@
         <a href="{{ route('therapy-periods.index') }}" class="sidebar-link">要加療期間リスト</a>
       </li>
       <li class="border-bottom border-secondary">
-        <a href="#" class="sidebar-link">入金管理</a>
+        <a href="{{ route('deposits.index') }}" class="sidebar-link">入金管理</a>
       </li>
     </ul>
   </nav>

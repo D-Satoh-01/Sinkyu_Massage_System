@@ -36,41 +36,41 @@
         <td style="width: 15%;">{{ $history->consenting_doctor_name }}</td>
         <td style="width: 10%;">
           @if($history->consenting_date)
-            {{ \Carbon\Carbon::parse($history->consenting_date)->format('Y/m/d') }}
+            {{ \Carbon\Carbon::parse($history->consenting_date)->format('Y/n/j') }}
           @endif
         </td>
         <td style="width: 10%;">
           @if($history->consenting_start_date)
-            {{ \Carbon\Carbon::parse($history->consenting_start_date)->format('Y/m/d') }}
+            {{ \Carbon\Carbon::parse($history->consenting_start_date)->format('Y/n/j') }}
           @endif
         </td>
         <td style="width: 10%;">
           @if($history->consenting_end_date)
-            {{ \Carbon\Carbon::parse($history->consenting_end_date)->format('Y/m/d') }}
+            {{ \Carbon\Carbon::parse($history->consenting_end_date)->format('Y/n/j') }}
           @endif
         </td>
         <td style="width: 10%;">
           @if($history->benefit_period_start_date)
-            {{ \Carbon\Carbon::parse($history->benefit_period_start_date)->format('Y/m/d') }}
+            {{ \Carbon\Carbon::parse($history->benefit_period_start_date)->format('Y/n/j') }}
           @endif
         </td>
         <td style="width: 10%;">
           @if($history->benefit_period_end_date)
-            {{ \Carbon\Carbon::parse($history->benefit_period_end_date)->format('Y/m/d') }}
+            {{ \Carbon\Carbon::parse($history->benefit_period_end_date)->format('Y/n/j') }}
           @endif
         </td>
         <td style="width: 10%;">
           @if($history->first_care_date)
-            {{ \Carbon\Carbon::parse($history->first_care_date)->format('Y/m/d') }}
+            {{ \Carbon\Carbon::parse($history->first_care_date)->format('Y/n/j') }}
           @endif
         </td>
         <td style="width: 10%;">
           @if($history->reconsenting_expiry)
-            {{ \Carbon\Carbon::parse($history->reconsenting_expiry)->format('Y/m/d') }}
+            {{ \Carbon\Carbon::parse($history->reconsenting_expiry)->format('Y/n/j') }}
           @endif
         </td>
         <td style="width: 9%;">
-          {{ \Carbon\Carbon::parse($history->created_at)->format('Y/m/d') }}
+          {{ \Carbon\Carbon::parse($history->created_at)->format('Y/n/j') }}
         </td>
       </tr>
       @empty
