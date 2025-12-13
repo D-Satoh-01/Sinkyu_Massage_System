@@ -74,6 +74,12 @@ html.sidebar-preload-closed .main-content {
   transition: margin-left 0.2s ease;
   overflow-y: auto;
   z-index: 999;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.sidebar::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
 }
 
 /* サイドバー格納状態 */
@@ -99,6 +105,60 @@ html.sidebar-preload-closed .sidebar {
 .sidebar-link:hover {
   color: #000;
   background-color: #00000010;
+}
+
+/* サブメニュートグル */
+.sidebar-submenu-toggle {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.submenu-arrow {
+  font-size: 12px;
+  transition: transform 0.2s ease;
+}
+
+/* サブメニュー */
+.submenu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background-color: #f8f9fa;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.submenu li {
+  border-bottom: 1px solid #dee2e6;
+}
+
+.submenu li:last-child {
+  border-bottom: none;
+}
+
+/* サブメニューリンク */
+.submenu-link {
+  display: block;
+  padding: 5px 20px;
+  text-decoration: none;
+  font-weight: 400;
+  font-size: 14px;
+  color: #444;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.submenu-link:hover {
+  color: #000;
+  background-color: #e9ecef;
+}
+
+.submenu-link.active {
+  background-color: #d3e5ff;
+  color: #0056b3;
+  font-weight: 500;
 }
 /*---------------------------------------------------------*/
 

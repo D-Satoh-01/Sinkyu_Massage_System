@@ -27,7 +27,22 @@
         <a href="{{ route('schedules.index') }}" class="sidebar-link">スケジュール</a>
       </li>
       <li class="border-bottom border-secondary">
-        <a href="{{ route('master.index') }}" class="sidebar-link">マスター登録</a>
+        <div class="sidebar-link sidebar-submenu-toggle" data-target="master-submenu">
+          <span>マスター登録</span>
+          <span class="submenu-arrow">▼</span>
+        </div>
+        <ul id="master-submenu" class="submenu">
+          <li><a href="{{ route('clinic-users.index') }}" class="submenu-link">利用者</a></li>
+          <li><a href="{{ route('doctors.index') }}" class="submenu-link">医師</a></li>
+          <li><a href="{{ route('therapists.index') }}" class="submenu-link">施術者</a></li>
+          <li><a href="{{ route('caremanagers.index') }}" class="submenu-link">ケアマネ</a></li>
+          <li><a href="{{ route('clinic-info.index') }}" class="submenu-link">自社情報</a></li>
+          <li><a href="{{ route('submaster.index') }}" class="submenu-link">サブマスター登録</a></li>
+          <li><a href="{{ route('master.documents.index') }}" class="submenu-link">文書</a></li>
+          <li><a href="{{ route('master.treatment-fees.index') }}" class="submenu-link">施術料金</a></li>
+          <li><a href="{{ route('master.self-fees.index') }}" class="submenu-link">自費施術料金</a></li>
+          <li><a href="{{ route('master.document-association.index') }}" class="submenu-link">登録済み標準文書の確認･関連付け</a></li>
+        </ul>
       </li>
       <li class="border-bottom border-secondary">
         <a href="#" class="sidebar-link">印刷メニュー</a>

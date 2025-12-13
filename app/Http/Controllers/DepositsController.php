@@ -28,10 +28,15 @@ class DepositsController extends Controller
     $yearMonths = [];
     $tempDate = clone $startDate;
     while ($tempDate <= $endDate) {
+      $yearMonth = $tempDate->format('Y-m');
+      // 各月のデータ有無をチェック
+      $hasData = Deposit::where('year_month', $yearMonth)->exists();
+
       $yearMonths[] = [
         'year' => (int)$tempDate->format('Y'),
         'month' => (int)$tempDate->format('m'),
-        'year_month' => $tempDate->format('Y-m'),
+        'year_month' => $yearMonth,
+        'has_data' => $hasData,
       ];
       $tempDate->modify('+1 month');
     }
@@ -41,8 +46,8 @@ class DepositsController extends Controller
 
     // 年ごとにグループ化
     $depositsByYear = collect($yearMonths)->groupBy('year')->map(function ($months, $year) {
-      // その年に入金データが1件でもあるかチェック
-      $hasDeposits = Deposit::whereYear('year_month', $year)->exists();
+      // その年に入金データが1件でもあるかチェック（月データのhas_dataフラグを確認）
+      $hasDeposits = collect($months)->contains('has_data', true);
 
       return [
         'has_deposits' => $hasDeposits,
